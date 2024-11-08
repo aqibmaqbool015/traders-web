@@ -442,9 +442,9 @@ const Detail = () => {
                 />
               </div>
               <form className="space-y-4">
-                {participateForm?.map((field) => (
+                {participateForm?.map((field,index) => (
                   <CustomInput
-                    key={field.id}
+                    key={index}
                     label={field.label}
                     type={field.type}
                     id={field.id}

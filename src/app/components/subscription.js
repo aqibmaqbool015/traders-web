@@ -133,8 +133,8 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
                   "__v",
                 ].includes(key)
             )
-            .map(([key]) => (
-              <div key={key} className="flex items-center mb-2">
+            .map(([key], index) => (
+              <div key={index} className="flex items-center mb-2">
                 <span className="mr-3">
                   <img
                     src={image.tick}
