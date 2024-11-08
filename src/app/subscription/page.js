@@ -120,7 +120,10 @@ const Subscription = () => {
   const renderSubscriptionDetails = (subscription, index) => {
     const isEven = index % 2 === 0;
     return (
-      <div key={subscription._id} className="my-5 mx-5 shadow-customShaddow rounded-[6px]">
+      <div
+        key={subscription._id}
+        className="my-5 mx-5 shadow-customShaddow rounded-[6px]"
+      >
         <div
           className={`flex justify-between items-center px-3 py-3 rounded-tl-[8px] rounded-tr-[6px] ${
             isEven ? "bg-customBlue" : "bg-customOrange"
@@ -148,8 +151,8 @@ const Subscription = () => {
                   "__v",
                 ].includes(key)
             )
-            .map(([key]) => (
-              <div key={key} className="flex items-center mb-2">
+            .map([key], (index) => (
+              <div key={index} className="flex items-center mb-2">
                 <span className="mr-3">
                   <img
                     src={image.tick}
