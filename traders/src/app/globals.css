@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .header_top_icon_wrapper {
+    @apply flex items-center justify-between p-1 hover:bg-red-300 hover:text-white rounded-md
+    cursor-pointer;
+  }
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove arrows (spinners) for Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+.glide__arrow {
+  position: absolute;
+  display: block;
+  top: 50%;
+  z-index: 2;
+  opacity: 1;
+  transform: translateY(-50%);
+}
+.style-module_emptyIcons__Bg-FZ {
+  display: flex !important;
+}
+/* Unchecked state: transparent background and orange border */
+.custom-rating svg {
+  stroke: orange; /* Border color */
+  background-color: transparent; /* Background is transparent */
+  stroke-width: 1; /* Border thickness */
+}
+
+/* Active state: background turns orange when clicked */
+.custom-rating svg.active {
+  fill: orange; /* Star fill color */
+  stroke: orange; /* Border color remains orange */
+}
+
+/* For hover: Keep the border and change the background */
+.custom-rating svg:hover {
+  fill: orange;
+}
