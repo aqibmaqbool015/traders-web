@@ -94,9 +94,9 @@ export default function ForgotPage() {
           </h6>
 
           <form className="space-y-4" onSubmit={handleOtpClick}>
-            {inputFields.map((field) => (
+            {inputFields.map((field, index) => (
               <CustomInput
-                key={field.id}
+                key={index}
                 label={field.label}
                 type={field.type}
                 id={field.id}

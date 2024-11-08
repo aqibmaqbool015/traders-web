@@ -211,8 +211,8 @@ export default function SignUpPage() {
               "company",
               "password",
               "rPassword",
-            ].map((field, idx) => (
-              <div key={idx}>
+            ].map((field, index) => (
+              <div key={index}>
                 <label htmlFor={field} className="text-[17px] text-customBlue">
                   {field === "fName"
                     ? "First Name"
@@ -262,9 +262,9 @@ export default function SignUpPage() {
           </form>
 
           <div className="mt-6 flex justify-center grid-cols-3 gap-3 mb-4">
-            {["google", "facebook", "apple"].map((provider, idx) => (
+            {["google", "facebook", "apple"].map((provider, index) => (
               <div
-                key={idx}
+                key={index}
                 className="w-[90px] md:w-[120px] text-center bg-customBg py-2 px-2 rounded-[25px]"
               >
                 <a href="#">

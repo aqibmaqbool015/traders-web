@@ -162,8 +162,8 @@ export default function LoginPage() {
           </h6>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {inputFields.map((field) => (
-              <div key={field.id}>
+            {inputFields.map((field,index) => (
+              <div key={index}>
                 <CustomInput
                   label={field.label}
                   type={field.type}

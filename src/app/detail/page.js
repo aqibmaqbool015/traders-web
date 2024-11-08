@@ -115,7 +115,10 @@ const Detail = () => {
               >
                 {contact.map((item, index) => {
                   return (
-                    <div className="inline-block md:w-full sm:w-[200px] w-[200px] mx-2">
+                    <div
+                      key={index}
+                      className="inline-block md:w-full sm:w-[200px] w-[200px] mx-2"
+                    >
                       <div
                         className="flex md:w-full sm:w-[200px] w-[200px] sm:px-3 px-5 py-3 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                             items-center"
@@ -276,10 +279,10 @@ const Detail = () => {
                   return (
                     <div
                       className="inline-block w-[140px] mx-2 "
+                      key={index}
                       onClick={openModalForm}
                     >
                       <div
-                        key={index}
                         className="flex md:w-[140px] sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                             items-center"
                       >
@@ -348,9 +351,9 @@ const Detail = () => {
                   Your Rating
                 </label>
                 <RatingStar />
-                {inputField?.map((field) => (
+                {inputField?.map((field, index) => (
                   <CustomInput
-                    key={field.id}
+                    key={index}
                     label={field.label}
                     type={field.type}
                     id={field.id}

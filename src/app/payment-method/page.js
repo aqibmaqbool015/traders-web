@@ -125,9 +125,9 @@ const PaymentMethod = () => {
                                 </h2>
                                 <form className="space-y-4 md:w-[480px] ">
 
-                                    {legalName.map((field) => (
+                                    {legalName.map((field,index) => (
                                         <CustomInput
-                                            key={field.id}
+                                            key={index}
                                             label={field.label}
                                             type={field.type}
                                             id={field.id}
@@ -137,9 +137,9 @@ const PaymentMethod = () => {
                                             icon={field.icon}
                                         />
                                     ))}
-                                    {inputFields.map((field) => (
+                                    {inputFields.map((field,index) => (
                                         <CustomInput
-                                            key={field.id}
+                                            key={index}
                                             label={field.label}
                                             type={field.type}
                                             id={field.id}
@@ -149,11 +149,11 @@ const PaymentMethod = () => {
                                         />
                                     ))}
                                     <div className="grid grid-cols-1 md:grid-cols-12 gap-4 ">
-                                        {amountDetail.map((field) => (
+                                        {amountDetail.map((field, index) => (
                                             <div className="col-span-12 md:col-span-6">
 
                                                 <CustomInput
-                                                    key={field.id}
+                                                    key={index}
                                                     type={field.type}
                                                     id={field.id}
                                                     name={field.name}
