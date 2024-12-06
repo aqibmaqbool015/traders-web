@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/redux/slice";
+import Image from "next/image";
 
 const OtpPage = () => {
   const router = useRouter();
@@ -83,8 +84,6 @@ const OtpPage = () => {
     const params = { email };
     try {
       const response = await resendOtp(params);
-      console.log(response, "Resend OTP response");
-
       if (response.success) {
         setError("");
         setTime(90);
@@ -115,9 +114,11 @@ const OtpPage = () => {
 
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <div className="text-left w-full">
-          <img
+          <Image
             src={image.logo}
-            alt="Car Dealership"
+            alt="img"
+            width={140}
+            height={70}
             className="w-[140px] h-auto"
           />
         </div>
@@ -180,7 +181,7 @@ const OtpPage = () => {
         </div>
       </div>
       <div className="w-full md:w-[45%]">
-        <img src={image.image} alt="Car Dealership" className="h-full w-full" />
+        <Image src={image.image} alt="img" className="h-full w-full" />
       </div>
     </div>
   );

@@ -33,6 +33,7 @@ export default function RootLayout({ children }) {
     pathname === "/add-vehicle" ||
     pathname === "/list-vehicle" ||
     pathname === "/vehicle-detail" ||
+    pathname === "/subscription" ||
     pathname === "/forgot-otp";
 
   return (
@@ -46,12 +47,11 @@ export default function RootLayout({ children }) {
       >
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
-            {!isAuthPage && <Header />}
             {children}
-            {!isAuthPage && <Footer />}
           </PersistGate>
         </Provider>
       </body>
     </html>
   );
 }
+//

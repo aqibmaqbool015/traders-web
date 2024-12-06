@@ -1,31 +1,19 @@
-import React from "react"
-const CustomToast = ({ closeToast }) => {
+import React from "react";
+const CustomToast = ({ content, contact, mail }) => {
   return (
     <>
       <div>
-        <p>Your account registration request is under review.</p>
+        <p>{content}</p>
+        <p>{contact}</p>
         <p>
-          You can contact us at{" "}
           <a
             href="mailto:support@trade2trade.co.uk"
             style={{ color: "orange" }}
           >
-            support@trade2trade.co.uk
+            {mail}
           </a>
         </p>
-        <button
-          onClick={closeToast}
-          style={{
-            marginTop: "10px",
-            backgroundColor: "blue",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            padding: "5px 10px",
-          }}
-        >
-          OK
-        </button>
+        
       </div>
     </>
   );

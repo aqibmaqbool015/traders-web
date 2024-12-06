@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import CustomInput from "../components/input";
+import Image from "next/image";
 
 const PaymentMethod = () => {
   const router = useRouter();
@@ -103,8 +104,10 @@ const PaymentMethod = () => {
                     className=" cursor-pointer border border-customGray rounded-[6px] my-4 px-5 py-3 flex justify-between items-center md:w-[420px] "
                   >
                     <div className="flex items-center">
-                      <img
+                      <Image
                         src={item.image}
+                        width={60}
+                        height={30}
                         alt=""
                         className="w-[60px] h-[30px] inline-block object-contain align-text-top "
                       />
@@ -112,8 +115,10 @@ const PaymentMethod = () => {
                         {item.text}
                       </p>
                     </div>
-                    <img
+                    <Image
                       src={item.arrow}
+                      width={20}
+                      height={20}
                       alt=""
                       className="w-[20px] h-[20px] inline-block object-contain "
                     />
@@ -152,8 +157,9 @@ const PaymentMethod = () => {
                   ))}
                   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 ">
                     {amountDetail.map((field, index) => (
-                      <div className="col-span-12 md:col-span-6" key={index}>
+                      <div key={index} className="col-span-12 md:col-span-6">
                         <CustomInput
+                          key={field.id}
                           type={field.type}
                           id={field.id}
                           name={field.name}
@@ -192,18 +198,22 @@ const PaymentMethod = () => {
         <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-[500px] max-h-[90vh] overflow-y-auto">
           <div className="p-4 relative">
             <div className="absolute right-3 top-4">
-              <img
+              <Image
                 src={image.crossBlue}
-                alt=""
+                alt="img"
+                width={15}
+                height={15}
                 className="w-[15px] h-auto cursor-pointer"
                 onClick={closeModal}
               />
             </div>
 
             <div className="text-center">
-              <img
+              <Image
                 src={image.success}
                 alt=""
+                width={70}
+                height={70}
                 className="w-[70px] h-auto inline-block object-contain "
               />
               <h5 className="text-[20px] font-medium text-customBlackLight capitalize my-2">
@@ -218,9 +228,11 @@ const PaymentMethod = () => {
               <h5 className="text-[20px] font-medium text-customOrange capitalize">
                 £ 9.99
               </h5>
-              <img
+              <Image
                 src={image.dashed}
                 alt=""
+                width={40}
+                height={40}
                 className="w-full h-auto inline-block object-contain px-7"
               />
               <div className="px-7">

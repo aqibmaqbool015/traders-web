@@ -16,6 +16,7 @@ export const endpoint = {
     allVehiclesFeed: 'getAllVehiclesNewsfeed',
     traderApiSearch: 'searchApi',
     userGetId: 'getVehicleById',
+    checkPaymentStatus:'checkPaymentStatus'
 }
 
 export const method = {

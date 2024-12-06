@@ -11,3 +11,14 @@ export const updatePremiumUser = (params) => {
       throw error;
     });
 };
+
+export const checkPaymentStatusApi = (params) => {
+  return fetchApi(endpoint.checkPaymentStatus, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Signup API Error:", error);
+      throw error;
+    });
+};

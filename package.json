@@ -2,7 +2,7 @@
   "name": "task-nextjs",
   "version": "0.1.0",
   "private": true,
-  "scripts": {
+ "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
@@ -13,7 +13,7 @@
     "@reduxjs/toolkit": "^2.3.0",
     "flowbite": "^2.5.2",
     "google-map-react": "^2.2.1",
-    "next": "^15.0.3",
+    "next": "^14.2.7",
     "next-redux-wrapper": "^8.1.0",
     "react": "^18",
     "react-dom": "^18",

@@ -1,9 +1,9 @@
-import HomePage from './home/page';
+import LoginPage from "./login/page";
 
 export default function MainPage() {
     return (
         <>
-            <HomePage />
+            <LoginPage />
         </>
     );
 }

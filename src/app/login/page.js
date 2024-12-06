@@ -6,7 +6,11 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/redux/slice";
 import { getUserProfile, LoginApi } from "./api";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import { setLocalStorageItem } from "@/utils/localStorage";
+import Image from "next/image";
+import CustomToast from "../components/toast";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,7 +30,7 @@ export default function LoginPage() {
     if (isSubmitted) {
       validateForm();
     }
-  }, [formValues.email, formValues.password]);
+  }, [formValues.email, formValues.password, isSubmitted]);
 
   const validateForm = () => {
     let validationErrors = {};
@@ -108,27 +112,37 @@ export default function LoginPage() {
 
       try {
         const response = await LoginApi(params);
-        console.log(response, "logggggggggg");
-
+        await setLocalStorageItem("token", response?.token);
         if (response) {
-          const res = await getUserProfile(params);
-          console.log(res?.data, "User profile data");
+          const res = await getUserProfile();
           if (res?.data?.paidMember === false) {
-            console.log(res?.data?.paidMember, "Redirecting to subscription");
             router.push("/subscription");
             return;
           }
-
           if (res?.data?.reviewStatus === "rejected") {
-            console.log(res?.data?.reviewStatus, "Redirecting to profile");
             router.push("/profile");
             return;
           }
           if (res?.data?.reviewStatus === "reviewing") {
-            toast.error()
+            toast.success(
+              <CustomToast
+                content="Your upload docements request is under review."
+                contact="You can contact us at"
+                mail="support@trade2trade.co.uk"
+              />
+            );
             return;
           }
-          router.push("/home");
+          if (res?.data?.reviewStatus === "reviewed") {
+            toast.success(
+              <CustomToast
+                content="Please login by app"
+                contact="You can contact us at"
+                mail="support@trade2trade.co.uk"
+              />
+            );
+          }
+          // router.push("/home");
           dispatch(setUser(res));
         }
       } catch (error) {
@@ -146,9 +160,11 @@ export default function LoginPage() {
       </Head>
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <div className="text-left w-full">
-          <img
+          <Image
             src={image.logo}
-            alt="Car Dealership"
+            width={140}
+            height={50}
+            alt="img"
             className="w-[140px] h-auto"
           />
         </div>
@@ -162,7 +178,7 @@ export default function LoginPage() {
           </h6>
 
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {inputFields.map((field,index) => (
+            {inputFields.map((field, index) => (
               <div key={index}>
                 <CustomInput
                   label={field.label}
@@ -214,13 +230,16 @@ export default function LoginPage() {
                 Sign Up
               </span>
             </h6>
+            <ToastContainer position="top-right" />
           </form>
 
           <div className="mt-6 flex justify-center grid-cols-3 gap-3">
             <div className="w-[90px] md:w-[120px] text-center bg-customBg py-2 px-2 rounded-[25px]">
               <a href="#">
-                <img
+                <Image
                   src={image.google}
+                  width={21}
+                  height={21}
                   alt="Google"
                   className="w-[21px] inline-block h-auto"
                 />
@@ -228,18 +247,22 @@ export default function LoginPage() {
             </div>
             <div className="w-[90px] md:w-[120px] text-center bg-customBg py-2 px-2 rounded-[25px]">
               <a href="#">
-                <img
+                <Image
                   src={image.facebook}
                   alt="Facebook"
+                  width={21}
+                  height={21}
                   className="w-[21px] inline-block h-auto "
                 />
               </a>
             </div>
             <div className="w-[90px] md:w-[120px] text-center bg-customBg py-2 px-2 rounded-[25px]">
               <a href="#">
-                <img
+                <Image
                   src={image.apple}
                   alt="Apple"
+                  width={21}
+                  height={21}
                   className="w-[21px] inline-block h-auto "
                 />
               </a>
@@ -249,7 +272,12 @@ export default function LoginPage() {
       </div>
 
       <div className="w-full md:w-[45%]">
-        <img src={image.image} alt="Car Dealership" className="h-full w-full" />
+        <Image
+          src={image.image}
+          alt="img"
+          fill
+          className="h-full w-full !relative"
+        />
       </div>
     </div>
   );

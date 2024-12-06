@@ -1,3 +1,4 @@
+import Image from "next/image";
 import CustomInput from "./input";
 
 const PersonalInfo = ({
@@ -16,13 +17,13 @@ const PersonalInfo = ({
           <div className="flex justify-center mb-3">
             <div className="w-24 h-24 bg-customGray rounded-full relative">
               {profileImage ? (
-                <img
+                <Image
                   src={profileImage}
                   alt="Profile"
                   className="w-full h-full object-cover rounded-full"
                 />
               ) : (
-                <img
+                <Image
                   src="/user-vactor.png"
                   alt="Avatar"
                   className="w-full h-full object-cover rounded-full"
@@ -33,10 +34,12 @@ const PersonalInfo = ({
                   htmlFor="profileImage"
                   className="cursor-pointer w-[17px] h-full inline-block"
                 >
-                  <img
+                  <Image
                     src="/camera.svg"
                     alt="Camera"
                     className="w-full h-full object-contain"
+                    width={30}
+                    height={30}
                   />
                 </label>
               </span>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { userLeader } from "../constant";
 
 const Leaderboard = () => {
@@ -6,11 +7,11 @@ const Leaderboard = () => {
             <h2 className="text-2xl text-customBlue font-semibold mb-4">Leaderboard</h2>
             {userLeader.map((user, index) => (
                 <div key={index} className="flex items-end space-x-3 border-b border-b-customBg pb-3 mb-3">
-                    <img src={user.avatar} alt="" className="w-[50px] h-[50px] inline-block object-contain " />
+                    <Image src={user.avatar} alt="img" className="w-[50px] h-[50px] inline-block object-contain " />
                     <div className="flex-1">
                         <p className="font-normal text-[20px] text-customBlue ">{user.name}</p>
                         <div className='flex items-center'>
-                            <img src={user.star} alt='' className='w-[16px] h-[16px] mr-2 object-contain inline-block ' />
+                            <Image src={user.star} alt='' className='w-[16px] h-[16px] mr-2 object-contain inline-block ' />
                             <h3 className='text-sm text-customDarkGray'>
                                 {user.lastMessage}
                             </h3>

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cards, cardsAuction } from "../constant";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const BASE_URL = "https://t2tcorebucket.s3.eu-west-2.amazonaws.com";
 
@@ -17,10 +18,12 @@ export const VehicleCard = ({ vehicle }) => {
   return (
     <div className="rounded overflow-hidden gap-2 my-3 cursor-pointer ">
       <div onClick={handleClick}>
-        <img
+        <Image
           className="w-full h-[280px] object-[initial] rounded-[8px] "
           src={`${BASE_URL}${vehicle?.pictures}` || image.vehicle}
           alt="Vehicle"
+          width={200}
+          height={280}
         />
       </div>
       <div className="px-2 py-1">
@@ -28,9 +31,11 @@ export const VehicleCard = ({ vehicle }) => {
           <h4 className="font-medium text-customOrange text-[22px]">
             {vehicle?.price || "Vehicle Title"}
           </h4>
-          <img
+          <Image
             className="w-[22px] h-[22px] object-[initial]"
             src={image.heart}
+            width={22}
+            height={22}
             alt="Heart Icon"
           />
         </div>
@@ -56,7 +61,7 @@ export const AuctionsCardLive = () => {
       {cardsAuction.map((item, index) => (
         <div key={index} className="rounded overflow-hidden gap-2 my-3">
           <Link href="/detail">
-            <img
+            <Image
               className="w-full object-[initial]"
               src={item.image}
               alt="Sample image"
@@ -81,9 +86,9 @@ export const AuctionsCardLive = () => {
             </p>
             <p className="text-customDarkGray text-[15px]">{item.distance}</p>
             <div className="flex items-center">
-              <img
+              <Image
                 src={item.clock}
-                alt=""
+                alt="img"
                 className="w-[14px] h-[14px] inline-block object-contain align-text-top "
               />
               <p className="text-customSmallGray text-[13px] mx-2">
@@ -92,9 +97,9 @@ export const AuctionsCardLive = () => {
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <img
+                <Image
                   src={item.calendar}
-                  alt=""
+                  alt="img"
                   className="w-[14px] h-[14px] inline-block object-contain align-text-top "
                 />
                 <p className="text-customSmallGray text-[13px] mx-2">
@@ -116,7 +121,7 @@ export const AuctionsCardTabs = () => {
       {cardsAuction.map((item, index) => (
         <div key={index} className="rounded overflow-hidden gap-2 my-3">
           <Link href="/detail">
-            <img
+            <Image
               className="w-full object-[initial]"
               src={item.image}
               alt="Sample image"
@@ -140,9 +145,9 @@ export const AuctionsCardTabs = () => {
             </p>
             <p className="text-customDarkGray text-[15px]">{item.distance}</p>
             <div className="flex items-center">
-              <img
+              <Image
                 src={item.clock}
-                alt=""
+                alt="img"
                 className="w-[14px] h-[14px] inline-block object-contain align-text-top "
               />
               <p className="text-customSmallGray text-[13px] mx-2">
@@ -151,9 +156,9 @@ export const AuctionsCardTabs = () => {
             </div>
             <div className="flex items-center justify-between">
               <div className="flex items-center">
-                <img
+                <Image
                   src={item.calendar}
-                  alt=""
+                  alt="img"
                   className="w-[14px] h-[14px] inline-block object-contain align-text-top "
                 />
                 <p className="text-customSmallGray text-[13px] mx-2">

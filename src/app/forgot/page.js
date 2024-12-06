@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { forgotApi } from "./api";
 import { useSelector } from "react-redux";
+import Image from "next/image";
 
 export default function ForgotPage() {
   const router = useRouter();
@@ -28,8 +29,6 @@ export default function ForgotPage() {
     try {
       setLoading(true);
       const response = await forgotApi(params);
-      console.log(response, "Forgot password API response");
-
       if (response.success) {
         const url = `/forgot-otp?email=${encodeURIComponent(formValues.email)}`;
         router.push(url);
@@ -79,10 +78,12 @@ export default function ForgotPage() {
       </Head>
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <div className="text-left w-full">
-          <img
+          <Image
             src={image.logo}
-            alt="Car Dealership"
+            alt="img"
             className="w-[140px] h-auto"
+            width={140}
+            height={70}
           />
         </div>
         <div className="max-w-md w-full py-8 md:py-16 px-4 md:px-0">
@@ -127,7 +128,9 @@ export default function ForgotPage() {
       </div>
 
       <div className="w-full md:w-[45%]">
-        <img src={image.image} alt="Car Dealership" className="h-full w-full" />
+        <Image src={image.image} alt="img"
+        fill
+        className="h-full w-full !relative" />
       </div>
     </div>
   );

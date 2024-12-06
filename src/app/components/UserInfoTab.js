@@ -5,6 +5,7 @@ import PersonalInfo from "./personalInfo";
 import Leaderboard from "./leaderBoard";
 import Wishlist from "./wishlist";
 import Subscription from "./subscription";
+import Image from "next/image";
 
 const UserInfoTab = () => {
   const [activeTab, setActiveTab] = useState("Personal Information");
@@ -67,7 +68,7 @@ const UserInfoTab = () => {
                 onClick={() => setActiveTab(item.name)}
               >
                 <span className="">
-                  <img
+                  <Image
                     src={item.icon}
                     alt={item.name}
                     className="w-5 h-5 mx-2"
@@ -78,13 +79,25 @@ const UserInfoTab = () => {
             ))}
             <li className="flex items-center space-x-2 md:px-5 cursor-pointer border-b border-b-customBg pb-4 ">
               <span className="">
-                <img src={image.logout} alt="" className="w-5 h-5 mx-2" />
+                <Image
+                  src={image.logout}
+                  width={30}
+                  height={30}
+                  alt=""
+                  className="w-5 h-5 mx-2"
+                />
               </span>
               <span className="text-lg capitalize text-customRed">logout</span>
             </li>
             <li className="flex items-center space-x-2 md:px-5 cursor-pointer border-b border-b-customBg pb-4 ">
               <span className="">
-                <img src={image.delete} alt="" className="w-5 h-5 mx-2" />
+                <Image
+                  src={image.delete}
+                  width={30}
+                  height={30}
+                  alt=""
+                  className="w-5 h-5 mx-2"
+                />
               </span>
               <span className="text-lg capitalize text-customRed ">
                 Delete Account

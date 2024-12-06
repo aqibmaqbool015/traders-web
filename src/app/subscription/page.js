@@ -6,12 +6,20 @@ import { toast } from "react-toastify";
 import { participateForm } from "../constant";
 import { paymentSubscription, userCustomer, userPayment } from "../home/api";
 import CustomInput from "../components/input";
+import Image from "next/image";
+
+const image = {
+  logo: "/logo-trade.svg",
+  tick: "/mark.svg",
+  crossBlue: "/cross.svg",
+};
 
 const Subscription = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
+  const [modalLoading, setModalLoading] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     name: "",
@@ -21,6 +29,8 @@ const Subscription = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState();
+  const [isFormValid, setIsFormValid] = useState(false);
+  
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -63,27 +73,32 @@ const Subscription = () => {
       validationErrors.name = "Name is required.";
     }
     setErrors(validationErrors);
-    return true;
+    setIsFormValid(Object.keys(validationErrors).length === 0);
   };
 
   const handlePaySubmit = async (event) => {
     event.preventDefault();
     setIsSubmitted(true);
-    if (!validateForm()) {
+    validateForm();
+    if (!isFormValid) {
       toast.error("Please fix the validation errors");
       return;
     }
-    setLoading(true);
+
+    setModalLoading(true);
     const params = {
       name: formValues.name,
       email: formValues.email,
       phone: formValues.phone,
     };
+
     try {
       const response = await userCustomer(params);
       if (response) {
         const paymentParams = {
           amount: selectedPackage?.price,
+          web: true,
+          userSelectedPackage: selectedPackage?._id,
         };
         const res = await userPayment(paymentParams);
         if (res) {
@@ -94,7 +109,7 @@ const Subscription = () => {
       console.error("Error in handleSubmit:", error);
       toast.error("Failed to process payment. Please try again.");
     } finally {
-      setLoading(false);
+      setModalLoading(false);
     }
   };
 
@@ -110,11 +125,6 @@ const Subscription = () => {
 
   const closeModal = () => {
     setIsModalOpen(false);
-  };
-
-  const image = {
-    tick: "/mark.svg",
-    crossBlue: "/cross.svg",
   };
 
   const renderSubscriptionDetails = (subscription, index) => {
@@ -137,26 +147,16 @@ const Subscription = () => {
           </h5>
         </div>
         <div className="px-3 py-3">
-          {Object.entries(subscription)
-            .filter(
-              ([key, value]) =>
-                value === true &&
-                ![
-                  "_id",
-                  "title",
-                  "price",
-                  "duration",
-                  "createdAt",
-                  "updatedAt",
-                  "__v",
-                ].includes(key)
-            )
-            .map([key], (index) => (
+          {Object.keys(subscription)
+            .filter((key) => subscription[key] === true)
+            .map((key, index) => (
               <div key={index} className="flex items-center mb-2">
                 <span className="mr-3">
-                  <img
+                  <Image
                     src={image.tick}
-                    alt=""
+                    alt="img"
+                    width={18}
+                    height={18}
                     className="inline-block object-contain align-text-bottom w-[18px] h-[18px]"
                   />
                 </span>
@@ -165,6 +165,7 @@ const Subscription = () => {
                 </p>
               </div>
             ))}
+
           <div className="mt-3">
             <button
               className={`border rounded-[8px] px-5 py-3 text-[18px] font-normal capitalize w-full ${
@@ -184,6 +185,15 @@ const Subscription = () => {
 
   return (
     <>
+      <div className="text-left mx-4 my-3">
+        <Image
+          src={image.logo}
+          width={140}
+          height={50}
+          alt="img"
+          className="w-[140px] h-[70px]"
+        />
+      </div>
       <div className="md:mx-40 mx-8 my-6 ">
         <h2 className="text-2xl text-customBlue font-semibold">Subscription</h2>
         <p className="text-customDarkGray text-[16px] font-normal capitalize mb-3">
@@ -198,9 +208,7 @@ const Subscription = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 ">
             {subscriptions?.length > 0 ? (
-              subscriptions?.map((subscription, index) =>
-                renderSubscriptionDetails(subscription, index)
-              )
+              subscriptions?.map(renderSubscriptionDetails)
             ) : (
               <p>No subscription data available</p>
             )}
@@ -217,10 +225,12 @@ const Subscription = () => {
           <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-[800px] max-h-[90vh] overflow-y-auto">
             <div className="p-4 relative">
               <div className="absolute right-3 top-4">
-                <img
+                <Image
                   src={image.crossBlue}
                   alt="Close"
                   className="w-[15px] h-auto cursor-pointer"
+                  width={15}
+                  height={15}
                   onClick={closeModal}
                 />
               </div>
@@ -249,14 +259,14 @@ const Subscription = () => {
                   <button
                     type="submit"
                     className={`border rounded-[25px] px-5 py-2 text-[18px] w-[200px] font-normal capitalize bg-customBlue text-white ${
-                      loading ? "cursor-not-allowed opacity-75" : ""
+                      modalLoading ? "cursor-not-allowed opacity-75" : ""
                     }`}
-                    disabled={loading}
+                    disabled={modalLoading}
                   >
-                    {loading ? (
+                    {modalLoading ? (
                       <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
                     ) : null}
-                    {loading ? "Loading..." : "submit and pay"}
+                    {modalLoading ? "Loading..." : "Submit and Pay"}
                   </button>
                 </div>
               </form>

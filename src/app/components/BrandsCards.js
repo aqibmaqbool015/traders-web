@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { VehicleCard } from "./VehicleCard";
+import Image from "next/image";
 
 const BASE_URL = "https://t2tcorebucket.s3.eu-west-2.amazonaws.com";
 
@@ -92,12 +93,14 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                               className=" rounded-[8px] overflow-hidden cursor-pointer gap-2 my-3 border-2 border-customBorderColor"
                             >
                               <div className="flex items-center py-4 px-2 ">
-                                <img
+                                <Image
                                   src={
                                     `${BASE_URL}${feed?.vehicle?.user_id?.profilePicture}` ||
                                     image.vehicle
                                   }
-                                  alt=""
+                                  width={40}
+                                  height={40}
+                                  alt="img"
                                   className="w-[40px] h-[40px] rounded-full inline-block object-cover mr-3"
                                 />
                                 <div className="">
@@ -110,7 +113,7 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                   </p>
                                 </div>
                               </div>
-                              <img
+                              <Image
                                 className="w-full md:h-[400px] object-[initial]"
                                 src={`${BASE_URL}${feed?.vehicle?.pictures}`}
                                 alt="Sample image"
@@ -119,20 +122,24 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                 <div className="px-2 flex justify-between items-center border-b-2 border-customBorderColor py-3">
                                   <div className="flex">
                                     <div className="flex">
-                                      <img
+                                      <Image
                                         className="w-[22px] h-[22px] object-[initial]"
                                         src={image.thumbUp}
                                         alt="Sample image"
+                                        width={22}
+                                        height={22}
                                       />
                                       <p className="text-customDarkGray text-[15px] mx-2">
                                         {feed?.likeCount}
                                       </p>
                                     </div>
                                     <div className="flex">
-                                      <img
+                                      <Image
                                         className="w-[22px] h-[22px] object-[initial]"
                                         src={image.thumbDown}
                                         alt="Sample image"
+                                        width={22}
+                                        height={22}
                                       />
                                       <p className="text-customDarkGray text-[15px] mx-2">
                                         {feed?.dislikeCount}

@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "@/redux/slice";
 import { signUpApi } from "./api";
+import Image from "next/image";
 
 const CustomToast = ({ closeToast }) => (
   <div>
@@ -41,6 +42,7 @@ export default function SignUpPage() {
   const [formValues, setFormValues] = useState({
     fName: "",
     lName: "",
+    fbName: "",
     email: "",
     phone: "",
     company: "",
@@ -50,6 +52,16 @@ export default function SignUpPage() {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const [rPasswordVisible, setRPasswordVisible] = useState(false);
+
+  const handlePasswordToggle = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const handleRPasswordToggle = () => {
+    setRPasswordVisible(!rPasswordVisible);
+  };
 
   useEffect(() => {
     if (isSubmitted) {
@@ -86,13 +98,8 @@ export default function SignUpPage() {
     }
 
     if ("phone" in fieldValue) {
-      temp.phone = fieldValue.phone
-        ? /^[0-9]{10}$/.test(fieldValue.phone)
-          ? ""
-          : "Phone must be a valid 10-digit number"
-        : "Phone number is required";
+      temp.phone = fieldValue.phone ? "" : "Phone number is required";
     }
-    
 
     if ("company" in fieldValue) {
       temp.company = fieldValue.company ? "" : "Company name is required";
@@ -130,6 +137,7 @@ export default function SignUpPage() {
     const params = {
       firstName: formValues.fName,
       lastName: formValues.lName,
+      fbName: formValues.fbName,
       email: formValues.email,
       phone: formValues.phone,
       companyName: formValues.company,
@@ -140,13 +148,9 @@ export default function SignUpPage() {
     try {
       setLoading(true);
       const response = await signUpApi(params);
-      console.log("Full API Response:", response);
-
       if (response && response.success) {
         const email = formValues.email;
         if (typeof email === "string" && email) {
-          console.log("Navigating to OTP page with email:", email);
-
           const otpPagePath = `/otp?email=${encodeURIComponent(email)}`;
           await router.push(otpPagePath);
           toast.success(<CustomToast />);
@@ -188,10 +192,12 @@ export default function SignUpPage() {
 
       <div className="w-full flex flex-col items-center">
         <div className="text-left w-full">
-          <img
+          <Image
             src={image.logo}
-            alt="Car Dealership"
+            alt="img"
             className="w-[140px] h-auto"
+            width={140}
+            height={70}
           />
         </div>
         <div className="max-w-md w-full px-4 md:px-0">
@@ -204,36 +210,88 @@ export default function SignUpPage() {
 
           <form className="space-y-4" onSubmit={handleSignUp}>
             {[
-              "fName",
-              "lName",
-              "email",
-              "phone",
-              "company",
-              "password",
-              "rPassword",
+              {
+                name: "fName",
+                label: "First Name",
+                placeholder: "Enter your first name",
+              },
+              {
+                name: "lName",
+                label: "Last Name",
+                placeholder: "Enter your Last name",
+              },
+              {
+                name: "fbName",
+                label: "Facebook Name",
+                placeholder: "Enter your Fb Name",
+              },
+              {
+                name: "email",
+                label: "Email",
+                placeholder: "Enter your email",
+              },
+              {
+                name: "phone",
+                label: "Phone",
+                placeholder: "Enter your phone number",
+              },
+              {
+                name: "company",
+                label: "Company",
+                placeholder: "Enter your company name",
+              },
+              {
+                name: "password",
+                label: "Password",
+                placeholder: "Enter your password",
+                type: passwordVisible ? "text" : "password",
+              },
+              {
+                name: "rPassword",
+                label: "Re-type Password",
+                placeholder: "Re-enter your password",
+                type: rPasswordVisible ? "text" : "password",
+              },
             ].map((field, index) => (
               <div key={index}>
-                <label htmlFor={field} className="text-[17px] text-customBlue">
-                  {field === "fName"
-                    ? "First Name"
-                    : field === "lName"
-                    ? "Last Name"
-                    : field === "rPassword"
-                    ? "Re-type Password"
-                    : field.charAt(0).toUpperCase() + field.slice(1)}
+                <label
+                  htmlFor={field.name}
+                  className="text-[17px] text-customBlue"
+                >
+                  {field.label}
                 </label>
-                <input
-                  type={field.includes("password") ? "password" : "text"}
-                  id={field}
-                  name={field}
-                  placeholder={`Enter your ${field}`}
-                  value={formValues[field]}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-3 py-2 shadow-sm border border-[#CFCFCF] rounded-[25px]"
-                />
-                {errors[field] && (
+                <div className="relative">
+                  <input
+                    type={field.type}
+                    id={field.name}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    value={formValues[field.name]}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-3 py-2 shadow-sm border border-[#CFCFCF] rounded-[25px]"
+                  />
+                  {/* {field.name === "password" && (
+                    <button
+                      type="button"
+                      onClick={handlePasswordToggle}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    >
+                      {passwordVisible ? "Hide" : "Show"}
+                    </button>
+                  )}
+                  {field.name === "rPassword" && (
+                    <button
+                      type="button"
+                      onClick={handleRPasswordToggle}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                    >
+                      {rPasswordVisible ? "Hide" : "Show"}
+                    </button>
+                  )} */}
+                </div>
+                {errors[field.name] && (
                   <div className="text-customRed text-sm mt-1">
-                    {errors[field]}
+                    {errors[field.name]}
                   </div>
                 )}
               </div>
@@ -241,7 +299,7 @@ export default function SignUpPage() {
 
             <button
               type="submit"
-              className={`w-full py-3 text-white bg-customBlue rounded-[25px] hover:bg-blue-700" ${
+              className={`w-full py-3 text-white bg-customBlue rounded-[25px] hover:bg-blue-700 ${
                 loading ? "cursor-not-allowed opacity-75" : ""
               }`}
               disabled={loading}
@@ -256,7 +314,9 @@ export default function SignUpPage() {
               <span
                 className="text-customOrange font-medium cursor-pointer"
                 onClick={handleSignInClick}
-              ></span>
+              >
+                Sign In
+              </span>
             </h6>
             <ToastContainer position="top-center" />
           </form>
@@ -268,9 +328,11 @@ export default function SignUpPage() {
                 className="w-[90px] md:w-[120px] text-center bg-customBg py-2 px-2 rounded-[25px]"
               >
                 <a href="#">
-                  <img
+                  <Image
                     src={image[provider]}
                     alt={provider}
+                    width={21}
+                    height={21}
                     className="w-[21px] inline-block h-auto"
                   />
                 </a>

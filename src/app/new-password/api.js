@@ -10,7 +10,6 @@ export const changePassword = async (params) => {
       true,
       false
     );
-    console.log("------------------:", response);
     if (!response.success) {
       console.warn("Create Password response error:", response.message);
       throw new Error(

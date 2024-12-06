@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Head from "next/head";
 import CustomInput from "../components/input";
 import { setUser } from "@/redux/slice";
+import Image from "next/image";
 
 export default function NewPassword() {
   const router = useRouter();
@@ -32,7 +33,7 @@ export default function NewPassword() {
     if (isSubmitted) {
       validateForm();
     }
-  }, [formValues]);
+  }, [formValues,isSubmitted]);
 
   const validateForm = () => {
     let validationErrors = {};
@@ -75,7 +76,6 @@ export default function NewPassword() {
       try {
         setLoading(true);
         const response = await changePassword(params);
-        console.log(response, "Change Password Response");
         if (response.success) {
           router.push("/login");
         } else {
@@ -100,9 +100,11 @@ export default function NewPassword() {
 
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <div className="text-left w-full">
-          <img
+          <Image
             src="/logo-trade.svg"
-            alt="Car Dealership"
+            alt="img"
+            width={140}
+            height={70}
             className="w-[140px] h-auto"
           />
         </div>
@@ -158,10 +160,11 @@ export default function NewPassword() {
       </div>
 
       <div className="w-full md:w-[45%]">
-        <img
+        <Image
           src="/auth-create.png"
-          alt="Car Dealership"
-          className="h-full w-full"
+          alt="img"
+          fill
+          className="h-full w-full !relative"
         />
       </div>
     </div>

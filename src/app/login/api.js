@@ -12,8 +12,8 @@ export const LoginApi = (params) => {
     });
 };
 
-export const getUserProfile = (params) => {
-  return fetchApi(endpoint.userProfile, params, method.get, true, false)
+export const getUserProfile = () => {
+  return fetchApi(endpoint.userProfile, null, method.get, true, false)
     .then((response) => {
       return response;
     })

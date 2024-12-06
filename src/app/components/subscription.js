@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { participateForm } from "../constant";
 import { userCustomer, userPayment } from "../home/api";
 import CustomInput from "./input";
+import Image from "next/image";
 
 const Subscription = ({ subscriptions, loading, setLoading }) => {
   const [error, setError] = useState(null);
@@ -68,6 +69,7 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
           amount: selectedPackage?.price,
         };
         const res = await userPayment(paymentParams);
+
         if (res) {
           handleStripePayment(res?.session?.url);
         }
@@ -83,7 +85,6 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
   const handleStripePayment = (url) => {
     window.location.href = url;
   };
-
   const handleClickForm = (selectedPackage) => {
     dispatch(setSelectedUserPackage(selectedPackage));
     setSelectedPackage(selectedPackage);
@@ -119,26 +120,16 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
           </h5>
         </div>
         <div className="px-3 py-3">
-          {Object.entries(subscription)
-            .filter(
-              ([key, value]) =>
-                value === true &&
-                ![
-                  "_id",
-                  "title",
-                  "price",
-                  "duration",
-                  "createdAt",
-                  "updatedAt",
-                  "__v",
-                ].includes(key)
-            )
-            .map(([key], index) => (
+          {Object.keys(subscription)
+            .filter((key) => subscription[key] === true)
+            .map((key, index) => (
               <div key={index} className="flex items-center mb-2">
                 <span className="mr-3">
-                  <img
+                  <Image
                     src={image.tick}
-                    alt=""
+                    alt="img"
+                    width={18}
+                    height={18}
                     className="inline-block object-contain align-text-bottom w-[18px] h-[18px]"
                   />
                 </span>
@@ -167,33 +158,32 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
   return (
     <>
       {/* Main Subscription Content */}
-      {!isModalOpen && (
-        <div>
-          <h2 className="text-2xl text-customBlue font-semibold">
-            Subscription
-          </h2>
-          <p className="text-customDarkGray text-[16px] font-normal capitalize mb-3">
-            Unlock premium access to view detailed vehicle information, manage
-            listings seamlessly, and enjoy an enhanced app experience. Subscribe
-            now and elevate your vehicle management journey!
-          </p>
-          {loading ? (
-            <p>Loading...</p>
-          ) : error ? (
-            <p className="text-customRed">{error}</p>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-              {subscriptions.length > 0 ? (
-                subscriptions.map((subscription, index) =>
-                  renderSubscriptionDetails(subscription, index)
-                )
-              ) : (
-                <p>No subscription data available</p>
-              )}
-            </div>
-          )}
-        </div>
-      )}
+
+      <div>
+        <h2 className="text-2xl text-customBlue font-semibold">
+          Subscriptionsdads
+        </h2>
+        <p className="text-customDarkGray text-[16px] font-normal capitalize mb-3">
+          Unlock premium access to view detailed vehicle information, manage
+          listings seamlessly, and enjoy an enhanced app experience. Subscribe
+          now and elevate your vehicle management journey!
+        </p>
+        {loading ? (
+          <p>Loading...</p>
+        ) : error ? (
+          <p className="text-customRed">{error}</p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
+            {subscriptions.length > 0 ? (
+              subscriptions.map((subscription, index) =>
+                renderSubscriptionDetails(subscription, index)
+              )
+            ) : (
+              <p>No subscription data available</p>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Modal */}
       {isModalOpen && (
@@ -204,11 +194,13 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
           <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-[800px] max-h-[90vh] overflow-y-auto">
             <div className="p-4 relative">
               <div className="absolute right-3 top-4">
-                <img
+                <Image
                   src={image.crossBlue}
                   alt="Close"
                   className="w-[15px] h-auto cursor-pointer"
                   onClick={closeModal}
+                  width={15}
+                  height={15}
                 />
               </div>
               <form onSubmit={handlePaySubmit}>

@@ -1,5 +1,6 @@
 import 'flowbite';
 import { Carousel } from 'flowbite';
+import Image from 'next/image';
 import { useEffect } from 'react';
 
 export const CarouselCar = () => {
@@ -28,13 +29,13 @@ export const CarouselCar = () => {
         <div data-carousel="slide" className="relative">
             <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
                 <div className="carousel-item" data-carousel-item="0">
-                    <img src={image.vector} alt="Slide 1" />
+                    <Image src={image.vector} alt="Slide 1" />
                 </div>
                 <div className="carousel-item" data-carousel-item="1">
-                    <img src={image.vector} alt="Slide 2" />
+                    <Image src={image.vector} alt="Slide 2" />
                 </div>
                 <div className="carousel-item" data-carousel-item="2">
-                    <img src={image.vector} alt="Slide 3" />
+                    <Image src={image.vector} alt="Slide 3" />
                 </div>
             </div>
 

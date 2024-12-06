@@ -5,8 +5,9 @@ import { getUserProfile } from "../login/api";
 import { setUser } from "@/redux/slice";
 import { useDispatch, useSelector } from "react-redux";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import CustomToast from "../components/toast";
+import Image from "next/image";
 
 const image = {
   logo: "/logo-trade.svg",
@@ -15,11 +16,11 @@ const image = {
   plas: "/plus.svg",
 };
 
-const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
+const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
   const router = useRouter();
   const dispatch = useDispatch();
   const user = useSelector((state) => state?.User?.data);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
   const [frontImage, setFrontImage] = useState(null);
@@ -28,6 +29,12 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
   const [backPreview, setBackPreview] = useState(null);
   const [insurance, setInsurance] = useState(null);
   const [insurancePreview, setInsurancePreview] = useState(null);
+
+  const [formValues, setFormValues] = useState({
+    email: "",
+    firstna: "",
+    phone: "",
+  });
 
   const handleImageUpload = (e, setImage, setPreview) => {
     const file = e.target.files[0];
@@ -50,78 +57,91 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
 
   const handleSubmitDocuments = async (event) => {
     event.preventDefault();
-    const formData = new FormData();
-
-    if (profileImage) {
-      formData.append("selfie", profileImage);
-    } else {
-      console.error("Profile image is required.");
-    }
-
-    if (frontImage) {
-      formData.append("drivingLicence", frontImage);
-    } else {
-      console.error("Front image is required.");
-    }
-
-    if (insurance) {
-      formData.append("insurance", insurance);
-    } else {
-      console.error("Insurance document is required.");
-    }
-
-    formData.append("email", user?.email);
-    formData.append("firstName", user?.firstName);
-    formData.append("lastName", user?.lastName);
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    setLoading(true);
 
     try {
-      setLoading(true);
-      const responseDocuments = await uploadDocuments(formData);
+      const profileResponse = await getUserProfile();
+      const userProfile = profileResponse?.data;
 
-      if (responseDocuments.success) {
-        const res = await getUserProfile();
-        if (res?.data?.paidMember === false) {
-          console.log(res?.data?.paidMember, "Redirecting to subscription");
-          router.push("/subscription");
-          setIsModalOpen(false);
-          return;
-        }
-        if (res?.data?.reviewStatus === "rejected") {
-          console.log(res?.data?.reviewStatus, "Redirecting to profile");
-          router.push("/profile");
-          setIsModalDocumentsOpen(false);
-          return;
-        }
-        if (res?.data?.reviewStatus === "reviewing") {
-          router.push("/login");
-          return;
-        }
+      if (!userProfile) {
+        console.error("Failed to retrieve user profile");
+        return;
+      }
 
-        router.push("/home");
-        dispatch(setUser(res));
+      const { email, firstName, lastName } = userProfile;
+      const formData = new FormData();
+
+      if (profileImage) {
+        formData.append("selfie", profileImage);
       } else {
-        console.log("Error!", responseDocuments.message);
+        console.error("Profile image is required.");
+      }
+
+      if (frontImage) {
+        formData.append("drivingLicence", frontImage);
+      } else {
+        console.error("Front image is required.");
+      }
+
+      if (insurance) {
+        formData.append("insurance", insurance);
+      } else {
+        console.error("Insurance document is required.");
+      }
+
+      formData.append("email", email);
+      formData.append("firstName", firstName);
+      formData.append("lastName", lastName);
+
+      try {
+        const responseDocuments = await uploadDocuments(formData);
+
+        if (responseDocuments.success) {
+          const res = await getUserProfile();
+          const userData = res?.data;
+
+          if (userData?.paidMember === false) {
+            router.push("/subscription");
+            setIsModalOpen(false);
+          } else if (userData?.reviewStatus === "reviewing") {
+            toast.success(
+              <CustomToast
+                content="Please go to the app and log in there."
+                contact="you can contact at"
+                mail="support@trade2trade.co.uk"
+              />
+            );
+            setTimeout(() => {
+              router.push("/login");
+            }, 3000);
+          } else {
+            // router.push("/home");
+            dispatch(setUser(res));
+          }
+        } else {
+        }
+      } catch (uploadError) {
+        console.error("Error in document upload:", uploadError);
       }
     } catch (error) {
-      console.error("Error uploading documents:", error);
+      console.error("Error retrieving user profile:", error);
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <>
+      <div className="text-left mx-4 my-3">
+        <Image
+          src={image.logo}
+          width={140}
+          height={50}
+          alt="img"
+          className="w-[140px] h-[70px]"
+        />
+      </div>
       <div className="w-full flex flex-col items-center">
-        <div className="text-left w-full">
-          <img
-            src={image.logo}
-            alt="Car Dealership"
-            className="w-[140px] h-auto"
-          />
-        </div>
         <div className="max-w-md w-full px-4 md:px-0">
           <form
             className="min-h-screen flex flex-col items-center p-4"
@@ -134,15 +154,19 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
               <div className="flex justify-center mb-3">
                 <div className="w-24 h-24 bg-customGray rounded-full relative">
                   {profileImage ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(profileImage)}
                       alt="Profile"
+                      width={40}
+                      height={40}
                       className="w-full h-full object-cover rounded-full"
                     />
                   ) : (
-                    <img
+                    <Image
                       src={image.vector}
                       alt="Avatar"
+                      width={40}
+                      height={40}
                       className="w-full h-full object-cover rounded-full"
                     />
                   )}
@@ -151,9 +175,11 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
                       htmlFor="profileImage"
                       className="cursor-pointer w-[17px] h-full inline-block"
                     >
-                      <img
+                      <Image
                         src={image.camera}
-                        alt=""
+                        alt="img"
+                        width={40}
+                        height={40}
                         className="w-full h-full object-contain"
                       />
                     </label>
@@ -179,17 +205,21 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
                 </label>
                 <div className="border-dashed border-2 border-customGray rounded-lg text-center bg-customLight h-[200px] grid place-items-center">
                   {frontImage ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(frontImage)}
                       alt="Front ID"
+                      width={390}
+                      height={190}
                       className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
                     />
                   ) : (
                     <div className="text-center">
                       <label className="inline-block cursor-pointer">
-                        <img
+                        <Image
                           src={image.plas}
-                          alt=""
+                          alt="img"
+                          width={25}
+                          height={25}
                           className="w-[25px] h-[25px] object-contain"
                         />
                         <input
@@ -215,17 +245,21 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
                 </label>
                 <div className="border-dashed border-2 border-customGray rounded-lg text-center bg-customLight h-[200px] flex items-center justify-center">
                   {backImage ? (
-                    <img
+                    <Image
                       src={URL.createObjectURL(backImage)}
                       alt="Back ID"
+                      width={390}
+                      height={190}
                       className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
                     />
                   ) : (
                     <div>
                       <label className="w-[25px] h-[25px] inline-block cursor-pointer">
-                        <img
+                        <Image
                           src={image.plas}
-                          alt=""
+                          width={30}
+                          height={30}
+                          alt="img"
                           className="w-full h-full object-contain"
                         />
                         <input
@@ -258,12 +292,19 @@ const Profile = ({setIsModalOpen, setIsModalDocumentsOpen}) => {
                   }
                 />
               </div>
+              <ToastContainer position="top-right" />
 
               <button
                 type="submit"
-                className="w-full py-3 px-4 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-4 "
+                className={`w-full py-3 px-4 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-4 ${
+                  loading ? "cursor-not-allowed opacity-75" : ""
+                }`}
+                disabled={loading}
               >
-                Upload Documents
+                {loading ? (
+                  <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                ) : null}
+                {loading ? "Loading..." : "Upload Documents"}
               </button>
             </div>
           </form>
