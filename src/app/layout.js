@@ -24,6 +24,7 @@ const geistMono = localFont({
 export default function RootLayout({ children }) {
   const pathname = usePathname();
   const isAuthPage =
+    pathname === "/" ||
     pathname === "/login" ||
     pathname === "/signup" ||
     pathname === "/forgot" ||
@@ -47,7 +48,9 @@ export default function RootLayout({ children }) {
       >
         <Provider store={store}>
           <PersistGate loading={null} persistor={persistor}>
+            {!isAuthPage && <Header />}
             {children}
+            {!isAuthPage && <Footer />}
           </PersistGate>
         </Provider>
       </body>

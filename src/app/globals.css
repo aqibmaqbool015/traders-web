@@ -15,7 +15,6 @@ input[type="number"]::-webkit-inner-spin-button {
   margin: 0;
 }
 
-/* Remove arrows (spinners) for Firefox */
 input[type="number"] {
   -moz-appearance: textfield;
 }
@@ -30,20 +29,19 @@ input[type="number"] {
 .style-module_emptyIcons__Bg-FZ {
   display: flex !important;
 }
-/* Unchecked state: transparent background and orange border */
 .custom-rating svg {
-  stroke: orange; /* Border color */
-  background-color: transparent; /* Background is transparent */
-  stroke-width: 1; /* Border thickness */
+  stroke: orange;
+  background-color: transparent;
+  stroke-width: 1; 
 }
-
-/* Active state: background turns orange when clicked */
 .custom-rating svg.active {
-  fill: orange; /* Star fill color */
-  stroke: orange; /* Border color remains orange */
+  fill: orange;
+  stroke: orange;
 }
 
-/* For hover: Keep the border and change the background */
 .custom-rating svg:hover {
   fill: orange;
+}
+.border-none {
+  --tw-ring-color: transparent !important;
 }

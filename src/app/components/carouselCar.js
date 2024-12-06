@@ -1,49 +1,48 @@
-import 'flowbite';
-import { Carousel } from 'flowbite';
-import Image from 'next/image';
-import { useEffect } from 'react';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import { Image_base } from "@/networking/network";
 
-export const CarouselCar = () => {
-    const image = {
-        vector: '/car-slide.png'
-    };
+export const CarouselCar = ({ isVehicleDetail }) => {
+  const [activeIndex, setActiveIndex] = useState(0);
+  useEffect(() => {
+    if (isVehicleDetail?.pictures?.length > 0) {
+      const intervalId = setInterval(() => {
+        setActiveIndex((prevIndex) => (prevIndex + 1) % isVehicleDetail.pictures.length);
+      }, 3000); 
+      return () => clearInterval(intervalId);
+    }
+  }, [isVehicleDetail]);
+  if (!isVehicleDetail?.pictures?.length) {
+    return <p>No pictures available</p>;
+  }
 
-    useEffect(() => {
-        // Check for the presence of window
-        if (typeof window !== 'undefined') {
-            const carouselElement = document.querySelector('[data-carousel]');
-            if (carouselElement) {
-                try {
-                    const carousel = new Carousel(carouselElement, {
-                        interval: 5000,
-                    });
-                    carousel.cycle();
-                } catch (error) {
-                    console.error("Carousel initialization error:", error);
-                }
-            }
-        }
-    }, []);
-
-    return (
-        <div data-carousel="slide" className="relative">
-            <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
-                <div className="carousel-item" data-carousel-item="0">
-                    <Image src={image.vector} alt="Slide 1" />
+  return (
+    <div id="carousel" data-carousel="slide" className="relative">
+      <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
+        <div>
+          {isVehicleDetail.pictures.map((picture, index) => {
+            const imageUrl = `${Image_base}${picture}`;
+            return (
+              <div
+                key={`${index}`}
+                className={`${
+                  activeIndex === index ? "block" : "hidden"
+                } duration-700 ease-in-out`}
+              >
+                <div className="relative w-full h-full">
+                  <Image
+                    src={imageUrl}
+                    alt={`Vehicle Slide ${index + 1}`}
+                    layout="fill"
+                    objectFit="cover"
+                    className="!relative w-full h-full"
+                  />
                 </div>
-                <div className="carousel-item" data-carousel-item="1">
-                    <Image src={image.vector} alt="Slide 2" />
-                </div>
-                <div className="carousel-item" data-carousel-item="2">
-                    <Image src={image.vector} alt="Slide 3" />
-                </div>
-            </div>
-
-            {/* <div className="absolute z-30 flex -translate-x-1/2 left-1/2 space-x-3 rtl:space-x-reverse">
-                <button type="button" className="w-3 h-3 rounded-full bg-[#FBD4A5] hover:bg-[#FF8C00] active:bg-[#FF8C00]" aria-current="true" aria-label="Slide 1" data-carousel-slide-to="0"></button>
-                <button type="button" className="w-3 h-3 rounded-full bg-[#FBD4A5] hover:bg-[#FF8C00] active:bg-[#FF8C00]" aria-current="false" aria-label="Slide 2" data-carousel-slide-to="1"></button>
-                <button type="button" className="w-3 h-3 rounded-full bg-[#FBD4A5] hover:bg-[#FF8C00] active:bg-[#FF8C00]" aria-current="false" aria-label="Slide 3" data-carousel-slide-to="2"></button>
-            </div> */}
+              </div>
+            );
+          })}
         </div>
-    );
+      </div>
+    </div>
+  );
 };

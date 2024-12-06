@@ -1,5 +1,5 @@
 import React from "react";
-const CustomToast = ({ content, contact, mail }) => {
+const CustomToast = ({ content, contact, mail, button, className }) => {
   return (
     <>
       <div>
@@ -13,7 +13,7 @@ const CustomToast = ({ content, contact, mail }) => {
             {mail}
           </a>
         </p>
-        
+        <div className={className}>{button}</div>
       </div>
     </>
   );

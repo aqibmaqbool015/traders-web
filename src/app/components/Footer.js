@@ -1,19 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
-import { SlSocialLinkedin } from "react-icons/sl";
-import { SlSocialInstagram } from "react-icons/sl";
-import { SlSocialSkype } from "react-icons/sl";
-import { SlSocialGoogle } from "react-icons/sl";
-import { SlSocialFacebook } from "react-icons/sl";
+
+const image = {
+  logo: "/logo-trade.svg",
+  social: "/social-1.svg",
+  social1: "/social-2.svg",
+  social2: "/social-3.svg",
+};
 
 function Footer() {
-  const image = {
-    logo: "/logo-trade.svg",
-    social: "/social-1.svg",
-    social1: "/social-2.svg",
-    social2: "/social-3.svg",
+  const router = useRouter();
+
+  const handleCLick = () => {
+    router.push("/home");
   };
+
   return (
     <>
       <div
@@ -30,7 +33,8 @@ function Footer() {
                     width={140}
                     height={50}
                     alt="img"
-                    className="md:w-[140px] w-[110px] h-auto"
+                    className="md:w-[140px] w-[110px] h-auto cursor-pointer "
+                    onClick={handleCLick}
                   />
                 </div>
               </div>

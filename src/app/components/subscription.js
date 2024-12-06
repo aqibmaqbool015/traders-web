@@ -1,15 +1,17 @@
 "use client";
 import { setSelectedUserPackage } from "@/redux/slice";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { participateForm } from "../constant";
-import { userCustomer, userPayment } from "../home/api";
+import { paymentSubscription, userCustomer, userPayment } from "../home/api";
 import CustomInput from "./input";
 import Image from "next/image";
 
-const Subscription = ({ subscriptions, loading, setLoading }) => {
+const Subscription = () => {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [subscriptions, setSubscriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
@@ -21,6 +23,22 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState();
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    fetchSubscriptionData();
+  }, []);
+
+  const fetchSubscriptionData = async () => {
+    try {
+      const response = await paymentSubscription();
+      setSubscriptions(response?.data);
+    } catch (err) {
+      setError("Failed to load subscription data.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -157,8 +175,6 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
 
   return (
     <>
-      {/* Main Subscription Content */}
-
       <div>
         <h2 className="text-2xl text-customBlue font-semibold">
           Subscriptionsdads
@@ -174,8 +190,8 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
           <p className="text-customRed">{error}</p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
-            {subscriptions.length > 0 ? (
-              subscriptions.map((subscription, index) =>
+            {subscriptions?.length > 0 ? (
+              subscriptions?.map((subscription, index) =>
                 renderSubscriptionDetails(subscription, index)
               )
             ) : (
@@ -185,7 +201,6 @@ const Subscription = ({ subscriptions, loading, setLoading }) => {
         )}
       </div>
 
-      {/* Modal */}
       {isModalOpen && (
         <div
           id="myModal"

@@ -79,6 +79,7 @@ const Success = () => {
           height={50}
           alt="img"
           className="w-[140px] h-[70px]"
+          
         />
       </div>
       {loading && (

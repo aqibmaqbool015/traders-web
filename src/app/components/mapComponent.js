@@ -1,29 +1,47 @@
-import React from "react";
-import GoogleMapReact from 'google-map-react';
+import React, { useEffect, useState } from "react";
+import GoogleMapReact from "google-map-react";
 
 const AnyReactComponent = ({ text }) => <div>{text}</div>;
 
-export default function MapComponent(){
+export default function MapComponent({ isVehicleDetail }) {
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useEffect(() => {
+    if (isVehicleDetail?.lat && isVehicleDetail?.long) {
+      setMapLoaded(true);
+    }
+  }, [isVehicleDetail]);
+
   const defaultProps = {
     center: {
-      lat: 10.99835602,
-      lng: 77.01502627
+      lat: isVehicleDetail?.lat || 59.955413,
+      lng: isVehicleDetail?.long || 30.337844,
     },
-    zoom: 11
+    zoom: 11,
   };
 
+  // console.log("Latitude:", defaultProps.center.lat);
+  // console.log("Longitude:", defaultProps.center.lng);
+
+  if (!mapLoaded) {
+    return (
+      <div className="text-center my-10 text-customBlue">Loading map...</div>
+    );
+  }
+
   return (
-    // Important! Always set the container height explicitly
-    <div style={{ height: '100vh', width: '100%' }}>
+    <div style={{ height: "500px", width: "100%" }}>
       <GoogleMapReact
-        bootstrapURLKeys={{ key: "" }}
+        bootstrapURLKeys={{
+          key: "AIzaSyD_KJynrQba_jgW-fo3F4ItmLiy58jD0es",
+        }}
         defaultCenter={defaultProps.center}
         defaultZoom={defaultProps.zoom}
       >
         <AnyReactComponent
-          lat={59.955413}
-          lng={30.337844}
-          text="My Marker"
+          lat={defaultProps.center.lat}
+          lng={defaultProps.center.lng}
+          text="Vehicle Location"
         />
       </GoogleMapReact>
     </div>

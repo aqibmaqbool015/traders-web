@@ -1,8 +1,8 @@
 import { endpoint, method } from "@/networking/endPoints";
 import { fetchApi } from "@/networking/network";
 
-export const paymentSubscription = (params) => {
-  return fetchApi(endpoint.paymentPackage, params, method.get, true, false)
+export const paymentSubscription = () => {
+  return fetchApi(endpoint.paymentPackage, null, method.get, true, false)
     .then((response) => {
       return response;
     })
@@ -35,7 +35,6 @@ export const userPayment = (params) => {
 };
 
 export const uploadDocuments = (params) => {
-  
   return fetchApi(endpoint.uploadDocuments, params, method.post, true, true)
     .then((response) => {
       return response;
@@ -46,8 +45,8 @@ export const uploadDocuments = (params) => {
     });
 };
 
-export const allBrands = (params) => {
-  return fetchApi(endpoint.allBrands, params, method.get, false, false)
+export const allBrands = () => {
+  return fetchApi(endpoint.allBrands, null, method.get, false, false)
     .then((response) => {
       return response;
     })
@@ -57,8 +56,8 @@ export const allBrands = (params) => {
     });
 };
 
-export const allVehicles = (params) => {
-  return fetchApi(endpoint.allVehicles, params, method.get, true, false)
+export const allVehicles = () => {
+  return fetchApi(endpoint.allVehicles, null, method.get, true, false)
     .then((response) => {
       return response;
     })
@@ -68,15 +67,46 @@ export const allVehicles = (params) => {
     });
 };
 
-export const allVehiclesNews = (params) => {
-  return fetchApi(endpoint.allVehiclesFeed, params, method.get, true, false)
+export const allVehiclesNews = () => {
+  return fetchApi(endpoint.allVehiclesFeed, null, method.get, true, false)
     .then((response) => {
       return response;
     })
     .catch((error) => {
-      console.error("Vehicles API Error:", error);
+      console.error("Vehicles Feed API Error:", error);
       throw error;
     });
 };
 
-// const updatedParams = { ...params, platform: "web" };
+export const wishlistPost = (params) => {
+  return fetchApi(endpoint.addRemWishlist, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Wishlist API Error:", error);
+      throw error;
+    });
+};
+
+export const allComments = (params) => {
+  return fetchApi(endpoint.getAllComments, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Comments API Error:", error);
+      throw error;
+    });
+};
+
+export const likeUnlikeApi = (params) => {
+  return fetchApi(endpoint.dislike, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Like API Error:", error);
+      throw error;
+    });
+};

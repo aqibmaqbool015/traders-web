@@ -3,33 +3,25 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 export default function AddVehicle() {
   const router = useRouter();
   const handleCLick = () => {
-    router.push("/");
+    router.push("/home");
   };
-  // 
+  const handleClickVehicle = () => {
+    localStorage.setItem("vehicleType", JSON.stringify({ auction: false }));
+    router.push("/list-vehicle");
+  };
+  const handleClickAuction = () => {
+    localStorage.setItem("vehicleType", JSON.stringify({ auction: true }));
+    router.push("/list-vehicle");
+  };
   const image = {
     logo: "/logo-trade.svg",
     image: "/auth-forgot.png",
     car: "/car.svg",
     carVendor: "/car-2.svg",
-  };
-
-  const [frontImage, setFrontImage] = useState(null);
-  const [backImage, setBackImage] = useState(null);
-
-  const handleImageUpload = (e, setImage) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   return (
@@ -60,94 +52,66 @@ export default function AddVehicle() {
               </h1>
               <div className="w-full md:w-[500px]">
                 <div className="mb-4">
-                  <div className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center">
-                    <div>
-                      {frontImage ? (
+                  <div
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center"
+                    onClick={handleClickVehicle}
+                  >
+                    <div className="text-center">
+                      <label className="inline-block cursor-pointer">
                         <Image
-                          src={frontImage}
-                          alt="Front ID"
-                          className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
+                          src={image.car}
+                          alt=""
+                          className="w-[70px] h-auto inline-block object-contain mb-1"
+                          width={70}
+                          height={40}
                         />
-                      ) : (
-                        <div className="text-center">
-                          <label className="inline-block cursor-pointer">
-                            <Image
-                              src={image.car}
-                              alt=""
-                              className="w-[70px] h-auto inline-block object-contain mb-1"
-                              width={70}
-                              height={40}
-                            />
-                            <p className="text-[18px] text-customBlue font-semibold capitalize">
-                              + Add Vehicle
-                            </p>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) =>
-                                handleImageUpload(e, setFrontImage)
-                              }
-                            />
-                          </label>
-                          <p className="text-customDarkGray">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Suspendisse nec justo elit. Maecenas euismod
-                            luctus aliquet. Sed mauris est, congue.
-                          </p>
-                        </div>
-                      )}
+                        <p className="text-[18px] text-customBlue font-semibold capitalize">
+                          + Add Vehicle
+                        </p>
+                      </label>
+                      <p className="text-customDarkGray">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Suspendisse nec justo elit. Maecenas euismod luctus
+                        aliquet. Sed mauris est, congue.
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="mb-4">
-                  <div className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center">
+                  <div
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center"
+                    onClick={handleClickAuction}
+                  >
                     <div>
-                      {backImage ? (
+                      <label className=" inline-block cursor-pointer">
                         <Image
-                          src={backImage}
-                          alt="Back ID"
-                          className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
+                          src={image.carVendor}
+                          alt=""
+                          className="w-[70px] h-auto inline-block object-contain mb-1"
+                          width={70}
+                          height={45}
                         />
-                      ) : (
-                        <div>
-                          <label className=" inline-block cursor-pointer">
-                            <Image
-                              src={image.carVendor}
-                              alt=""
-                              className="w-[70px] h-auto inline-block object-contain mb-1"
-                            />
-                            <p className="text-[18px] text-customBlue font-semibold capitalize">
-                              +Add Vehicle For Auction
-                            </p>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="hidden"
-                              onChange={(e) =>
-                                handleImageUpload(e, setBackImage)
-                              }
-                            />
-                          </label>
-                          <p className="text-customDarkGray">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit. Suspendisse nec justo elit. Maecenas euismod
-                            luctus aliquet. Sed mauris est, congue.
-                          </p>
-                        </div>
-                      )}
+                        <p className="text-[18px] text-customBlue font-semibold capitalize">
+                          +Add Vehicle For Auction
+                        </p>
+                      </label>
+                      <p className="text-customDarkGray">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                        Suspendisse nec justo elit. Maecenas euismod luctus
+                        aliquet. Sed mauris est, congue.
+                      </p>
                     </div>
                   </div>
                 </div>
                 <div className="flex justify-between">
                   <Link
-                    href="/"
+                    href="#"
                     className="md:w-[200px] flex justify-center py-2.5 px-10 border border-customBlue rounded-[25px] shadow-sm text-sm font-medium text-customBlue bg-transparent !mt-7"
                   >
                     Back
                   </Link>
                   <Link
-                    href="/list-vehicle"
+                    href="#"
                     className="md:w-[200px] flex justify-center py-2.5 px-10 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-7"
                   >
                     Next
@@ -161,9 +125,9 @@ export default function AddVehicle() {
       <div className="w-full md:w-[45%]">
         <Image
           src={image.image}
-          fill={true}
+          fill
           alt="img"
-          className="h-full w-full"
+          className="h-full w-full !relative"
         />
       </div>
     </div>

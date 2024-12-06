@@ -1,27 +1,28 @@
-import React, { useState } from 'react'
-import { Rating } from 'react-simple-star-rating'
+import React from "react";
+import { Rating } from "react-simple-star-rating";
 
-export const RatingStar = () => {
-    const [rating, setRating] = useState(0)
+export const RatingStar = ({ isReview, setIsReview }) => {
+  const handleRating = (rate) => {
+    const ratingValue = rate / 1;
+    setIsReview((prev) => ({
+      ...prev,
+      rating: ratingValue.toString(),
+    }));
+    console.log({ rating: ratingValue }, "Updated rating");
+  };
 
-    // Update rating on star click
-    const handleRating = (rate) => {
-        // If the rating is the same as the clicked one, reset to 0 (for deselection)
-        setRating(prevRating => (prevRating === rate ? 0 : rate))
-    }
-
-    return (
-        <div className='!mt-1'>
-            <Rating
-                onClick={handleRating}
-                ratingValue={rating} // Controlled rating value
-                initialValue={0} // Start with no rating
-                size={30} // Adjust size as needed
-                fillColor="orange" // Star fill color after click
-                emptyColor="transparent" // Empty star background
-                allowHover={false} // Disable hover effect to prevent filling multiple stars
-                className='flex custom-rating'
-            />
-        </div>
-    )
-}
+  return (
+    <div className="!mt-1">
+      <Rating
+        onClick={handleRating}
+        ratingValue={(Number(isReview.rating || 0)) * 5}
+        initialValue={0}
+        size={30}
+        fillColor="orange"
+        emptyColor="transparent"
+        allowHover={false}
+        className="flex custom-rating"
+      />
+    </div>
+  );
+};

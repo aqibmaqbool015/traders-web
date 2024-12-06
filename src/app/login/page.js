@@ -136,13 +136,11 @@ export default function LoginPage() {
           if (res?.data?.reviewStatus === "reviewed") {
             toast.success(
               <CustomToast
-                content="Please login by app"
-                contact="You can contact us at"
-                mail="support@trade2trade.co.uk"
+                content="Reviewed successfully"
               />
             );
           }
-          // router.push("/home");
+          router.push("/home");
           dispatch(setUser(res));
         }
       } catch (error) {
@@ -168,7 +166,6 @@ export default function LoginPage() {
             className="w-[140px] h-auto"
           />
         </div>
-
         <div className="max-w-md w-full py-5 px-4 md:px-0">
           <h1 className="text-2xl font-semibold mb-2 text-center text-[30px] text-customBlue">
             Sign In
