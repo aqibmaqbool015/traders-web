@@ -4,7 +4,12 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { participateForm } from "../constant";
-import { paymentSubscription, userCustomer, userPayment } from "../home/api";
+import {
+  getAllPaymentPackages,
+  paymentSubscription,
+  userCustomer,
+  userPayment,
+} from "../home/api";
 import CustomInput from "./input";
 import Image from "next/image";
 
@@ -13,6 +18,7 @@ const Subscription = () => {
   const [error, setError] = useState(null);
   const [subscriptions, setSubscriptions] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isPaymentModal, setIsPaymentModal] = useState(false);
   const [formValues, setFormValues] = useState({
     email: "",
     name: "",
@@ -22,9 +28,11 @@ const Subscription = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedPackage, setSelectedPackage] = useState();
+  const [selectedPaymentPackage, setSelectedPayemtPackage] = useState();
   const dispatch = useDispatch();
 
   useEffect(() => {
+    fetchAllPaymentPackages();
     fetchSubscriptionData();
   }, []);
 
@@ -32,6 +40,20 @@ const Subscription = () => {
     try {
       const response = await paymentSubscription();
       setSubscriptions(response?.data);
+    } catch (err) {
+      setError("Failed to load subscription data.");
+      console.error("API Error:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllPaymentPackages = async () => {
+    try {
+      const response = await getAllPaymentPackages();
+      if (response) {
+        setSelectedPayemtPackage(response?.subscription);
+      }
     } catch (err) {
       setError("Failed to load subscription data.");
       console.error("API Error:", err);
@@ -85,6 +107,8 @@ const Subscription = () => {
       if (response) {
         const paymentParams = {
           amount: selectedPackage?.price,
+          web: true,
+          userSelectedPackage: selectedPackage?._id,
         };
         const res = await userPayment(paymentParams);
 
@@ -103,6 +127,7 @@ const Subscription = () => {
   const handleStripePayment = (url) => {
     window.location.href = url;
   };
+
   const handleClickForm = (selectedPackage) => {
     dispatch(setSelectedUserPackage(selectedPackage));
     setSelectedPackage(selectedPackage);
@@ -112,6 +137,14 @@ const Subscription = () => {
   const closeModal = () => {
     setIsModalOpen(false);
   };
+
+  const openActivatedModal = () => setIsPaymentModal(true);
+  const openActivatedCloseModal = () => setIsPaymentModal(false);
+
+  const onPressNewPackage =()=>{
+    setIsModalOpen(true)
+    setIsPaymentModal(false)
+  }
 
   const image = {
     tick: "/mark.svg",
@@ -163,9 +196,15 @@ const Subscription = () => {
                   ? "border-customBlue bg-transparent text-customBlue"
                   : "border-customOrange bg-transparent text-customOrange"
               }`}
-              onClick={() => handleClickForm(subscription)}
+              onClick={() =>
+                selectedPaymentPackage?.packageId?._id === subscription._id
+                  ? openActivatedModal()
+                  : handleClickForm(subscription)
+              }
             >
-              Get Started
+              {selectedPaymentPackage?.packageId?._id === subscription._id
+                ? "Activated"
+                : "Get Started"}
             </button>
           </div>
         </div>
@@ -177,7 +216,7 @@ const Subscription = () => {
     <>
       <div>
         <h2 className="text-2xl text-customBlue font-semibold">
-          Subscriptionsdads
+          Subscriptions
         </h2>
         <p className="text-customDarkGray text-[16px] font-normal capitalize mb-3">
           Unlock premium access to view detailed vehicle information, manage
@@ -254,6 +293,44 @@ const Subscription = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {isPaymentModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-[500px] max-h-[90vh] overflow-y-auto">
+            <div className="p-4 relative">
+              <div className="absolute right-3 top-4">
+                <Image
+                  src={image.crossBlue}
+                  alt="Close"
+                  className="w-[15px] h-auto cursor-pointer"
+                  onClick={openActivatedCloseModal}
+                  width={15}
+                  height={15}
+                />
+              </div>
+              <div className="text-center mt-7 px-3">
+                <p className="text-center text-[16px] text-customDarkGray ">
+                  You have already activated a package after activating this
+                  package your previous package will be deactivated.
+                </p>
+                <div>
+                  <button className=" md:py-2.5 md:px-10 py-2 px-5 rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue min-w-[140px] !mt-5 mx-1"
+                   onClick={onPressNewPackage}
+                  >
+                    OK
+                  </button>
+                  <button
+                    onClick={openActivatedCloseModal}
+                    className=" md:py-2.5 md:px-10 py-2 px-5 border border-transparent rounded-[25px] shadow-sm text-sm font-medium min-w-[140px] text-white bg-customOrange !mt-5 mx-1"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

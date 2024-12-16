@@ -26,7 +26,7 @@ const BrandsListing = ({ brand }) => {
 
   return (
     <>
-      <div className="glide xl:w-[54rem] lg:w-[42rem] md:w-[30rem] sm:w-[18rem] px-16 py-8 bg-white">
+      <div className="glide xl:w-[54rem] lg:w-[42rem] md:w-[30rem] sm:w-[18rem] md:px-16 px-6 py-8 bg-white">
         <div className="glide__track" data-glide-el="track">
           <ul className="glide__slides">
             {brand?.map((item, index) => {

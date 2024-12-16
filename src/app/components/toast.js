@@ -13,7 +13,7 @@ const CustomToast = ({ content, contact, mail, button, className }) => {
             {mail}
           </a>
         </p>
-        <div className={className}>{button}</div>
+        {/* <div className={className}>{button}</div> */}
       </div>
     </>
   );

@@ -18,7 +18,7 @@ export const CarouselCar = ({ isVehicleDetail }) => {
 
   return (
     <div id="carousel" data-carousel="slide" className="relative">
-      <div className="relative h-56 overflow-hidden rounded-lg md:h-96">
+      <div className="relative overflow-hidden rounded-lg min-h-96">
         <div>
           {isVehicleDetail.pictures.map((picture, index) => {
             const imageUrl = `${Image_base}${picture}`;
@@ -29,13 +29,12 @@ export const CarouselCar = ({ isVehicleDetail }) => {
                   activeIndex === index ? "block" : "hidden"
                 } duration-700 ease-in-out`}
               >
-                <div className="relative w-full h-full">
+                <div className="relative w-full h-[450px] inline-block ">
                   <Image
                     src={imageUrl}
                     alt={`Vehicle Slide ${index + 1}`}
                     layout="fill"
-                    objectFit="cover"
-                    className="!relative w-full h-full"
+                    className="!relative w-full h-full rounded-[10px] "
                   />
                 </div>
               </div>

@@ -1,8 +1,10 @@
 import { endpoint, method } from "@/networking/endPoints";
 import { fetchApi } from "@/networking/network";
 
-export const getLeaderboardAPi = () => {
-  return fetchApi(endpoint.getLeaderboard, null, method.get, true, false)
+export const getLeaderboardAPi = (params) => {
+  return fetchApi(
+    `${endpoint.getLeaderboard}?page=${params?.page}&limit=${params?.limit}`,
+     null, method.get, true, false)
     .then((response) => {
       return response;
     })
@@ -66,6 +68,17 @@ export const createSnagApi = (params) => {
     });
 };
 
+export const addFeedbackApi = (params) => {
+  return fetchApi(endpoint.addFeedback, params, method.post, true, true)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Feedback API Error:", error);
+      throw error;
+    });
+};
+
 export const changePasswordApi = (params) => {
   return fetchApi(endpoint.changePassword, params, method.patch, true, true)
     .then((response) => {
@@ -90,5 +103,16 @@ export const deleteUserApi = (params) => {
     })
     .catch((error) => {
       console.error("User delete API Error:", error);
+    });
+};
+
+export const getUserNotificationApi = () => {
+  return fetchApi(endpoint.getUserNotification, null, method.get, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Notifications API Error:", error);
+      throw error;
     });
 };

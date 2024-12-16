@@ -21,6 +21,8 @@ export const contact = [
   },
 ];
 
+
+
 export const contactList = [
   {
     image: "/contact1.svg",
@@ -484,10 +486,10 @@ export const yourProfileList = [
     icon: "/info-7.svg",
     name: "Wanted Section",
   },
-  {
-    icon: "/info-8.svg",
-    name: "Manage Notification",
-  },
+  // {
+  //   icon: "/info-8.svg",
+  //   name: "Manage Notification",
+  // },
   {
     icon: "/info-9.svg",
     name: "Manage Location",
@@ -629,6 +631,32 @@ export const driver = [
   },
   {
     title: "FWD",
+  },
+];
+export const duration = [
+  {
+    title: "1 hours",
+  },
+  {
+    title: "2 hours",
+  },
+  {
+    title: "3 hours",
+  },
+  {
+    title: "4 hours",
+  },
+  {
+    title: "5 hours",
+  },
+  {
+    title: "6 hours",
+  },
+  {
+    title: "7 hours",
+  },
+  {
+    title: "8 hours",
   },
 ];
 

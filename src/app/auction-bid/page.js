@@ -26,8 +26,6 @@ const Detail = () => {
   const [customValue, setCustomValue] = useState("");
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
 
-  console.log("isvehicleeeeeeeeeeeeeeeee", isVehicleDetail);
-
   const fetchGetVehicleDetail = async (id) => {
     try {
       const response = await vehicleById(id);
@@ -70,19 +68,11 @@ const Detail = () => {
   const openCommentModal = () => setCommentModalOpen(true);
   const closeCommentModal = () => setCommentModalOpen(false);
 
-  //   if (loading) {
-  //     return <p className="text-center my-10 text-customBlue">Loading...</p>;
-  //   }
-
-  //   if (error) {
-  //     return <p className="text-center my-10 text-customBlue">Error: {error}</p>;
-  //   }
 
   return (
     <>
       <div className="md:px-8">
         <section className="mt-5 px-2 py-6">
-          {/* {isVehicleDetail ? ( */}
           <>
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 ">
               <div className="col-span-12 md:col-span-6">

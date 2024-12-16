@@ -1,25 +1,51 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Image from "next/image";
 import { getUserProfile } from "../login/api";
 import { Image_base } from "@/networking/network";
+import { getUserNotificationApi } from "../user-profile/api";
 
 const image = {
   logo: "/logo-trade.svg",
   bell: "/bell.svg",
   user: "/user.svg",
   profile: "user2.png",
+  menu: "/menu.png",
+  bellIcon: "/bell-icon.svg",
 };
 
 const Header = () => {
+  const pathname = usePathname();
   const router = useRouter();
   const handleCLick = () => {
     router.push("/home");
   };
+  const handleCLickAuctions = () => {
+    router.push("/auctions");
+  };
+
   const [isOpen, setIsOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userProfile, setUserProfile] = useState();
+  const [allNotifications, setAllNotifications] = useState([]);
+
+  useEffect(() => {
+    fetchAllNotification();
+  }, []);
+
+  const fetchAllNotification = async () => {
+    try {
+      const response = await getUserNotificationApi();
+
+      if (response?.data) {
+        setAllNotifications(response?.data);
+      }
+    } catch (error) {
+      console.error("Error fetching Wanted List", error);
+      setAllNotifications([]);
+    }
+  };
 
   useEffect(() => {
     fetchGetProfile();
@@ -50,6 +76,10 @@ const Header = () => {
     router.push("/chats");
   };
 
+  const onClickLeaderboard = () => {
+    router.push("/user-profile?tab=Leaderboard");
+  };
+
   return (
     <header className="bg-white shadow">
       <div className="container mx-auto px-4">
@@ -66,35 +96,88 @@ const Header = () => {
             </span>
           </div>
           <nav className="hidden md:flex space-x-4">
-            <Link
-              href="/home"
-              className="px-2 text-customColorNav text-[15px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+            <div
+              onClick={handleCLick}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
+                pathname === "/home"
+                  ? "text-customOrange"
+                  : "text-customColorNav"
+              }`}
             >
               HOME
-            </Link>
-            <Link
-              href="/auctions"
-              className="px-2 text-customColorNav text-[15px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+            </div>
+            <div
+              onClick={handleCLickAuctions}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
+                pathname === "/auctions"
+                  ? "text-customOrange"
+                  : "text-customColorNav"
+              }`}
             >
               AUCTION
-            </Link>
+            </div>
             <div
               onClick={onClickChat}
-              className="px-2 text-customColorNav cursor-pointer text-[15px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
+                pathname === "/chats"
+                  ? "text-customOrange"
+                  : "text-customColorNav"
+              }`}
             >
               CHATS
+            </div>
+
+            <div
+              onClick={onClickLeaderboard}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 uppercase ${
+                pathname === "/user-profile"
+                  ? "text-customOrange"
+                  : "text-customColorNav"
+              }`}
+            >
+              Leaderboard
             </div>
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
-            <span>
-              <Image
-                src={image.bell}
-                height={10}
-                width={18}
-                alt="Bell"
-                className="w-[18px] h-auto"
-              />
+            <span className=" cursor-pointer" onClick={toggleDropdown}>
+              {allNotifications ? (
+                <Image
+                  src={image.bellIcon}
+                  height={10}
+                  width={18}
+                  alt="Bell"
+                  className="w-[18px] h-auto "
+                />
+              ) : (
+                <Image
+                  src={image.bell}
+                  height={10}
+                  width={18}
+                  alt="Bell"
+                  className="w-[18px] h-auto "
+                />
+              )}
+
+              {isDropdownOpen && (
+                <div className="absolute right-24 mt-6 z-50 md:w-[350px] p-1 px-2 bg-white border border-customGray rounded shadow-lg">
+                  {allNotifications?.length === 0 ? (
+                    <p className="text-left text-customBlue my-5">
+                      Notifications not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {allNotifications?.map((item, index) => (
+                          <div className="" key={index}>
+                            Notifications
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
             </span>
             <Link
               href="/add-vehicle"
@@ -109,27 +192,25 @@ const Header = () => {
               >
                 Profile{" "}
               </Link> */}
-              <span className="flex items-center">
+              <span className="flex items-center cursor-pointer relative group">
                 <Image
                   src={
                     `${Image_base}${userProfile?.profilePicture}` ||
                     image.profile
-                    // userProfile?.profilePicture?.length > 0
-                    //   ? `${Image_base}${userProfile?.profilePicture[0]}`
-                    //   : image.profile
                   }
-                  onClick={toggleDropdown}
                   width={22}
                   height={10}
                   alt=""
-                  className="w-[30px] h-auto cursor-pointer rounded-full "
+                  className="w-[30px] h-auto rounded-full"
                 />
-                <span className="text-customBlue mx-2 text-[14px] inline-block ">
+                <span className="text-customBlue mx-2 text-[14px] inline-block">
                   {userProfile?.firstName}
                 </span>
-              </span>
-              {isDropdownOpen && (
-                <div className="absolute right-4 mt-28 w-24 p-1 bg-white border border-customGray rounded shadow-lg">
+
+                <div
+                  className="absolute right-1 mt-24 w-24 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
+                z-50 "
+                >
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
@@ -140,10 +221,11 @@ const Header = () => {
                     href="/user-profile"
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
                   >
-                    Settings{" "}
+                    Settings
                   </Link>
                 </div>
-              )}
+              </span>
+
               {/* <span>
                                 <Image src={image.user} width={22} height={10} alt="User" className="w-[22px] h-auto" />
                             </span>
@@ -157,7 +239,15 @@ const Header = () => {
               onClick={() => setIsOpen(!isOpen)}
               className="focus:outline-none"
             >
-              <span className="material-icons">menu</span>
+              <span className="material-icons">
+                <Image
+                  src={image.menu}
+                  alt=""
+                  width={30}
+                  height={30}
+                  className="inline-block w-[25px] h-auto object-contain "
+                />
+              </span>
             </button>
           </div>
         </div>

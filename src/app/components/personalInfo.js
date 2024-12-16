@@ -3,6 +3,9 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import { updateProfileApi } from "../user-profile/api";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "./toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
@@ -14,33 +17,27 @@ const validationSchema = Yup.object().shape({
   bio: Yup.string().required("Bio is required"),
 });
 
-const PersonalInfo = ({
-  profileImage,
-  handleImageUpload,
-  setProfileImage,
-  inputProfile,
-  userProfile,
-  setUserProfile,
-}) => {
+const PersonalInfo = ({ userProfile, setUserProfile }) => {
   const [loading, setLoading] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    if (typeof setUserProfile === "function") {
-      setUserProfile({ ...userProfile, [name]: value });
-    }
-  };
+  // const handleInputChange = (e) => {
+  //   const { name, value } = e.target;
+  //   if (typeof setUserProfile === "function") {
+  //     setUserProfile({ ...userProfile, [name]: value });
+  //   }
+  // };
 
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      phone: "",
-      bio: "",
-      // profileImage: null,
+      firstName: userProfile?.firstName || "",
+      lastName: userProfile?.lastName || "",
+      email: userProfile?.email || "",
+      phone: userProfile?.phone || "",
+      bio: userProfile?.bio || "",
     },
     validationSchema: validationSchema,
+    validateOnChange: false,
+    validateOnBlur: true,
     onSubmit: async (values) => {
       setLoading(true);
       const formData = new FormData();
@@ -48,17 +45,11 @@ const PersonalInfo = ({
       formData.append("lastName", values.lastName);
       formData.append("phone", values.phone);
       formData.append("bio", values.bio);
-      // if (values.profileImage) {
-      //   formData.append("profileImage", values.profileImage);
-      // }
 
       try {
         const response = await updateProfileApi(formData);
-        console.log("API Response:", response);
-
         if (response?.success) {
-          window.location.reload();
-          console.log("Profile updated successfully.");
+          toast.success(<CustomToast content="Your profile is updated." />);
         } else {
           console.error(
             "Error updating profile:",
@@ -71,6 +62,7 @@ const PersonalInfo = ({
         setLoading(false);
       }
     },
+    enableReinitialize: true,
   });
 
   return (
@@ -149,12 +141,13 @@ const PersonalInfo = ({
                 placeholder="Enter your first name"
                 // value={formik?.values?.firstName}
                 // onChange={handleInputChange}
-                value={formik?.values?.firstName || userProfile?.firstName}
+                value={formik.values.firstName}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
               />
-              {formik.errors.firstName ? (
+              {formik.touched.firstName && formik.errors.firstName ? (
                 <div className="text-customRed">{formik.errors.firstName}</div>
               ) : null}
             </div>
@@ -170,12 +163,13 @@ const PersonalInfo = ({
                 id="lastName"
                 name="lastName"
                 placeholder="Enter your last name"
-                value={formik?.values?.lastName || userProfile?.lastName}
+                value={formik.values.lastName}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
               />
-              {formik.errors.lastName ? (
+              {formik.touched.lastName && formik.errors.lastName ? (
                 <div className="text-customRed">{formik.errors.lastName}</div>
               ) : null}
             </div>
@@ -201,6 +195,7 @@ const PersonalInfo = ({
                 <div className="text-customRed">{formik.errors.email}</div>
               ) : null} */}
             </div>
+
             <div className="mt-[12px]">
               <label
                 htmlFor="phone"
@@ -213,12 +208,13 @@ const PersonalInfo = ({
                 id="phone"
                 name="phone"
                 placeholder="Enter your phone"
-                value={formik?.values?.phone || userProfile?.phone}
+                value={formik.values.phone}
                 onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
                 className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-        border border-[#CFCFCF] rounded-[25px]"
+    border border-[#CFCFCF] rounded-[25px]"
               />
-              {formik.errors.phone ? (
+              {formik.touched.phone && formik.errors.phone ? (
                 <div className="text-customRed">{formik.errors.phone}</div>
               ) : null}
             </div>
@@ -235,13 +231,14 @@ const PersonalInfo = ({
               id="bio"
               name="bio"
               placeholder="Enter Description"
-              value={formik?.values?.bio || userProfile?.bio}
               rows={5}
+              value={formik.values.bio}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
             ></textarea>
-            {formik.errors.bio ? (
+            {formik.touched.bio && formik.errors.bio ? (
               <div className="text-customRed">{formik.errors.bio}</div>
             ) : null}
           </div>
@@ -255,6 +252,7 @@ const PersonalInfo = ({
             </button>
           </div>
         </form>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

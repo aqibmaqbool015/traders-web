@@ -27,10 +27,11 @@ const UserProfile = () => {
     // companyName: "",
     // bio: "",
   });
-  const [isLeaderBoard, setIsLeaderBoard] = useState();
+  const [isLeaderBoard, setIsLeaderBoard] = useState([]);
   const [isWishlist, setIsWishlist] = useState([]);
   const [isVehcilesPost, setIsVehcilesPost] = useState([]);
   const [isAllWanted, setIsAllWanted] = useState([]);
+  const [feedback, setFeedback] = useState();
   const user = useSelector((state) => state?.User);
   const [isDeleteModal, setIsDeleteModal] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -38,7 +39,13 @@ const UserProfile = () => {
   const handleModalOpen = () => setIsDeleteModal(true);
   const handleModalClose = () => setIsDeleteModal(false);
   const userId = user?.data?._id;
+  const [showLoading, setShowLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 10;
   const router = useRouter();
+  
+ 
 
   useEffect(() => {
     fetchAllWanted();
@@ -87,20 +94,34 @@ const UserProfile = () => {
       setIsWishlist([]);
     }
   };
-
+  
   useEffect(() => {
-    fetchLeaderBoard();
-  }, []);
+    fetchLeaderBoard(currentPage);
+  }, [currentPage]);
 
-  const fetchLeaderBoard = async () => {
+  const fetchLeaderBoard = async (page) => {
     try {
-      const data = await getLeaderboardAPi();
+      const data = await getLeaderboardAPi({ page, limit: rowsPerPage });
+      // if (data?.data) {
+      //   setIsLeaderBoard(data?.data);
+      // }
       if (data?.data) {
-        setIsLeaderBoard(data?.data);
+        setIsLeaderBoard((prevLeaderBoard) => [
+          ...prevLeaderBoard,
+          ...data?.data,
+        ]);
+        setTotalPages(data?.totalPages);
       }
     } catch (error) {
       console.error("Error fetching User Leaderboard", error);
       setIsLeaderBoard([]);
+    }
+  };
+
+  const handleShowMore = () => {
+    setShowLoading(true);
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
     }
   };
 
@@ -158,12 +179,17 @@ const UserProfile = () => {
       </div>
       <UserInfoTab
         isLeaderBoard={isLeaderBoard}
+        setIsLeaderBoard={setIsLeaderBoard}
         userProfile={userProfile}
         setUserProfile={setUserProfile}
         isWishlist={isWishlist}
         isVehcilesPost={isVehcilesPost}
         isAllWanted={isAllWanted}
         handleModalOpen={handleModalOpen}
+        totalPages={totalPages}
+        rowsPerPage={rowsPerPage}
+        handleShowMore={handleShowMore}
+        showLoading={showLoading}
       />
       {isDeleteModal && (
         <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">

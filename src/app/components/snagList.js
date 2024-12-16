@@ -5,6 +5,10 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useState } from "react";
 import { createSnagApi } from "../user-profile/api";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "./toast";
+import "react-toastify/dist/ReactToastify.css";
+
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required("title is required"),
@@ -21,6 +25,8 @@ const SnagList = () => {
       image: null,
     },
     validationSchema: validationSchema,
+    validateOnChange: false,
+    validateOnBlur: true,
     onSubmit: async (values) => {
       setLoading(true);
       const formData = new FormData();
@@ -33,8 +39,7 @@ const SnagList = () => {
       try {
         const response = await createSnagApi(formData);
         if (response?.success) {
-          console.log("Profile updated successfully.");
-          window.location.reload();
+          toast.success(<CustomToast content="Snag list is Updated." />);
         } else {
           console.error(
             "Error updating profile:",
@@ -46,6 +51,7 @@ const SnagList = () => {
         setLoading(false);
       }
     },
+    enableReinitialize: true,
   });
 
   const handleImageUpload = (e) => {
@@ -60,7 +66,7 @@ const SnagList = () => {
         className="text-2xl text-customBlue font-semibold mb-4
       capitalize"
       >
-        Personal Information
+        Snags List
       </h2>
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-4">
         <form onSubmit={formik.handleSubmit} className="w-full space-y-6">
@@ -76,12 +82,13 @@ const SnagList = () => {
               id="title"
               name="title"
               placeholder="Enter your first name"
-              value={formik?.values?.title}
+              value={formik.values.title}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
             />
-            {formik.errors.title ? (
+            {formik.touched.title && formik.errors.title ? (
               <div className="text-customRed">{formik.errors.title}</div>
             ) : null}
           </div>
@@ -97,13 +104,14 @@ const SnagList = () => {
               id="description"
               name="description"
               placeholder="Enter description"
-              value={formik?.values?.description}
               rows={5}
+              value={formik.values.description}
               onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
               className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
             ></textarea>
-            {formik.errors.description ? (
+            {formik.touched.description && formik.errors.description ? (
               <div className="text-customRed">{formik.errors.description}</div>
             ) : null}
           </div>
@@ -121,9 +129,9 @@ const SnagList = () => {
               id="image"
               onChange={handleImageUpload}
             />
-            {formik.errors.image && (
+            {formik.touched.image && formik.errors.image ? (
               <div className="text-customRed">{formik.errors.image}</div>
-            )}
+            ) : null}
           </div>
 
           <div className="text-center">
@@ -136,6 +144,7 @@ const SnagList = () => {
             </button>
           </div>
         </form>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

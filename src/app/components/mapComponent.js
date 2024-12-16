@@ -1,27 +1,35 @@
 import React, { useEffect, useState } from "react";
 import GoogleMapReact from "google-map-react";
 
-const AnyReactComponent = ({ text }) => <div>{text}</div>;
-
-export default function MapComponent({ isVehicleDetail }) {
+function MapComponent({ isVehicleDetail }) {
   const [mapLoaded, setMapLoaded] = useState(false);
 
   useEffect(() => {
-    if (isVehicleDetail?.lat && isVehicleDetail?.long) {
+    if (
+      isVehicleDetail?.lat &&
+      isVehicleDetail?.long &&
+      !isNaN(isVehicleDetail.lat) &&
+      !isNaN(isVehicleDetail.long)
+    ) {
       setMapLoaded(true);
     }
   }, [isVehicleDetail]);
 
   const defaultProps = {
     center: {
-      lat: isVehicleDetail?.lat || 59.955413,
-      lng: isVehicleDetail?.long || 30.337844,
+      lat: parseFloat(isVehicleDetail?.lat) || 0,
+      lng: parseFloat(isVehicleDetail?.long) || 0,
     },
     zoom: 11,
   };
 
-  // console.log("Latitude:", defaultProps.center.lat);
-  // console.log("Longitude:", defaultProps.center.lng);
+  const handleApiLoaded = (map, maps) => {
+    new maps.Marker({
+      position: defaultProps.center,
+      map,
+      title: "Vehicle Location",
+    });
+  };
 
   if (!mapLoaded) {
     return (
@@ -34,16 +42,16 @@ export default function MapComponent({ isVehicleDetail }) {
       <GoogleMapReact
         bootstrapURLKeys={{
           key: "AIzaSyD_KJynrQba_jgW-fo3F4ItmLiy58jD0es",
+          language: "en",
+          region: "gb",
         }}
-        defaultCenter={defaultProps.center}
-        defaultZoom={defaultProps.zoom}
-      >
-        <AnyReactComponent
-          lat={defaultProps.center.lat}
-          lng={defaultProps.center.lng}
-          text="Vehicle Location"
-        />
-      </GoogleMapReact>
+        center={defaultProps.center}
+        zoom={defaultProps.zoom}
+        yesIWantToUseGoogleMapApiInternals
+        onGoogleApiLoaded={({ map, maps }) => handleApiLoaded(map, maps)}
+      />
     </div>
   );
 }
+
+export default MapComponent;

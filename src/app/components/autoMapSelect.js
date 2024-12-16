@@ -8,7 +8,7 @@ import Autocomplete from "react-google-autocomplete";
   }}
   options={{
     types: ["(regions)"],
-    componentRestrictions: { country: "ru" },
+    componentRestrictions: { country: "gb" },
   }}
-  defaultValue="Amsterdam"
+  defaultValue="London"
 />;

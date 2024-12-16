@@ -100,54 +100,56 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    if (isSubmitted) return;
     setIsSubmitted(true);
-    validateForm();
-
-    if (isFormValid) {
-      setLoading(true);
-      const params = {
-        email: formValues.email,
-        password: formValues.password,
-      };
-
-      try {
-        const response = await LoginApi(params);
-        await setLocalStorageItem("token", response?.token);
-        if (response) {
-          const res = await getUserProfile();
-          if (res?.data?.paidMember === false) {
-            router.push("/subscription");
-            return;
-          }
-          if (res?.data?.reviewStatus === "rejected") {
-            router.push("/profile");
-            return;
-          }
-          if (res?.data?.reviewStatus === "reviewing") {
-            toast.success(
-              <CustomToast
-                content="Your upload docements request is under review."
-                contact="You can contact us at"
-                mail="support@trade2trade.co.uk"
-              />
-            );
-            return;
-          }
-          if (res?.data?.reviewStatus === "reviewed") {
-            toast.success(
-              <CustomToast
-                content="Reviewed successfully"
-              />
-            );
-          }
-          router.push("/home");
-          dispatch(setUser(res));
+    validateForm(true);
+    // if (!isFormValid) {
+    //   setIsSubmitted(false);
+    //   return;
+    // }
+    const params = {
+      email: formValues.email,
+      password: formValues.password,
+    };
+    try {
+      const response = await LoginApi(params);
+      await setLocalStorageItem("token", response?.token);
+      if (response) {
+        const res = await getUserProfile();
+        if (res?.data?.paidMember === false) {
+          router.push("/subscription");
+          return;
         }
-      } catch (error) {
-        console.error("Error in handleSubmit:", error);
-      } finally {
-        setLoading(false);
+
+        if (res?.data?.reviewStatus === "rejected") {
+          router.push("/profile");
+          return;
+        }
+
+        if (res?.data?.reviewStatus === "reviewing") {
+          toast.success(
+            <CustomToast
+              content="Your upload documents request is under review."
+              contact="You can contact us at"
+              mail="support@trade2trade.co.uk"
+            />
+          );
+          return;
+        }
+
+        if (res?.data?.reviewStatus === "reviewed") {
+          toast.success(<CustomToast content="Reviewed successfully" />);
+        }
+        router.push("/home");
+        dispatch(setUser(res));
       }
+    } catch (error) {
+      toast.error(<CustomToast content="Error in handleSubmit:" />);
+      console.error("Error in handleSubmit:", error);
+    } finally {
+      setLoading(false);
+      setIsSubmitted(false);
     }
   };
 
@@ -207,10 +209,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              className={`w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue ${
-                loading ? "cursor-not-allowed opacity-75" : ""
-              }`}
-              disabled={loading}
+              className="w-full flex items-center justify-center py-2 px-4 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue "
             >
               {loading ? (
                 <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>

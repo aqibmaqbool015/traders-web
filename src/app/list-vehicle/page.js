@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { identityApi } from "./api";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "../components/toast";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ListVehicle() {
   const router = useRouter();
@@ -19,7 +22,9 @@ export default function ListVehicle() {
   const handleLookupClick = async (e) => {
     e.preventDefault();
     if (!registration) {
-      alert("Please enter a valid vehicle registration number.");
+      toast.error(
+        <CustomToast content="Please enter a valid vehicle registration number." />
+      );
       return;
     }
     setLoading(true);
@@ -29,15 +34,25 @@ export default function ListVehicle() {
     try {
       const identity = await identityApi(params);
       if (identity?.success === false) {
-        console.log(
-          identity?.message || "Vehicle registration already exists."
+        toast.error(
+          <CustomToast
+            content={
+              identity?.message || "Vehicle registration already exists."
+            }
+          />
         );
+        return;
       }
-      await localStorage.setItem("regnoData", JSON.stringify(identity ?? {}));
-      router.push(`/vehicle-detail?regno=${registration}`);
+      if (identity?.success) {
+        await localStorage.setItem("regnoData", JSON.stringify(identity ?? {}));
+        router.push(`/vehicle-detail?regno=${registration}`);
+      }
     } catch (error) {
-      console.error("Error during lookup: ", error);
-      alert("Failed to lookup the vehicle. Please try again.");
+      toast.error(
+        <CustomToast
+          content={error || "Failed to lookup the vehicle. Please try again."}
+        />
+      );
     } finally {
       setLoading(false);
     }
@@ -122,6 +137,7 @@ export default function ListVehicle() {
           className="h-full w-full !relative"
         />
       </div>
+      <ToastContainer position="top-right" />
     </div>
   );
 }

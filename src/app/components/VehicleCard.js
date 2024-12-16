@@ -1,12 +1,9 @@
-import Link from "next/link";
-import { cards, cardsAuction } from "../constant";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { wishlistPost } from "../home/api";
-import { useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
-import CustomToast from "./toast";
 import { Image_base } from "@/networking/network";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { ToastContainer } from "react-toastify";
+import { wishlistPost } from "../home/api";
 
 const image = {
   heart: "/heart.svg",
@@ -29,15 +26,12 @@ export const VehicleCard = ({ vehicle }) => {
     const params = {
       vehicleId: vehicle?._id,
     };
-    console.log(params, "lllllll");
     try {
       const response = await wishlistPost(params);
       if (response) {
         setIsFavourite(!isFavourite);
-        // toast.success(<CustomToast content="Added To Wishlist" />);
       }
     } catch (error) {
-      // toast.error(<CustomToast content="Failed to Add to Wishlist" />);
       console.error("Wishlist API Error:", error);
     }
   };
@@ -47,19 +41,12 @@ export const VehicleCard = ({ vehicle }) => {
       ? `${Image_base}${vehicle.pictures[0]}`
       : image.vehicle;
 
-  const handleShowMore = () => {
-    setVisibleFeed((prev) => prev + 3);
-  };
-  const handleShowLess = () => {
-    setVisibleFeed(3);
-  };
-
   return (
     <div className="rounded overflow-hidden gap-2 my-3 cursor-pointer ">
       <ToastContainer position="top-right" />
-      <div onClick={handleClick}>
+      <div className="w-full h-[250px] inline-block " onClick={handleClick}>
         <Image
-          className="w-full h-[250px] object-[initial] rounded-[8px] "
+          className="w-full h-full object-[initial] rounded-[8px] "
           src={imageSrc}
           alt="Vehicle"
           width={200}
@@ -68,17 +55,9 @@ export const VehicleCard = ({ vehicle }) => {
       </div>
       <div className="px-2 py-1">
         <div className="flex justify-between items-center">
-          <h4 className="font-medium text-customOrange text-[22px]">
+          <h4 className="font-medium text-customOrange md:text-[22px] text-[18px] ">
             £ {vehicle?.price || "Vehicle Title"}
           </h4>
-          {/* <Image
-            className="w-[22px] h-[22px] object-[initial]"
-            src={image.heart}
-            width={22}
-            height={22}
-            alt="Heart Icon"
-          /> */}
-
           {isFavourite ? (
             <svg
               onClick={handleClickFavourite}
@@ -111,7 +90,7 @@ export const VehicleCard = ({ vehicle }) => {
             </svg>
           )}
         </div>
-        <p className="text-customBlackLight text-[18px]">
+        <p className="text-customBlackLight md:text-[18px] text-[16px] ">
           {vehicle?.model_id?.name || vehicle?.regno}
         </p>
         <div className="flex justify-between items-center">
@@ -165,7 +144,7 @@ export const AuctionsCardAll = ({ auction }) => {
           <div className="px-2 py-1">
             <div className="flex justify-between items-center">
               <h4 className="font-medium  text-customOrange text-[22px]">
-                £ {auction?.price || "Vehicle Title"}
+                £ {auction?.price}
               </h4>
               {auction.isLive && (
                 <p className="font-medium text-customRed text-[16px] relative before:content-[''] before:absolute before:left-0 before:top-1/2 before:w-2 before:h-2 before:bg-customRed before:rounded-full before:transform before:-translate-y-1/2 pl-5">
@@ -189,11 +168,15 @@ export const AuctionsCardAll = ({ auction }) => {
                 height={14}
               />
               <p className="text-customSmallGray text-[13px] mx-2">
-                {new Date(auction?.auc_start_time).toLocaleString("en-GB", {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                  hour12: true,
-                })}
+                {new Date(auction?.auc_start_time)
+                  .toUTCString()
+                  .split(" ")[4]
+                  .replace(/^(\d{2}):(\d{2}):\d{2}$/, (_, hh, mm) => {
+                    const hours = Number(hh) % 12 || 12;
+                    const period = Number(hh) >= 12 ? "pm" : "am";
+                    return `${hours}:${mm} ${period}`;
+                  })}
+
                 {"-"}
                 {new Date(auction?.auc_end_time).toLocaleString("en-GB", {
                   hour: "2-digit",
@@ -212,18 +195,22 @@ export const AuctionsCardAll = ({ auction }) => {
                   height={14}
                 />
                 <p className="text-customSmallGray text-[13px] mx-2">
-                  {auction?.make_id?.createdAt
-                    ? new Date(auction?.make_id?.createdAt).toLocaleDateString(
-                        "en-GB"
-                      )
+                  {auction?.auction_date
+                    ? new Date(auction?.auction_date)
+                        .toUTCString()
+                        .split(" ")
+                        .slice(1, 4)
+                        .join(" ")
                     : "7 days ago"}
                 </p>
               </div>
               <p className="text-customDarkGray text-[14px]">
-                {auction?.make_id?.createdAt
-                  ? new Date(auction?.make_id?.createdAt).toLocaleDateString(
-                      "en-GB"
-                    )
+                {auction?.auction_date
+                  ? new Date(auction?.auction_date)
+                      .toUTCString()
+                      .split(" ")
+                      .slice(1, 4)
+                      .join(" ")
                   : "7 days ago"}
               </p>
             </div>

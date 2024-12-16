@@ -38,13 +38,20 @@ export const endpoint = {
   getUserPosts: "getUserPosts",
   getAllWanted: "getAllWanted",
   createSnag: "createSnag",
+  addFeedback: "addFeedback",
   changePassword: "changePassword",
   deleteUser: "deleteUser",
   dislike: "dislike",
+  likeunlike: "likeunlike",
   getModelsByBrand: "getModelsByBrand",
   searchByBrandApi: "searchByBrandApi",
   auctionSearchApi: "auctionSearchApi",
-  
+  reviewDetails: "reviewDetails",
+  getAllReviews: "getAllReviews",
+  getAllPaymentPackages: "getAllPaymentPackages",
+  getUserNotification: "getUserNotification",
+  getUserVehicleHistory: "getUserVehicleHistory",
+  reviewDetailsVehicle: "reviewDetailsVehicle",
 };
 
 export const method = {

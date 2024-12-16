@@ -6,6 +6,9 @@ import { useFormik } from "formik";
 import { changePasswordApi } from "../user-profile/api";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "./toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const validationSchema = Yup.object().shape({
   password: Yup.string().required("Old Password is required"),
@@ -36,7 +39,7 @@ const ChangePassword = () => {
       try {
         const response = await changePasswordApi(formData);
         if (response?.success) {
-          console.log("Password Change successfully.");
+          toast.success(<CustomToast content="Your Password is Updated." />);
           router.push("/login");
         } else {
           console.error(
@@ -137,6 +140,7 @@ const ChangePassword = () => {
             </button>
           </div>
         </form>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

@@ -56,8 +56,14 @@ export const allBrands = () => {
     });
 };
 
-export const allVehicles = () => {
-  return fetchApi(endpoint.allVehicles, null, method.get, true, false)
+export const allVehicles = (params) => {
+  return fetchApi(
+    `${endpoint.allVehicles}?page=${params?.page}&limit=${params?.limit}`,
+    null,
+    method.get,
+    true,
+    false
+  )
     .then((response) => {
       return response;
     })
@@ -100,13 +106,35 @@ export const allComments = (params) => {
     });
 };
 
-export const likeUnlikeApi = (params) => {
+export const dislikeApi = (params) => {
   return fetchApi(endpoint.dislike, params, method.post, true, false)
     .then((response) => {
       return response;
     })
     .catch((error) => {
+      console.error("Dislike API Error:", error);
+      throw error;
+    });
+};
+
+export const likeunlikeApi = (params) => {
+  return fetchApi(endpoint.likeunlike, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
       console.error("Like API Error:", error);
+      throw error;
+    });
+};
+
+export const getAllPaymentPackages = () => {
+  return fetchApi(endpoint.getAllPaymentPackages, null, method.get, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Payment API Error:", error);
       throw error;
     });
 };

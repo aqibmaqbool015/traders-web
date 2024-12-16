@@ -11,8 +11,14 @@ export const allVehicles = () => {
       throw error;
     });
 };
-export const getAllAuctionApi = () => {
-  return fetchApi(endpoint.allVehicles, null, method.get, true, false)
+export const getAllAuctionApi = (params) => {
+  return fetchApi(
+    `${endpoint.getAllAuction}?page=${params?.page}&limit=${params?.limit}`,
+    null,
+    method.get,
+    true,
+    false
+  )
     .then((response) => {
       return response;
     })
@@ -62,7 +68,7 @@ export const getAllUserWonApi = () => {
     });
 };
 
-export const getAuctionSearchApi = ( search) => {
+export const getAuctionSearchApi = (search) => {
   return fetchApi(
     `${endpoint.auctionSearchApi}?term=${"vehicle"}&search=${search}`,
     null,

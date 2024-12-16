@@ -5,25 +5,26 @@ import { CarouselCar } from "../../components/carouselCar";
 import CustomInput from "../../components/input";
 import MapComponent from "../../components/mapComponent";
 import { RatingStar } from "../../components/ratingStar";
-import {
-  auto,
-  contact,
-  contactList,
-  participateForm,
-  products,
-  userListingDetail,
-} from "../../constant";
+import { contact, contactList, participateForm } from "../../constant";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
   addCommentApi,
   createReviewApi,
   getAllCommentsApi,
+  getAllReviewsApi,
+  getUserVehicleHistoryApi,
+  reviewDetailsApi,
+  reviewDetailsVehicleApi,
   vehicleById,
 } from "../api";
 import Image from "next/image";
 import { getAllAuctionApi } from "@/app/auctions/api";
 import { Image_base } from "@/networking/network";
+import { wishlistPost } from "@/app/home/api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CustomToast from "@/app/components/toast";
 
 const image = {
   heart: "/heart.svg",
@@ -37,9 +38,12 @@ const image = {
   image4: "/instrument4.svg",
   image5: "/instrument5.svg",
   user1: "/user1.png",
+  regIcon: "/verify.png",
+  location: "/location.png",
+  distance: "/distance.png",
 };
 
-export const inputField = [
+const inputField = [
   {
     label: "Your Name",
     type: "text",
@@ -54,20 +58,15 @@ export const inputField = [
     name: "feedback",
     placeholder: "Enter your feedback",
   },
-  {
-    label: "Registration Number",
-    type: "text",
-    id: "regno",
-    name: "regno",
-    placeholder: "Enter your regno",
-  },
 ];
 
 const Detail = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [isVehicleDetail, setIsVehicleDetail] = useState([]);
+  const [isVehicleDetailRate, setIsVehicleDetailRate] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false);
   const [isLoadingComment, setIsLoadingComment] = useState(false);
   const [error, setError] = useState(null);
   const [isCommentModalOpen, setCommentModalOpen] = useState(false);
@@ -80,6 +79,46 @@ const Detail = () => {
   const [isAllComments, setIsAllComments] = useState([]);
   const [visibleComments, setVisibleComments] = useState(3);
   const [isCommented, setIsCommented] = useState(false);
+  const [allReviews, setAllReviews] = useState([]);
+  const [allReviewsVehicle, setAllReviewsVehicle] = useState([]);
+  const [isFavourite, setIsFavourite] = useState(false);
+  const [vehicleHIstory, setVehicleHistory] = useState({});
+
+  useEffect(() => {
+    const id = isVehicleDetail?.user_id?._id;
+    if (id) {
+      fetchVehicleHistory(id);
+    }
+  }, [isVehicleDetail?.user_id?._id]);
+
+  const fetchVehicleHistory = async (id) => {
+    try {
+      const response = await getUserVehicleHistoryApi(id);
+      if (response) {
+        setVehicleHistory(response);
+      } else {
+        setVehicleHistory([]);
+      }
+    } catch (err) {
+      setError(err.message);
+      setVehicleHistory([]);
+    }
+  };
+
+  const handleClickFavourite = async () => {
+    const id = pathname.split("/")[2];
+    const params = {
+      vehicleId: id,
+    };
+    try {
+      const response = await wishlistPost(params);
+      if (response) {
+        setIsFavourite(!isFavourite);
+      }
+    } catch (error) {
+      // toast.error(<CustomToast content="Failed to Add to Wishlist" />);
+    }
+  };
 
   useEffect(() => {
     fetchAllComments();
@@ -98,10 +137,46 @@ const Detail = () => {
         setIsCommented(false);
       }
     } catch (err) {
-      console.error("Error fetching comments:", err);
       setIsAllComments([]);
     }
   };
+
+  const fetchAllReviewsVehicle = async () => {
+    const params = {
+      regno: isVehicleDetail?.regno,
+    };
+    const data = await reviewDetailsVehicleApi(params);
+    if (data?.data) {
+      setAllReviewsVehicle(data?.data[0]?.reviews);
+    } else {
+      setAllReviewsVehicle([]);
+    }
+  };
+
+  useEffect(() => {
+    if (isVehicleDetail?.regno) {
+      fetchAllReviewsVehicle();
+    }
+  }, [isVehicleDetail]);
+
+  const fetchAllReviews = async () => {
+    const params = {
+      regno: isVehicleDetail?.regno,
+    };
+    try {
+      const data = await reviewDetailsApi(params);
+
+      if (data?.data) {
+        setAllReviews(data?.data[0]?.reviews || []);
+      }
+    } catch (err) {
+      setAllReviews([]);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllReviews();
+  }, []);
 
   const handleShowMore = () => {
     setVisibleComments((prev) => prev + 3);
@@ -110,30 +185,34 @@ const Detail = () => {
     setVisibleComments(3);
   };
 
-  useEffect(() => {
-    fetchAllAuctions();
-  }, []);
+  // useEffect(() => {
+  //   fetchAllAuctions();
+  // }, []);
 
-  const fetchAllAuctions = async () => {
-    try {
-      const data = await getAllAuctionApi();
-      if (data?.data) {
-        setAllAuction(data?.data);
-      }
-    } catch (err) {
-      console.error("Error fetching vehicles:", err);
-      setAllAuction([]);
-    }
-  };
+  // const fetchAllAuctions = async () => {
+  //   try {
+  //     const data = await getAllAuctionApi();
+  //     if (data?.data) {
+  //       setAllAuction(data?.data);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching vehicles:", err);
+  //     setAllAuction([]);
+  //   }
+  // };
 
   const fetchGetVehicleDetail = async (id) => {
     try {
       const response = await vehicleById(id);
       if (response?.data) {
-        setIsVehicleDetail(response.data);
+        setIsVehicleDetail(response?.data);
+      }
+      if (response) {
+        setIsVehicleDetailRate(response);
       }
     } catch (err) {
-      console.error("Error fetching vehicle details:", err);
+      toast.error(<CustomToast content="Error fetching vehicle details:" />);
+
       setError(err.message);
       setIsVehicleDetail([]);
     } finally {
@@ -149,7 +228,11 @@ const Detail = () => {
   }, [pathname]);
 
   if (loading) {
-    return <p className="text-center my-10 text-customBlue">Loading...</p>;
+    return (
+      <div className="flex justify-center">
+        <p className="text-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 my-5 "></p>
+      </div>
+    );
   }
 
   if (error) {
@@ -158,7 +241,6 @@ const Detail = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!commentText) return;
     const id = pathname.split("/")[2];
     setIsLoadingComment(true);
@@ -169,11 +251,11 @@ const Detail = () => {
     try {
       const rsponse = await addCommentApi(params);
       if (rsponse) {
-        console.log("Comment added successfully.");
+        toast.success(<CustomToast content="Comment added successfully." />);
         setIsCommented(true);
       }
     } catch (error) {
-      console.error("Error adding comment:", error);
+      toast.error(<CustomToast content="Error adding comment:" />);
     } finally {
       setIsLoadingComment(false);
       closeCommentModal();
@@ -185,12 +267,13 @@ const Detail = () => {
 
     const { name, rating, feedback, regno } = isReview;
 
-    if (!name || !rating || !feedback || !regno) {
-      console.log("Validation Error:", { name, rating, feedback, regno });
+    if (!name || !rating || !feedback) {
+      toast.error(<CustomToast content="Validation Error:" />);
+
       return;
     }
 
-    setLoading(true);
+    setReviewLoading(true);
 
     const param = {
       traderId: isVehicleDetail?.user_id?._id,
@@ -202,11 +285,10 @@ const Detail = () => {
 
     try {
       await createReviewApi(param);
-      console.log("Review added successfully.");
+      toast.success(<CustomToast content="Review added successfully." />);
     } catch (error) {
-      console.error("Error adding Review:", error);
     } finally {
-      setLoading(false);
+      setReviewLoading(false);
       closeFilterModal();
     }
   };
@@ -232,11 +314,6 @@ const Detail = () => {
 
   const openCallModal = () => setIsCallModal(true);
   const closeCallModal = () => setIsCallModal(false);
-
-  const handleClick = (e) => {
-    e.preventDefault();
-    router.push("/payment-method");
-  };
   const handleClickBid = (e) => {
     e.preventDefault();
     router.push("/auction-bid");
@@ -255,7 +332,17 @@ const Detail = () => {
       router.push(`/chats`);
     }
   };
-
+  const handleClickHistory = (selected) => {
+    if (vehicleHIstory) {
+      const param = {
+        user_id: isVehicleDetail?.user_id?._id,
+        sold: selected === "sold" ? true : false,
+      };
+      const userJsonParams = JSON.stringify(param);
+      localStorage.setItem("traderVehicleId", userJsonParams);
+      router.push("/my-post");
+    }
+  };
   return (
     <>
       <div className="md:px-8">
@@ -269,17 +356,41 @@ const Detail = () => {
                 <div className="col-span-12 md:col-span-6">
                   <div className="px-2 py-1">
                     <div className="flex justify-between items-center">
-                      <h4 className="font-medium  text-customBlackLight text-[26px]">
+                      <h4 className="font-medium  text-customBlackLight md:text-[26px] text-[20px] ">
                         {isVehicleDetail?.make_id?.title} {""}
                         {isVehicleDetail?.model_id?.name}
                       </h4>
-                      <Image
-                        className="w-[22px] h-[22px] object-[initial]"
-                        src={image.heart}
-                        alt="Sample image"
-                        width={22}
-                        height={22}
-                      />
+                      {isFavourite ? (
+                        <svg
+                          onClick={handleClickFavourite}
+                          width="25"
+                          height="25"
+                          viewBox="0 0 35 32"
+                          fill="#F53535"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{ cursor: "pointer" }}
+                        >
+                          <path
+                            d="M24.5487 0.814148C29.5477 0.814148 33.6001 4.89137 33.6001 10.5995C33.6001 22.0157 21.2573 28.5392 17.143 30.9856C13.0287 28.5392 0.685852 22.0157 0.685852 10.5995C0.685852 4.89137 4.80014 0.814148 9.73728 0.814148C12.7983 0.814148 15.4973 2.44504 17.143 4.07592C18.7887 2.44504 21.4877 0.814148 24.5487 0.814148Z"
+                            fill="#F53535"
+                          />
+                        </svg>
+                      ) : (
+                        <svg
+                          onClick={handleClickFavourite}
+                          width="25"
+                          height="25"
+                          viewBox="0 0 35 32"
+                          fill="none"
+                          xmlns="http://www.w3.org/2000/svg"
+                          style={{ cursor: "pointer" }}
+                        >
+                          <path
+                            d="M24.5487 0.814148C29.5477 0.814148 33.6001 4.89137 33.6001 10.5995C33.6001 22.0157 21.2573 28.5392 17.143 30.9856C13.0287 28.5392 0.685852 22.0157 0.685852 10.5995C0.685852 4.89137 4.80014 0.814148 9.73728 0.814148C12.7983 0.814148 15.4973 2.44504 17.143 4.07592C18.7887 2.44504 21.4877 0.814148 24.5487 0.814148Z"
+                            stroke="#7C7C7C"
+                          />
+                        </svg>
+                      )}
                     </div>
                     <p className="text-customOrange text-[18px]">
                       {isVehicleDetail?.price}
@@ -348,48 +459,51 @@ const Detail = () => {
                               onClick={closeCallModal}
                             />
                           </div>
-                          <form className="space-y-4">
+                          <div className="space-y-4">
                             <p className="text-[16px] text-customColorNav font-medium ">
-                              +9243 2390 102 80
+                              +123 324424 4234
                             </p>
-                            <div className="flex justify-center">
-                              <button className=" flex justify-center py-2.5 px-12 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-2">
-                                Save
-                              </button>
-                            </div>
-                          </form>
+                            {/* {isVehicleDetail?.length === 0 ? (
+                              <p>No contact number</p>
+                            ) : (
+                              isVehicleDetail?.map((item, index) => {
+                                <p
+                                  key={index}
+                                  className="text-[16px] text-customColorNav font-medium "
+                                >
+                                  {item?.userId?.phone}
+                                </p>
+                              })
+                            )} */}
+                          </div>
                         </div>
                       </div>
                     </div>
                   )}
                   <div className="grid md:grid-cols-2 gap-0 my-5">
-                    {/* {products.map((item, index) => {
-                      return (
-                       
-                      );
-                    })} */}
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
                       <Image
                         className="w-[20px] h-[20px]"
-                        src={image.image1}
+                        src={image.regIcon}
                         width={20}
                         height={20}
                         alt=""
                       />
                       <h5 className="text-[16px] text-customDarkGray font-normal mx-3">
-                        {isVehicleDetail?.location}
+                        {isVehicleDetail?.regno}
                       </h5>
                     </div>
+
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
                       <Image
                         className="w-[20px] h-[20px]"
-                        src={image.image1}
+                        src={image.distance}
                         width={20}
                         height={20}
                         alt=""
                       />
-                      <h5 className="text-[16px] text-customDarkGray font-normal mx-3">
-                        {isVehicleDetail?.mileage} Liter
+                      <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
+                        {isVehicleDetail?.mileage} meter
                       </h5>
                     </div>
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
@@ -419,13 +533,13 @@ const Detail = () => {
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
                       <Image
                         className="w-[20px] h-[20px]"
-                        src={image.image4}
+                        src={image.location}
                         width={20}
                         height={20}
                         alt=""
                       />
                       <h5 className="text-[16px] text-customDarkGray font-normal mx-3">
-                        {isVehicleDetail?.seats} Seats
+                        {isVehicleDetail?.location}
                       </h5>
                     </div>
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
@@ -442,7 +556,7 @@ const Detail = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-span-12 md:col-span-12">
+                {/* <div className="col-span-12 md:col-span-12">
                   {allAuction?.length === 0 ? (
                     <>
                       <p className="text-center text-customBlue">No Bid</p>
@@ -475,7 +589,7 @@ const Detail = () => {
                       )}
                     </>
                   )}
-                </div>
+                </div> */}
                 <div className="col-span-12 md:col-span-6">
                   <div className="mt-10">
                     <Image
@@ -492,7 +606,9 @@ const Detail = () => {
                         Vehicle
                       </h5>
                       <h5 className="text-[16px] text-customDarkGray font-normal">
-                        £ {isVehicleDetail?.vehicle_status}
+                        {isVehicleDetail?.make_id?.title}
+                        {", "}
+                        {isVehicleDetail?.model_id?.name}
                       </h5>
                     </div>
                     <div className="flex justify-between cursor-pointer items-center border-b border-b-customGray py-3">
@@ -638,34 +754,40 @@ const Detail = () => {
                 <h4 className="font-normal  text-customBlue  text-[24px] my-5">
                   The Trader
                 </h4>
-                <div className="md:flex justify-between items-center">
+
+                <div className="md:flex justify-between items-center ">
                   <div className="flex items-center mb-3">
                     <Image
                       src={
-                        `${Image_base}${isVehicleDetail?.user_id?.profilePicture}` ||
-                        image.user1
+                        isVehicleDetail?.user_id?.profilePicture
+                          ? `${Image_base}${isVehicleDetail?.user_id?.profilePicture}`
+                          : image.user1
                       }
                       alt=""
-                      className="w-[47px] h-[47px] inline-block rounded-full "
+                      className="w-[47px] h-[47px] inline-block rounded-full"
                       width={47}
                       height={47}
                     />
                     <div className="mx-3">
                       <h5 className="text-[16px] font-medium text-customBlue capitalize mb-1">
-                        {isVehicleDetail?.user_id?.firstName} {""}
+                        {isVehicleDetail?.user_id?.firstName}{" "}
                         {isVehicleDetail?.user_id?.lastName}
                       </h5>
-                      <p className="text-[13px] font-normal text-customDarkGray capitalize ">
-                        <Image
-                          className="w-[16px] h-[16px] inline-block object-contain mr-1 align-text-top"
-                          src={image.star}
-                          alt=""
-                          width={16}
-                          height={16}
-                        />{" "}
-                        {isVehicleDetail?.averageRating}(
-                        {isVehicleDetail?.totalReviews} reviews)
-                      </p>
+                      <div className="flex items-center ">
+                        <p className="text-[13px] font-normal text-customDarkGray capitalize mr-2">
+                          <Image
+                            className="w-[16px] h-[16px] inline-block object-contain mr-1 align-text-top"
+                            src={image.star}
+                            alt=""
+                            width={16}
+                            height={16}
+                          />{" "}
+                          {isVehicleDetailRate?.averageRating} {""}
+                        </p>
+                        <p className="text-[13px] text-customDarkGray">
+                          ({isVehicleDetailRate?.totalReviews} reviews)
+                        </p>
+                      </div>
                     </div>
                   </div>
                   <div className="md:flex sm:flex inline-block">
@@ -674,11 +796,11 @@ const Detail = () => {
                         <div
                           className="inline-block w-[140px] mx-2 "
                           key={index}
-                          onClick={openAuctionModal}
                         >
                           <div
                             className="flex md:w-[140px] sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
-                                     items-center"
+                                 items-center"
+                            onClick={() => onHandleClickButtons(index)}
                           >
                             <Image
                               className="w-[20px] h-[20px]"
@@ -696,21 +818,100 @@ const Detail = () => {
                     })}
                   </div>
                 </div>
+                {/* <div className="">
+                  {allReviews?.length === 0 ? (
+                    <p className="text-center text-customBlue">
+                      No reviews available
+                    </p>
+                  ) : (
+                    <div className=" ">
+                      {allReviews?.map((review, index) => (
+                        <>
+                          <div className="flex justify-between items-center ">
+                            <div key={index} className="flex items-center mb-3">
+                              <Image
+                                src={image.user1}
+                                alt=""
+                                className="w-[47px] h-[47px] inline-block rounded-full"
+                                width={47}
+                                height={47}
+                              />
+                              <div className="mx-3">
+                                <h5 className="text-[16px] font-medium text-customBlue capitalize mb-1">
+                                  {review?.userId?.firstName}{" "}
+                                  {review?.userId?.lastName}
+                                </h5>
+                                <p className="text-[13px] font-normal text-customDarkGray capitalize">
+                                  <Image
+                                    className="w-[16px] h-[16px] inline-block object-contain mr-1 align-text-top"
+                                    src={image.star}
+                                    alt=""
+                                    width={16}
+                                    height={16}
+                                  />{" "}
+                                  {review?.rating}
+                                </p>
+                                <p className="text-[13px] text-customDarkGray">
+                                  ({review?.feedback} reviews)
+                                </p>
+                              </div>
+                            </div>
+                            <div className="md:flex sm:flex inline-block">
+                              {contactList.map((item, index) => {
+                                return (
+                                  <div
+                                    className="inline-block w-[140px] mx-2 "
+                                    key={index}
+                                  >
+                                    <div
+                                      className="flex md:w-[140px] sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                                 items-center"
+                                      onClick={() =>
+                                        onHandleClickButtons(index)
+                                      }
+                                    >
+                                      <Image
+                                        className="w-[20px] h-[20px]"
+                                        src={item.image}
+                                        alt=""
+                                        width={20}
+                                        height={20}
+                                      />
+                                      <h5 className="text-[16px] text-customBlue font-normal mx-3">
+                                        {item.title}
+                                      </h5>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </>
+                      ))}
+                    </div>
+                  )}
+                </div> */}
                 <div className="flex mx-2 my-3">
-                  <div className="flex justify-between md:w-[180px] w-[190px] border border-customOrange mx-2 my-3 px-3 py-3 cursor-pointer rounded-[12px] bg-customExtralight items-center">
+                  <div
+                    className="flex justify-between md:w-[180px] w-[190px] border border-customOrange mx-2 my-3 px-3 py-3 cursor-pointer rounded-[12px] bg-customExtralight items-center"
+                    onClick={() => handleClickHistory("sale", false)}
+                  >
                     <h5 className="text-[16px] text-customOrange font-normal ">
                       Sale Cars{" "}
                     </h5>
                     <h5 className="text-[16px] text-customOrange font-normal ">
-                      35{" "}
+                      {vehicleHIstory?.userSaleVehicles || "0"}
                     </h5>
                   </div>
-                  <div className="flex justify-between md:w-[180px]  w-[190px] border border-customOrange mx-2 my-3 px-3 py-3 cursor-pointer rounded-[12px] bg-customExtralight items-center">
+                  <div
+                    className="flex justify-between md:w-[180px]  w-[190px] border border-customOrange mx-2 my-3 px-3 py-3 cursor-pointer rounded-[12px] bg-customExtralight items-center"
+                    onClick={() => handleClickHistory("sold", true)}
+                  >
                     <h5 className="text-[16px] text-customOrange font-normal ">
                       Sold Cars{" "}
                     </h5>
                     <h5 className="text-[16px] text-customOrange font-normal ">
-                      20{" "}
+                      {vehicleHIstory?.totalSoldVehicle || "0"}
                     </h5>
                   </div>
                 </div>
@@ -718,7 +919,61 @@ const Detail = () => {
                   We have been supplying the trade for over 35 years building
                   many relationship on trust and integrity.
                 </p>
-                <div className="my-3 md:mx-10">
+                <div className="my-3">
+                  <p className="my-2 text-[20px] text-customBlue font-medium ">
+                    {" "}
+                    <span className="text-customDarkGray font-light">
+                      Reviews
+                    </span>
+                  </p>
+                  {allReviewsVehicle.length === 0 ? (
+                    <p>No reviews available</p>
+                  ) : (
+                    <>
+                      {allReviewsVehicle?.map((review, index) => {
+                        return (
+                          <div key={index} className="">
+                            <div className="flex items-center mb-3">
+                              <Image
+                                src={
+                                  `${Image_base}${review?.userId?.profilePicture}` ||
+                                  image.user1
+                                }
+                                alt=""
+                                className="w-[47px] h-[47px] inline-block rounded-full"
+                                width={47}
+                                height={47}
+                              />
+                              <div className="mx-3">
+                                <h5 className="text-[16px] font-medium text-customBlue capitalize mb-1">
+                                  {review?.userId?.firstName} {""}{" "}
+                                  {review?.userId?.lastName}
+                                </h5>
+                                <p className="text-[13px] font-normal text-customDarkGray capitalize">
+                                  <Image
+                                    className="w-[16px] h-[16px] inline-block object-contain mr-1 align-text-top"
+                                    src={image.star}
+                                    alt=""
+                                    width={16}
+                                    height={16}
+                                  />{" "}
+                                  {review?.rating}
+                                </p>
+                                <p className="text-[13px] text-customDarkGray">
+                                  {review?.feedback}
+                                </p>
+                                <p className="text-[13px] text-customDarkGray">
+                                  {review?.name}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+                <div className="my-3">
                   <MapComponent isVehicleDetail={isVehicleDetail} />
                 </div>
               </div>
@@ -798,17 +1053,8 @@ const Detail = () => {
                   <label className="text-[16px] font-medium text-customDarkGray">
                     Your Rating
                   </label>
-                  {/* <RatingStar
-                    value={isReview.rating || "0"}
-                    onChange={(rating) => {
-                      setIsReview((prev) => ({
-                        ...prev,
-                        rating: String(rating),
-                      }));
-                      console.log({ rating: String(rating) }, "Updated rating");
-                    }}
-                  /> */}
                   <RatingStar isReview={isReview} setIsReview={setIsReview} />
+
                   {inputField.map((field, index) => (
                     <CustomInput
                       key={index}
@@ -820,11 +1066,7 @@ const Detail = () => {
                       value={isReview[field.name] || ""}
                       onChange={(e) => {
                         const { name, value } = e.target;
-                        setIsReview((prev) => ({
-                          ...prev,
-                          [name]: value,
-                        }));
-                        console.log({ [name]: value }, "Updated field");
+                        setIsReview((prev) => ({ ...prev, [name]: value }));
                       }}
                     />
                   ))}
@@ -834,7 +1076,7 @@ const Detail = () => {
                       type="submit"
                       className="flex justify-center py-2.5 px-12 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2"
                     >
-                      Submit
+                      {reviewLoading ? "Loading..." : "Submit"}
                     </button>
                   </div>
                 </form>
@@ -891,6 +1133,7 @@ const Detail = () => {
             </div>
           </div>
         )}
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

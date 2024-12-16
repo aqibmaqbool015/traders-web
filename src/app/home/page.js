@@ -22,6 +22,8 @@ import Image from "next/image";
 import CustomToast from "../components/toast";
 import "react-toastify/dist/ReactToastify.css";
 import { Image_base } from "@/networking/network";
+import CarouselBanner from "../components/carouselBanner";
+import { VehicleCard } from "../components/VehicleCard";
 const image = {
   search: "/search.svg",
   filter: "/filter.svg",
@@ -50,6 +52,7 @@ const HomePage = () => {
   const [isModalDocumentsOpen, setIsModalDocumentsOpen] = useState(false);
   const [isReviewingModal, setIsReviewingModal] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showLoading, setShowLoading] = useState(false);
   const [error, setError] = useState(null);
   const [profileImage, setProfileImage] = useState(null);
   const [profilePreview, setProfilePreview] = useState(null);
@@ -60,8 +63,39 @@ const HomePage = () => {
   const [insurance, setInsurance] = useState(null);
   const [insurancePreview, setInsurancePreview] = useState(null);
   const [brands, setBrands] = useState([]);
-  const [vehicles, setVehicles] = useState([]);
+  // const [vehicles, setVehicles] = useState([]);
   const [newsFeed, setNewsFeed] = useState([]);
+
+  const [vehicles, setVehicles] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const rowsPerPage = 20;
+
+  useEffect(() => {
+    fetchVehicles(1);
+  }, []);
+
+  const fetchVehicles = async (page) => {
+    try {
+      const data = await allVehicles({ page, limit: rowsPerPage });
+      setShowLoading(false);
+      if (data?.data) {
+        setVehicles((prevVehicles) => [...prevVehicles, ...data?.data]);
+        setTotalPages(data?.totalPages);
+      }
+    } catch (err) {
+      console.error("Error fetching vehicles:", err);
+      setVehicles([]);
+    }
+  };
+
+  const handleShowMore = () => {
+    setShowLoading(true);
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+      fetchVehicles((prev) => prev + 1);
+    }
+  };
 
   useEffect(() => {
     fetchNewsFeed();
@@ -76,22 +110,6 @@ const HomePage = () => {
     } catch (err) {
       console.error("Error fetching NewsFeed:", err);
       setNewsFeed([]);
-    }
-  };
-
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
-
-  const fetchVehicles = async () => {
-    try {
-      const data = await allVehicles();
-      if (data?.data) {
-        setVehicles(data?.data);
-      }
-    } catch (err) {
-      console.error("Error fetching vehicles:", err);
-      setVehicles([]);
     }
   };
 
@@ -243,7 +261,7 @@ const HomePage = () => {
         setIsModalOpen(false);
         setIsModalDocumentsOpen(false);
       } else {
-        console.log("Error!", responseDocuments.message);
+        toast.error(<CustomToast content="Error!" />);
       }
     } catch (error) {
       console.error("Error uploading documents:", error);
@@ -276,7 +294,7 @@ const HomePage = () => {
                 <Image
                   src={image.search}
                   alt="img"
-                  className="w-[20px] h-auto"
+                  className="md:w-[20px] w-[17px] h-auto"
                   width={20}
                   height={10}
                 />
@@ -300,36 +318,9 @@ const HomePage = () => {
         <h3 className="text-customBlue md:text-[28px] text-center font-semibold">
           Top Brands Associated with Us
         </h3>
-        {/* <div className="glide xl:w-[54rem] lg:w-[42rem] md:w-[30rem] sm:w-[18rem] px-16 py-8 bg-white">
+        <div className="glide xl:w-[54rem] lg:w-[42rem] md:w-[30rem] sm:w-[18rem] md:px-16 px-6 md:py-8 py-4 bg-white">
           <div className="glide__track" data-glide-el="track">
-            <ul className="glide__slides">
-              <li className="glide__slide">
-                <Image src={image.brand} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand2} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand3} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand4} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand5} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand6} alt="img" className="w-[100px] h-auto" />
-              </li>
-              <li className="glide__slide">
-                <Image src={image.brand7} alt="img" className="w-[100px] h-auto" />
-              </li>
-            </ul>
-          </div>
-        </div> */}
-        <div className="glide xl:w-[54rem] lg:w-[42rem] md:w-[30rem] sm:w-[18rem] px-16 py-8 bg-white">
-          <div className="glide__track" data-glide-el="track">
-            <ul className="glide__slides">
+            <ul className="glide__slides justify-center">
               {brands?.length > 0 ? (
                 brands?.map((brand, index) => (
                   <li key={index} className="glide__slide">
@@ -344,9 +335,14 @@ const HomePage = () => {
                   </li>
                 ))
               ) : (
-                <p className="text-center text-customBlue ">
-                  No brands available
-                </p>
+                <>
+                  {loading ? (
+                    <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></span>
+                  ) : null}
+                </>
+                // <p className="text-center text-customBlue ">
+                //   No brands available
+                // </p>
               )}
             </ul>
           </div>
@@ -370,7 +366,14 @@ const HomePage = () => {
           Best Vehicles For You
         </h3>
 
-        <BrandsCards vehicles={vehicles} newsFeed={newsFeed} />
+        <BrandsCards
+          vehicles={vehicles}
+          newsFeed={newsFeed}
+          totalPages={totalPages}
+          rowsPerPage={rowsPerPage}
+          handleShowMore={handleShowMore}
+          showLoading={showLoading}
+        />
       </section>
       {/* modal */}
       {isModalOpen && (
@@ -438,7 +441,7 @@ const HomePage = () => {
                     className="min-h-screen flex flex-col items-center p-4"
                     onSubmit={handleSubmitDocuments}
                   >
-                    <h1 className="text-2xl font-semibold mb-4 text-center text-[30px] text-customBlue">
+                    <h1 className="text-2xl font-semibold mb-4 text-center md:text-[30px] text-[25px] text-customBlue">
                       Upload Documents
                     </h1>
                     <div className="w-full md:w-[400px]">

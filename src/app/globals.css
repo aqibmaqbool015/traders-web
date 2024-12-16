@@ -33,6 +33,7 @@ input[type="number"] {
   stroke: orange;
   background-color: transparent;
   stroke-width: 1; 
+  display: inline-block;
 }
 .custom-rating svg.active {
   fill: orange;

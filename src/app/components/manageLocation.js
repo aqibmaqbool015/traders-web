@@ -6,6 +6,9 @@ import { useState } from "react";
 import Autocomplete from "react-google-autocomplete";
 import * as Yup from "yup";
 import { updateProfileApi } from "../user-profile/api";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "./toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const validationSchema = Yup.object().shape({
   location: Yup.string().required("Location is required"),
@@ -16,6 +19,7 @@ const image = {
   arrow: "/arrow.svg",
   cross: "/cross.svg",
 };
+
 const ManageLocation = () => {
   const [isLocationModal, setIsLocationModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -26,14 +30,18 @@ const ManageLocation = () => {
       location: "",
     },
     validationSchema: validationSchema,
-    onSubmit: async (values) => {
+    onSubmit: async (values, { setSubmitting }) => {
       setLoading(true);
       const formData = new FormData();
       formData.append("location", values.location);
       try {
         const response = await updateProfileApi(formData);
         if (response?.success) {
-          console.log("Profile updated successfully.");
+          toast.success(
+            <CustomToast
+              content="Your profile is updated."
+            />
+          );
         } else {
           console.error(
             "Error updating profile:",
@@ -41,27 +49,24 @@ const ManageLocation = () => {
           );
         }
       } catch (error) {
+        console.error("Error during API call:", error);
       } finally {
         setLoading(false);
+        setSubmitting(false);
       }
     },
   });
 
   const openLocationModal = () => setIsLocationModal(true);
-  const closeLocationModal = () => {
-    setIsLocationModal(false);
-  };
+  const closeLocationModal = () => setIsLocationModal(false);
 
   return (
     <>
-      <h2
-        className="text-2xl text-customBlue font-semibold mb-4
-      capitalize"
-      >
+      <h2 className="text-2xl text-customBlue font-semibold mb-4 capitalize">
         Manage Location
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
-        <form className="w-full space-y-6">
+        <form onSubmit={formik.handleSubmit} className="w-full space-y-6">
           <div className="mb-4 relative">
             <label
               htmlFor="location"
@@ -73,7 +78,7 @@ const ManageLocation = () => {
               type="text"
               id="location"
               className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-        border border-[#CFCFCF] rounded-[25px]"
+                border border-[#CFCFCF] rounded-[25px]"
               placeholder="Location"
               disabled
               onChange={(e) => {
@@ -86,7 +91,7 @@ const ManageLocation = () => {
               <div className="text-customRed">{formik.errors.location}</div>
             ) : null}
             <span
-              className="absolute right-2 top-10 cursor-pointer "
+              className="absolute right-2 top-10 cursor-pointer"
               onClick={openLocationModal}
             >
               <Image
@@ -94,7 +99,7 @@ const ManageLocation = () => {
                 alt=""
                 width={20}
                 height={20}
-                className="w-[18px] h-[18px] object-contain "
+                className="w-[18px] h-[18px] object-contain"
               />
             </span>
             {isLocationModal && (
@@ -131,7 +136,7 @@ const ManageLocation = () => {
                         }}
                         defaultValue=""
                         className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-                  border border-[#CFCFCF] rounded-[25px]"
+                          border border-[#CFCFCF] rounded-[25px]"
                       />
                     </form>
                   </div>
@@ -139,28 +144,17 @@ const ManageLocation = () => {
               </div>
             )}
           </div>
-          {/* <span className="flex cursor-pointer">
-            <Image
-              src={image.pin}
-              alt=""
-              width={30}
-              height={30}
-              className="w-[20px] h-auto object-contain inline-block mr-2 align-middle "
-            />
-            <p className="text-[16px] text-customBlue font-medium ">
-              Use current location
-            </p>
-          </span> */}
           <div className="text-center">
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || formik.isSubmitting}
               className="md:w-[200px] w-[130px] inline-block py-2.5 md:px-10 px-4 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-4 mx-3"
             >
               {loading ? "Loading..." : "Save"}
             </button>
           </div>
         </form>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

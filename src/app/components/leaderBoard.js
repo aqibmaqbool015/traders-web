@@ -7,63 +7,99 @@ const image = {
   star: "/star-fill.svg",
 };
 
-const Leaderboard = ({ isLeaderBoard }) => {
+const Leaderboard = ({
+  isLeaderBoard,
+  rowsPerPage,
+  handleShowMore,
+  showLoading,
+  totalPages,
+}) => {
   return (
     <>
       <h2 className="text-2xl text-customBlue font-semibold mb-4">
-        Leaderboard
+        Leaderboard 
       </h2>
-      {isLeaderBoard?.map((user, index) => (
-        <div
-          key={index}
-          className="flex items-end space-x-3 border-b border-b-customBg pb-3 mb-3"
-        >
-          <Image
-            src={`${Image_base}${user?.user?.profilePicture}` || image.avatar}
-            alt=""
-            className="w-[50px] h-[50px] inline-block rounded-full "
-            width={50}
-            height={50}
-          />
-          <div className="flex-1">
-            <p className="font-normal text-[20px] text-customBlue ">
-              {user?.user?.firstName}
-            </p>
-            <div className="flex items-center">
+      {isLeaderBoard?.length === 0 ? (
+        <p className="text-center text-customBlue my-5">
+          No LeaderBoard available
+        </p>
+      ) : (
+        <div className="md:mx-2">
+          {isLeaderBoard?.map((user, index) => (
+            <div
+              key={index}
+              className="flex items-end space-x-3 border-b border-b-customBg pb-3 mb-3"
+            >
               <Image
-                src={image.star}
+                src={
+                  `${Image_base}${user?.user?.profilePicture}` || image.avatar
+                }
                 alt=""
-                className="w-[16px] h-[16px] mr-2 object-contain inline-block "
-                width={16}
-                height={16}
+                className="md:w-[50px] md:h-[50px] h-[40px] w-[40px] inline-block rounded-full "
+                width={50}
+                height={50}
               />
-              <h3 className="text-sm text-customDarkGray">
-                {user?.averageRating} ( {user?.reviews} )
-              </h3>
-            </div>
-          </div>
-          <div className="flex">
-            <div className="mx-2">
-              <p className="text-[18px] text-customDarkGray font-normal  text-center">
-                Sold
-              </p>
-              <div className="w-[50px] flex justify-center items-center text-center h-[50px] rounded-[10px] border border-customOrange bg-customOrangeLightBg text-customOrange">
-                {user?.userSoldVehicles}
+              <div className="flex-1">
+                <p className="font-normal md:text-[20px] text-[17px] text-customBlue ">
+                  {user?.user?.firstName}
+                </p>
+                <div className="flex items-center">
+                  <Image
+                    src={image.star}
+                    alt=""
+                    className="w-[16px] h-[16px] mr-2 object-contain inline-block "
+                    width={16}
+                    height={16}
+                  />
+                  <h3 className="text-sm text-customDarkGray">
+                    {user?.averageRating} ( {user?.reviews} )
+                  </h3>
+                </div>
+              </div>
+              <div className="flex">
+                <div className="mx-2">
+                  <p className="md:text-[18px] text-[15px] text-customDarkGray font-normal  text-center">
+                    Sold
+                  </p>
+                  <div className="w-[50px] flex justify-center items-center text-center md:h-[50px] h-[40px] rounded-[10px] border border-customOrange bg-customOrangeLightBg text-customOrange">
+                    {user?.userSoldVehicles}
+                  </div>
+                </div>
+                <div className="mx-2">
+                  <p className="md:text-[18px] text-[15px] text-customDarkGray font-normal  text-center">
+                    Sales
+                  </p>
+                  <div className="w-[50px] flex justify-center items-center text-center md:h-[50px] h-[40px] rounded-[10px] border border-customOrange bg-customOrangeLightBg text-customOrange">
+                    {user.count1 || "0"}
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="mx-2">
-              <p className="text-[18px] text-customDarkGray font-normal  text-center">
-                Sales
-              </p>
-              <div className="w-[50px] flex justify-center items-center text-center h-[50px] rounded-[10px] border border-customOrange bg-customOrangeLightBg text-customOrange">
-                {user.count1 || '0'} 
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
+          ))}
 
-      <div className="flex justify-between items-center">
+          {isLeaderBoard?.length < totalPages * rowsPerPage && (
+            <div className="text-center my-5">
+              <button
+                onClick={handleShowMore}
+                className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+              >
+                {showLoading ? (
+                  <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                ) : null}
+                {showLoading ? "Loading..." : "Show More"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+};
+
+export default Leaderboard;
+
+{
+  /* <div className="flex justify-between items-center">
         <p className="font-medium text-[16px] text-customBlue capitalize cursor-pointer">
           previous
         </p>
@@ -81,9 +117,5 @@ const Leaderboard = ({ isLeaderBoard }) => {
         <p className="font-medium text-[16px] text-customBlue capitalize  cursor-pointer">
           next
         </p>
-      </div>
-    </>
-  );
-};
-
-export default Leaderboard;
+      </div> */
+}

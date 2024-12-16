@@ -43,26 +43,26 @@ function Footer() {
                   Support
                 </h6>
                 <div className="">
-                  <Link
+                  {/* <Link
                     href="/"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Returns{" "}
-                  </Link>
-                  <Link
+                  </Link> */}
+                  {/* <Link
                     href="/"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     F.A.Qs
-                  </Link>
+                  </Link> */}
                   <Link
-                    href="/"
+                    href="#"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Privacy Policy
                   </Link>
                   <Link
-                    href="/"
+                    href="#"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Contact Us
@@ -112,33 +112,33 @@ function Footer() {
           </div>
           <div className="flex md:flex-row flex-col justify-between items-center mt-8">
             <div className=" lg:flex gap-2">
-              <div className="text-white text-[14px] cursor-pointer hover:text-red-400">
+              <div className="text-white text-[14px]">
                 @2024 trade2trade. All Rights Reserved
               </div>
             </div>
 
-            <div className=" lg:flex gap-2">
+            <div className=" lg:flex gap-2 sm:text-left text-center ">
               <Link
-                href=""
-                className="text-white text-[14px] cursor-pointer font-normal mx-3 "
+                href="#"
+                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
               >
                 Copy Right
               </Link>
               <Link
-                href=""
-                className="text-white text-[14px] cursor-pointer font-normal mx-3 "
+                href="#"
+                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
               >
                 Terms Of Use
               </Link>
               <Link
-                href=""
-                className="text-white text-[14px] cursor-pointer font-normal mx-3 "
+                href="#"
+                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
               >
                 Privacy Policy
               </Link>
               <Link
-                href=""
-                className="text-white text-[14px] cursor-pointer font-normal mx-3 "
+                href="#"
+                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
               >
                 Code of Conduct
               </Link>

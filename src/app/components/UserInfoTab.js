@@ -15,9 +15,6 @@ import Feedback from "./feedback";
 import ChangePassword from "./changePassword";
 import TermsCondition from "./termsCondition";
 import PrivacyPolicy from "./privacyPolicy";
-import { deleteUserApi } from "../user-profile/api";
-import { usePathname, useRouter } from "next/navigation";
-import { useSelector } from "react-redux";
 
 const image = {
   logout: "/info-14.svg",
@@ -33,8 +30,12 @@ const UserInfoTab = ({
   isVehcilesPost,
   isAllWanted,
   handleModalOpen,
+  rowsPerPage,
+  handleShowMore,
+  showLoading,
+  totalPages,
 }) => {
-  const [activeTab, setActiveTab] = useState("Personal Information");
+  const [activeTab, setActiveTab] = useState("Leaderboard");
   const [profileImage, setProfileImage] = useState(null);
 
   const handleImageUpload = (e, setImage) => {
@@ -47,6 +48,7 @@ const UserInfoTab = ({
       reader.readAsDataURL(file);
     }
   };
+
 
   const renderContent = () => {
     switch (activeTab) {
@@ -62,7 +64,16 @@ const UserInfoTab = ({
           />
         );
       case "Leaderboard":
-        return <Leaderboard isLeaderBoard={isLeaderBoard} />;
+        return (
+          <Leaderboard
+            isLeaderBoard={isLeaderBoard}
+            handleModalOpen={handleModalOpen}
+            totalPages={totalPages}
+            rowsPerPage={rowsPerPage}
+            handleShowMore={handleShowMore}
+            showLoading={showLoading}
+          />
+        );
       case "Wishlist":
         return (
           <>
@@ -79,7 +90,7 @@ const UserInfoTab = ({
                 </p>
               </>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
                 {isWishlist?.map((wishlists, index) => (
                   <Wishlist key={index} wishlists={wishlists} />
                 ))}
@@ -167,7 +178,9 @@ const UserInfoTab = ({
 
   return (
     <div className="min-h-screen md:flex">
-      <div className="md:w-1/4 px-4 md:px-0 bg-white shadow-lg border-r border-r-customBg">
+      <div className="md:w-1/4 px-4 md:px-0 bg-white shadow-lg border-r border-r-customBg
+      md:sticky md:top-0 md:h-fit
+      ">
         <div>
           <h2 className="text-xl text-customBlue font-bold mb-4 px-4 pt-5">
             Your Profile
@@ -229,7 +242,7 @@ const UserInfoTab = ({
       </div>
 
       {/* Main Content */}
-      <div className="md:w-3/4 bg-white p-6">{renderContent()}</div>
+      <div className="md:w-3/4 bg-white md:p-6 p-3">{renderContent()}</div>
     </div>
   );
 };

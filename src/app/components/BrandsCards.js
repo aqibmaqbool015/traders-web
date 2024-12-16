@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import { VehicleCard } from "./VehicleCard";
 import Image from "next/image";
-import { allComments, likeUnlikeApi } from "../home/api";
+import {
+  allComments,
+  allVehiclesNews,
+  dislikeApi,
+  likeunlikeApi,
+} from "../home/api";
 import { usePathname } from "next/navigation";
 import { Image_base } from "@/networking/network";
 
@@ -14,17 +19,27 @@ const image = {
   thumbUp: "/up.svg",
   thumbDown: "/down.svg",
   thumbsCheck: "/Thumbs-up.png",
+  thumbsDislike: "/dislike.png",
 };
 
-const BrandsCards = ({ vehicles, newsFeed }) => {
+const BrandsCards = ({
+  vehicles,
+  // newsFeed,
+  rowsPerPage,
+  handleShowMore,
+  showLoading,
+  totalPages,
+}) => {
   const pathname = usePathname();
   const [openTab, setOpenTab] = useState(1);
   const [expand, setExpand] = useState(null);
   const [comments, setComments] = useState({});
+  const [loading, setLoading] = useState(true);
   const [isLike, setIsLike] = useState();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 20;
+  // const [currentPage, setCurrentPage] = useState(1);
+  // const [totalPages, setTotalPages] = useState(1);
+  // const rowsPerPage = 20;
+  const [newsFeed, setNewsFeed] = useState([]);
 
   const toggleAccordion = async (vehicleId) => {
     if (expand === vehicleId) {
@@ -47,95 +62,69 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
     }
   };
 
-  const handleClickLiked = async (id) => {
-    const params = { vehicleId: id };
-    console.log(params, "lllllll");
+  useEffect(() => {
+    fetchNewsFeed();
+  }, []);
+
+  const fetchNewsFeed = async () => {
     try {
-      const response = await likeUnlikeApi(params);
+      const data = await allVehiclesNews();
+      if (data?.data) {
+        setNewsFeed(data?.data);
+      }
+    } catch (err) {
+      console.error("Error fetching NewsFeed:", err);
+      setNewsFeed([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClickLiked = async (feedId) => {
+    try {
+      const response = await likeunlikeApi({ vehicleId: feedId });
       if (response) {
-        setIsLike(!isLike);
+        setNewsFeed((prevNewsFeed) =>
+          prevNewsFeed.map((feed) =>
+            feed.vehicle._id === feedId
+              ? {
+                  ...feed,
+                  isLiked: !feed.isLiked,
+                  likeCount: feed.isLiked
+                    ? feed.likeCount - 1
+                    : feed.likeCount + 1,
+                }
+              : feed
+          )
+        );
       }
     } catch (error) {
       console.error("Liked API Error:", error);
     }
   };
 
-  const handleShowMore = () => {
-    setCurrentPage((prev) => prev + 1);
+  const handleClickDisliked = async (feedId) => {
+    try {
+      const response = await dislikeApi({ vehicleId: feedId });
+      if (response) {
+        setNewsFeed((prevNewsFeed) =>
+          prevNewsFeed.map((feed) =>
+            feed.vehicle._id === feedId
+              ? {
+                  ...feed,
+                  isDisLiked: !feed.isDisLiked,
+                  dislikeCount: feed.isDisLiked
+                    ? feed.dislikeCount - 1
+                    : feed.dislikeCount + 1,
+                }
+              : feed
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Disliked API Error:", error);
+    }
   };
-
-  const displayedVehicles = vehicles.slice(0, currentPage * rowsPerPage);
-  const displayedNewsfeed = newsFeed.slice(0, currentPage * rowsPerPage);
-
-  // const BrandsCards = ({ vehicles, newsFeed }) => {
-  //   const pathname = usePathname();
-  //   const [openTab, setOpenTab] = useState(1);
-  //   const [expand, setExpand] = useState(null);
-  //   const [comments, setComments] = useState({});
-  //   const [isLike, setIsLike] = useState();
-
-  //   const [isLoading, setIsLoading] = useState(false);
-  //   const [currentPage, setCurrentPage] = useState(1);
-  //   const rowsPerPage = 20;
-  //   const [totalPages, setTotalPages] = useState(1);
-
-  //   const toggleAccordion = async (vehicleId) => {
-  //     if (expand === vehicleId) {
-  //       setExpand(null);
-  //     } else {
-  //       setExpand(vehicleId);
-  //       if (!comments[vehicleId]) {
-  //         try {
-  //           const response = await allComments({ vehicleId });
-  //           if (response) {
-  //             setComments((prev) => ({
-  //               ...prev,
-  //               [vehicleId]: response.data.comments,
-  //             }));
-  //           }
-  //         } catch (error) {
-  //           console.error("Failed to fetch comments:", error);
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   // useEffect(() => {
-  //   //   const id = pathname.split("/")[2];
-  //   //   if (id) {
-  //   //     fetchGetVehicleDetail(id);
-  //   //   }
-  //   // }, [pathname]);
-
-  //   const handleClickLiked = async (id) => {
-  //     const params = {
-  //       vehicleId: id,
-  //     };
-  //     console.log(params, "lllllll");
-  //     try {
-  //       const response = await likeUnlikeApi(params);
-  //       if (response) {
-  //         setIsLike(!isLike);
-  //       }
-  //     } catch (error) {
-  //       console.error("Liked API Error:", error);
-  //     }
-  //   };
-
-  //   const handleShowMore = () => {
-  //     if (currentPage < totalPages) {
-  //       setCurrentPage((prev) => prev + 1);
-  //       const id = pathname.split("/")[2];
-  //       const fetchFunction = fetchGetAllAuctions;
-  //       fetchFunction(id);
-  //     }
-  //   };
-  //   useEffect(() => {
-  //     const id = pathname.split("/")[2];
-  //     if (id) {
-  //       fetchGetVehicleDetail(id);
-  //     }
-  //   }, [pathname]);
 
   return (
     <>
@@ -182,48 +171,68 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
               </li>
             </ul>
             <div className="relative flex flex-col min-w-0 break-words w-full mb-6">
-              <div className="px-4 py-5 flex-auto">
+              <div className="px-4 flex-auto">
                 <div className="tab-content tab-space">
-                  <div className={openTab === 1 ? "block" : "hidden"}>
-                    {displayedVehicles.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No vehicles available
-                      </p>
+                  <div
+                    className={
+                      openTab === 1
+                        ? "text-center flex justify-center"
+                        : "hidden"
+                    }
+                  >
+                    {vehicles?.length === 0 ? (
+                      <>
+                        {loading ? (
+                          <p className="animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 my-5 "></p>
+                        ) : null}
+                      </>
                     ) : (
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {displayedVehicles.map((vehicle, index) => (
-                          <VehicleCard key={index} vehicle={vehicle} />
-                        ))}
+                      <div className="md:mx-20">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
+                          {vehicles?.map((vehicle, index) => (
+                            <VehicleCard key={index} vehicle={vehicle} />
+                          ))}
+                        </div>
+
+                        {vehicles?.length < totalPages * rowsPerPage && (
+                          <div className="text-center my-5">
+                            <button
+                              onClick={handleShowMore}
+                              className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                            >
+                              {showLoading ? (
+                                <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                              ) : null}
+                              {showLoading ? "Loading..." : "Show More"}
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
-                    <div className="text-center">
-                      {displayedVehicles.length < vehicles.length && (
-                        <div className="text-center my-5">
-                          <button
-                            onClick={handleShowMore}
-                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
-                          >
-                            Show More
-                          </button>
-                        </div>
-                      )}
-                    </div>
                   </div>
 
-                  <div className={openTab === 2 ? "block" : "hidden"}>
+                  <div
+                    className={
+                      openTab === 2
+                        ? "text-center flex justify-center"
+                        : "hidden"
+                    }
+                  >
                     <div className="container md:px-40">
-                      {displayedNewsfeed?.length === 0 ? (
-                        <p className="text-center text-customBlue">
-                          No Newsfeed available
-                        </p>
+                      {newsFeed?.length === 0 ? (
+                        <>
+                          {loading ? (
+                            <p className="animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 my-5"></p>
+                          ) : null}
+                        </>
                       ) : (
                         <>
-                          {displayedNewsfeed?.map((feed) => (
+                          {newsFeed?.map((feed) => (
                             <div
                               key={feed.vehicle._id}
                               className="rounded-[8px] overflow-hidden cursor-pointer gap-2 my-3 border-2 border-customBorderColor"
                             >
-                              <div className="flex justify-between items-center py-4 px-2">
+                              <div className="flex justify-between items-center py-4 px-2 text-left ">
                                 <div className="flex">
                                   <Image
                                     src={
@@ -236,11 +245,11 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                     className="w-[40px] h-[40px] rounded-full inline-block object-cover mr-3"
                                   />
                                   <div>
-                                    <h4 className="text-[18px] text-customBlue font-medium capitalize">
+                                    <h4 className="md:text-[18px] text-[15px] text-customBlue font-medium capitalize">
                                       {feed?.vehicle?.user_id?.firstName}{" "}
                                       {feed?.vehicle?.user_id?.lastName}
                                     </h4>
-                                    <p className="text-[15px] text-customDarkGray font-normal">
+                                    <p className="md:text-[15px] text-[14px] text-customDarkGray font-normal">
                                       {feed?.vehicle?.createdAt
                                         ? new Date(
                                             feed?.vehicle?.createdAt
@@ -249,33 +258,37 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                     </p>
                                   </div>
                                 </div>
-                                <div className="capitalize bg-customBlue rounded-[20px] px-3 py-2 text-white text-[15px] text-center md:w-[100px]">
+                                <div className="capitalize bg-customBlue rounded-[20px] px-3 py-2 text-white md:text-[15px] text-[14px]  text-center md:w-[100px]">
                                   facebook
                                 </div>
                               </div>
-                              <Image
-                                className="w-full md:h-[100%] max-h-[100vh] "
-                                src={
-                                  feed?.vehicle?.pictures?.length > 0
-                                    ? `${Image_base}${feed.vehicle.pictures[0]}`
-                                    : image.vehicle
-                                }
-                                alt="Sample image"
-                                width={300}
-                                height={400}
-                              />
+                              <div className="w-full md:h-[full] inline-block ">
+                                <Image
+                                  className=" w-full h-full "
+                                  src={
+                                    feed?.vehicle?.pictures?.length > 0
+                                      ? `${Image_base}${feed.vehicle.pictures[0]}`
+                                      : image.vehicle
+                                  }
+                                  alt="Sample image"
+                                  width={300}
+                                  height={400}
+                                />
+                              </div>
                               <div className="py-1">
                                 <div className="px-2 flex justify-between items-center border-b-2 border-customBorderColor py-3">
                                   <div className="flex">
                                     <div className="flex items-center">
-                                      {isLike ? (
+                                      {feed.isLiked ? (
                                         <Image
                                           src={image.thumbsCheck}
                                           alt="Thumb up"
                                           className="w-[22px] h-[22px]"
                                           width={22}
                                           height={22}
-                                          onClick={handleClickLiked}
+                                          onClick={() =>
+                                            handleClickLiked(feed.vehicle._id)
+                                          }
                                         />
                                       ) : (
                                         <Image
@@ -284,36 +297,50 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                           className="w-[22px] h-[22px]"
                                           width={22}
                                           height={22}
-                                          onClick={handleClickLiked}
+                                          onClick={() =>
+                                            handleClickLiked(feed.vehicle._id)
+                                          }
                                         />
                                       )}
-                                      {/* <Image
-                                      src={image.thumbUp}
-                                      alt="Thumb up"
-                                      className="w-[22px] h-[22px]"
-                                      width={22}
-                                      height={22}
-                                      onClick={thumbsUpClick}
-                                    /> */}
                                       <p className="text-customDarkGray text-[15px] mx-2">
-                                        {feed?.likeCount}
+                                        {feed.likeCount}
                                       </p>
                                     </div>
                                     <div className="flex items-center">
-                                      <Image
-                                        src={image.thumbDown}
-                                        alt="Thumb down"
-                                        className="w-[22px] h-[22px]"
-                                        width={22}
-                                        height={22}
-                                      />
+                                      {feed.isDisLiked ? (
+                                        <Image
+                                          src={image.thumbsDislike}
+                                          alt="Thumb down"
+                                          className="w-[22px] h-[22px]"
+                                          width={22}
+                                          height={22}
+                                          onClick={() =>
+                                            handleClickDisliked(
+                                              feed.vehicle._id
+                                            )
+                                          }
+                                        />
+                                      ) : (
+                                        <Image
+                                          src={image.thumbDown}
+                                          alt="Thumb down"
+                                          className="w-[22px] h-[22px]"
+                                          width={22}
+                                          height={22}
+                                          onClick={() =>
+                                            handleClickDisliked(
+                                              feed.vehicle._id
+                                            )
+                                          }
+                                        />
+                                      )}
                                       <p className="text-customDarkGray text-[15px] mx-2">
                                         {feed?.dislikeCount}
                                       </p>
                                     </div>
                                   </div>
                                   <button
-                                    className="px-7 py-2 md:text-[16px] text-[13px] font-normal text-white bg-customBlue rounded-[20px] capitalize"
+                                    className="md:px-7 px-4 py-2 md:text-[16px] text-[13px] font-normal text-white bg-customBlue rounded-[20px] capitalize"
                                     onClick={() =>
                                       toggleAccordion(feed.vehicle._id)
                                     }
@@ -346,14 +373,14 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                                 )}
                               </div>
                               <div className="py-3 px-2">
-                                <h2 className="text-customBlue font-medium md:text-[23px]">
+                                <h2 className="text-customBlue font-medium md:text-[23px] text-[15px] ">
                                   {feed?.vehicle?.model_id?.name ||
                                     feed?.vehicle?.regno}
                                 </h2>
-                                <h4 className="text-customOrange font-medium text-[18px]">
+                                <h4 className="text-customOrange font-medium md:text-[18px] text-[15px] ">
                                   £ {feed?.vehicle?.price}
                                 </h4>
-                                <p className="text-customDarkGray text-[14px]">
+                                <p className="text-customDarkGray md:text-[14px] text-[13px] ">
                                   {feed?.vehicle?.year || "2014"} -{" "}
                                   {feed?.vehicle?.mileage || "167,453"} Km
                                 </p>
@@ -362,8 +389,8 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                           ))}
                         </>
                       )}
-                      <div className="text-center">
-                        {displayedNewsfeed.length < newsFeed.length && (
+                      {/* <div className="text-center">
+                        {newsFeed.length && (
                           <div className="text-center my-5">
                             <button
                               onClick={handleShowMore}
@@ -373,7 +400,7 @@ const BrandsCards = ({ vehicles, newsFeed }) => {
                             </button>
                           </div>
                         )}
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                 </div>

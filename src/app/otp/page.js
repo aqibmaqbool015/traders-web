@@ -1,11 +1,13 @@
 "use client";
 import Head from "next/head";
-import { otpApi, resendOtp } from "./api";
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useDispatch, useSelector } from "react-redux";
-import { setUser } from "@/redux/slice";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CustomToast from "../components/toast";
+import { otpApi, resendOtp } from "./api";
 
 const OtpPage = () => {
   const router = useRouter();
@@ -53,46 +55,41 @@ const OtpPage = () => {
   const handleNewClick = async (e) => {
     e.preventDefault();
     setIsSubmitted(true);
-
     if (formValues.OTP.length !== 6) {
-      setError("Please enter a 6-digit OTP code.");
+      toast.error("Please enter a 6-digit OTP code.");
       return;
     }
-
-    setError("");
     const params = { email, OTP: formValues.OTP };
-
     try {
       setLoading(true);
       const response = await otpApi(params);
-      if (response.success) {
-        dispatch(setUser(response.data));
-        router.push("/login");
-      } else {
-        setError(response.message);
+      if (response) {
+        router.push("/subscription");
       }
     } catch (error) {
-      console.error("API error:", error);
-      setError("Signup failed. Please try again.");
+      toast.error(error.message || "Signup failed. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
   const handleResendOtp = async () => {
-    const params = { email };
-    try {
-      const response = await resendOtp(params);
-      if (response.success) {
-        setError("");
-        setTime(90);
-      } else {
-        setError(response.message);
+    if (time === 0) {
+      const params = { email };
+      try {
+        const response = await resendOtp(params);
+        if (response.success) {
+          toast.success(<CustomToast content={response?.message} />);
+          setTime(90);
+        } else {
+          toast.error(<CustomToast content={response?.message} />);
+        }
+      } catch (error) {
+        console.error("API error while resending OTP:", error);
       }
-    } catch (error) {
-      console.error("API error while resending OTP:", error);
-      setError("Failed to resend OTP. Please try again.");
+      return;
     }
+    toast.error(<CustomToast content={"Please wait for the time to stop"} />);
   };
 
   const formatTime = (seconds) => {
@@ -123,7 +120,6 @@ const OtpPage = () => {
             height={70}
             className="w-[140px] h-auto"
           />
-          
         </div>
         <div className="max-w-md w-full py-8 md:py-16 px-4 md:px-0">
           <h1 className="text-2xl font-semibold mb-2 text-center text-[30px] text-customBlue">
@@ -153,9 +149,6 @@ const OtpPage = () => {
                     />
                   ))}
               </div>
-              {error && (
-                <p className="text-customRed mt-2 text-left">{error}</p>
-              )}
             </div>
 
             <button
@@ -170,24 +163,27 @@ const OtpPage = () => {
               ) : null}
               {loading ? "Loading..." : "Save"}
             </button>
-
-            <div className="flex justify-between items-center w-full mt-4">
-              <button
-                className="text-customOrange cursor-pointer"
-                onClick={handleResendOtp}
-              >
-                Resend code to {email}
-              </button>
-              <span className="text-customOrange">{formatTime(time)}</span>
-            </div>
           </form>
+          <div className="flex justify-between items-center w-full mt-4">
+            <button
+              className="text-customOrange cursor-pointer"
+              onClick={handleResendOtp}
+            >
+              Resend code to {email}
+            </button>
+            <span className="text-customOrange">{formatTime(time)}</span>
+          </div>
         </div>
       </div>
       <div className="w-full md:w-[45%]">
-        <Image src={image.image} alt="img"
-        fill
-         className="h-full w-full !relative" />
+        <Image
+          src={image.image}
+          alt="img"
+          fill
+          className="h-full w-full !relative"
+        />
       </div>
+      <ToastContainer position="top-right" />
     </div>
   );
 };

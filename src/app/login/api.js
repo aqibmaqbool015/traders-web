@@ -18,7 +18,7 @@ export const getUserProfile = () => {
       return response;
     })
     .catch((error) => {
-      console.error("Login API Error:", error);
+      console.error("User API Error:", error);
       throw error;
     });
 };

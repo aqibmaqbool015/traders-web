@@ -3,6 +3,9 @@ import { useState } from "react";
 import { uploadDocuments } from "./api";
 import { getUserProfile } from "../login/api";
 import Image from "next/image";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "../components/toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const UploadDocuments = () => {
   const image = {
@@ -74,13 +77,11 @@ const UploadDocuments = () => {
     try {
       setLoading(true);
       const responseDocuments = await uploadDocuments(formData);
-      console.log(responseDocuments, ",,,,,,,,/////");
 
       if (response) {
         const res = await getUserProfile(params);
-        console.log(res?.data, "User profile data");
         if (res?.data?.paidMember === false) {
-          console.log(res?.data?.paidMember, "Redirecting to subscription");
+          toast.error(<CustomToast content="Redirecting to subscription" />);
           router.push("/subscription");
           return;
         }
@@ -93,12 +94,13 @@ const UploadDocuments = () => {
         // toast.success(<CustomToast />);
         // dispatch(setUser(res));
         if (res?.data?.paidMember === false) {
-          console.log(res?.data?.paidMember, "Redirecting to subscription");
+          toast.error(<CustomToast content="Redirecting to subscription" />);
           router.push("/subscription");
           return;
         }
         if (res?.data?.reviewStatus === "rejected") {
-          console.log(res?.data?.reviewStatus, "Redirecting to profile");
+          toast.success(<CustomToast content="Redirecting to profile" />);
+
           router.push("/profile");
           return;
         }
@@ -110,7 +112,7 @@ const UploadDocuments = () => {
         router.push("/home");
         dispatch(setUser(res));
       } else {
-        console.log("Error!", responseDocuments.message);
+        toast.error(<CustomToast content="Error!" />);
       }
     } catch (error) {
       console.error("Error uploading documents:", error);
@@ -135,7 +137,7 @@ const UploadDocuments = () => {
             className="min-h-screen flex flex-col items-center p-4"
             onSubmit={handleSubmitDocuments}
           >
-            <h1 className="text-2xl font-semibold mb-4 text-center text-[30px] text-customBlue">
+            <h1 className="text-2xl font-semibold mb-4 text-center md:text-[30px] text-[25px] text-customBlue">
               Upload Documentss
             </h1>
             <div className="w-full md:w-[400px]">
@@ -195,7 +197,6 @@ const UploadDocuments = () => {
                       src={URL.createObjectURL(frontImage)}
                       alt="Front ID"
                       className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
-                  
                     />
                   ) : (
                     <div className="text-center">
@@ -289,6 +290,7 @@ const UploadDocuments = () => {
             </div>
           </form>
         </div>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

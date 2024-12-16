@@ -32,18 +32,19 @@ export default function AddVehicle() {
       <div className="w-full md:w-[65%] flex flex-col items-center">
         <div className="w-full flex flex-col items-center">
           <div className="text-left w-full">
-            <span className="cursor-pointer" onClick={handleCLick}>
+            <span>
               <Image
                 src={image.logo}
                 alt="1"
-                className="w-[140px] h-auto"
+                className="w-[140px] h-auto cursor-pointer"
                 width={140}
                 height={50}
+                onClick={handleCLick}
               />
             </span>
           </div>
           <div className="max-w-md w-full px-4 md:px-0">
-            <div className="min-h-screen flex flex-col items-center p-4">
+            <div className="min-h-screen flex flex-col items-center md:p-4">
               <h1
                 className="text-2xl font-semibold mb-4 text-center text-[26px]
                     text-customBlue"
@@ -53,7 +54,8 @@ export default function AddVehicle() {
               <div className="w-full md:w-[500px]">
                 <div className="mb-4">
                   <div
-                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center"
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center
+                    cursor-pointer"
                     onClick={handleClickVehicle}
                   >
                     <div className="text-center">
@@ -79,10 +81,11 @@ export default function AddVehicle() {
                 </div>
                 <div className="mb-4">
                   <div
-                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center"
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center
+                    cursor-pointer"
                     onClick={handleClickAuction}
                   >
-                    <div>
+                    <div className="">
                       <label className=" inline-block cursor-pointer">
                         <Image
                           src={image.carVendor}
@@ -102,20 +105,6 @@ export default function AddVehicle() {
                       </p>
                     </div>
                   </div>
-                </div>
-                <div className="flex justify-between">
-                  <Link
-                    href="#"
-                    className="md:w-[200px] flex justify-center py-2.5 px-10 border border-customBlue rounded-[25px] shadow-sm text-sm font-medium text-customBlue bg-transparent !mt-7"
-                  >
-                    Back
-                  </Link>
-                  <Link
-                    href="#"
-                    className="md:w-[200px] flex justify-center py-2.5 px-10 border border-transparent rounded-[25px] shadow-sm text-sm font-medium text-white bg-customBlue !mt-7"
-                  >
-                    Next
-                  </Link>
                 </div>
               </div>
             </div>

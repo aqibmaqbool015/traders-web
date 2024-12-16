@@ -35,7 +35,8 @@ export default function RootLayout({ children }) {
     pathname === "/list-vehicle" ||
     pathname === "/vehicle-detail" ||
     pathname === "/subscription" ||
-    pathname === "/forgot-otp";
+    pathname === "/forgot-otp" ||
+    pathname === "/check-payment-status";
 
   return (
     <html lang="en">

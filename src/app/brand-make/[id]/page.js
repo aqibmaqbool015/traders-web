@@ -119,7 +119,11 @@ const BrandMake = () => {
           </div>
         </div>
         {isLoading ? (
-          <p className="text-center text-customBlue">Loading...</p>
+          <>
+            <div className="w-full text-center my-5 flex justify-center">
+              <p className="text-center  animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+            </div>
+          </>
         ) : isBrandsMake?.length === 0 ? (
           <p className="text-center text-customBlue">No Brands available</p>
         ) : (
@@ -145,11 +149,11 @@ const BrandMake = () => {
                 </div>
                 <div className="px-2 py-1">
                   <div className="flex justify-between items-center">
-                    <h4 className="font-medium text-customOrange text-[22px]">
+                    <h4 className="font-medium text-customOrange md:text-[22px] text-[18px] ">
                       £ {brand?.price}
                     </h4>
                   </div>
-                  <p className="text-customBlackLight text-[18px]">
+                  <p className="text-customBlackLight md:text-[18px] text-[16px] ">
                     {brand?.model_id?.name}
                   </p>
                   <div className="flex justify-between items-center">

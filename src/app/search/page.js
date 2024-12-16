@@ -5,6 +5,7 @@ import { VehicleCard } from "../components/VehicleCard";
 import { allVehicles } from "../home/api";
 import { searchTraderApi } from "./api";
 import { Image_base } from "@/networking/network";
+import { useRouter } from "next/navigation";
 
 const image = {
   search: "/search-1.svg",
@@ -35,8 +36,11 @@ const image = {
 // ];
 
 const SearchPage = () => {
+  const router = useRouter();
   const [vehicles, setVehicles] = useState([]);
-  const [searchTerm, setSearchTerm] = useState();
+  const [trader, setTraders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [openTab, setOpenTab] = useState(1);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -44,9 +48,25 @@ const SearchPage = () => {
   const rowsPerPage = 20;
   const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
+  // useEffect(() => {
+  //   fetchVehicles();
+  // }, []);
+
+  // const fetchVehicles = async () => {
+  //   try {
+  //     const response = await allVehicles({
+  //       page: currentPage,
+  //       limit: rowsPerPage,
+  //     });
+  //     setVehicles(response?.data);
+  //     setTotalPages(response?.totalPages || 1);
+  //   } catch (error) {
+  //     console.error("Vehicles API Error:", error);
+  //     setVehicles([]);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const fetchSearchApi = async (termsType) => {
     try {
@@ -54,28 +74,18 @@ const SearchPage = () => {
         page: currentPage,
         limit: rowsPerPage,
       });
-      setVehicles((prev) => [...prev, ...(response?.data || [])]);
+      if (termsType === "vehicle") {
+        setVehicles(response?.data);
+        setTotalPages(response?.totalPages || 1);
+        return;
+      }
+      setTraders(response?.data);
       setTotalPages(response?.totalPages || 1);
     } catch (error) {
       console.error("Search API Error:", error);
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchVehicles = async () => {
-    try {
-      const response = await allVehicles({
-        page: currentPage,
-        limit: rowsPerPage,
-      });
-      setVehicles((prev) => [...prev, ...(response?.data || [])]);
-      setTotalPages(response?.totalPages || 1);
-    } catch (error) {
-      console.error("Vehicles API Error:", error);
-      setVehicles([]);
-    } finally {
-      setIsLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -84,7 +94,7 @@ const SearchPage = () => {
     setCurrentPage(1);
     const termsType = openTab === 1 ? "vehicle" : "trader";
     setIsLoading(true);
-    const fetchFunction = searchTerm ? fetchSearchApi : fetchVehicles;
+    const fetchFunction = fetchSearchApi;
     fetchFunction(termsType);
   };
 
@@ -92,8 +102,7 @@ const SearchPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
       const termsType = openTab === 1 ? "vehicle" : "trader";
-      // setIsLoading(true);
-      const fetchFunction = searchTerm ? fetchSearchApi : fetchVehicles;
+      const fetchFunction = fetchSearchApi;
       fetchFunction(termsType);
     }
   };
@@ -108,32 +117,23 @@ const SearchPage = () => {
 
   const handleTabSelect = (tab) => {
     setOpenTab(tab);
+    setSearchTerm("");
     setDropdownOpen(false);
   };
 
-  // function openModal() {
-  //   document.getElementById("myModal").classList.remove("hidden");
-  // }
-
-  // function closeModal() {
-  //   document.getElementById("myModal").classList.add("hidden");
-  // }
-
-  // const handleInputChange = (e) => {
-  //   const { name, value } = e.target;
-  //   setFormValues((prevValues) => ({
-  //     ...prevValues,
-  //     [name]: value,
-  //   }));
-  // };
+  const handleCLickDetail = (trader) => {
+    const data = JSON.stringify(trader);
+    localStorage.setItem("traderData", data);
+    router.push(`/trader-detail/${trader._id}`);
+  };
 
   return (
     <>
-      <div className=" px-8">
+      <div className=" px-4 md:px-8">
         <section className="mt-4">
-          <div className="md:flex sm:flex items-center space-x-2 p-2 mt-3 relative">
+          <div className="flex items-center space-x-2 p-2 mt-3 relative">
             <div className="relative flex items-center flex-1 rounded-[6px] border-2 border-customGray">
-              <div className="md:flex sm:flex items-center space-x-2 p-2 relative w-full ">
+              <div className="flex items-center space-x-2 p-2 relative w-full ">
                 <div className="relative flex items-center flex-1 ">
                   <input
                     type="search"
@@ -154,17 +154,9 @@ const SearchPage = () => {
                 />
               </div>
             </div>
-            {/* <button
-              className="bg-customBlue text-white py-2.5 px-4 rounded-md inline-flex mt-4 md:mt-0 sm:mt-0  md:flex items-center space-x-1"
-              onClick={openModal}
-            >
-              <span>Filter</span>
-              <Image src={image.filter} alt="img" className="w-[20px] h-auto" />
-            </button> */}
-
             <button
               onClick={toggleDropdown}
-              className="cursor-pointer relative appearance-none block px-8 pl-5 py-2.5 shadow-sm focus:outline-none bg-customBlue rounded-[8px] text-white"
+              className="cursor-pointer relative appearance-none block md:px-8 px-6 pl-5 py-2.5 shadow-sm focus:outline-none bg-customBlue rounded-[8px] text-white"
             >
               {openTab === 1 ? "Vehicle" : "Traders"}
               <span className="absolute top-4 right-0 flex items-center z-20 px-2 pointer-events-none">
@@ -208,13 +200,22 @@ const SearchPage = () => {
         </section>
         <section className="mt-4 md:mx-10">
           <div className="tab-content tab-space">
-            <div className={openTab === 1 ? "block" : "hidden"}>
+            <div
+              className={
+                openTab === 1 ? " text-center flex justify-center" : "hidden"
+              }
+            >
               {isLoading ? (
-                <p className="text-center">Loading...</p>
+                <>
+                  <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  {/* {isLoading ? (
+                    <span className="animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></span>
+                  ) : null} */}
+                </>
               ) : vehicles?.length === 0 ? (
                 <p className="text-center">No data found</p>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                   {vehicles?.map((vehicle, index) => (
                     <VehicleCard key={index} vehicle={vehicle} />
                   ))}
@@ -231,20 +232,21 @@ const SearchPage = () => {
                 )}
               </div>
             </div>
-            <div className={openTab === 2 ? "block" : "hidden"}>
+            <div className={openTab === 2 ? " flex text-center justify-center" : " hidden"}>
               {isLoading ? (
-                <p className="text-center">Loading...</p>
-              ) : vehicles?.length === 0 ? (
+                <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+              ) : trader?.length === 0 ? (
                 <p className="text-center">No data found</p>
               ) : (
-                <div className="grid grid-cols-1bs gap-4 mt-4">
-                  {vehicles.map((trader, index) => (
+                <div className="grid grid-cols-1bs gap-4 mt-4 text-left w-full ">
+                  {trader?.map((trader, index) => (
                     <div
                       key={index}
-                      className="flex items-center border-b border-customGrayLine pb-5 mb-3"
+                      className="flex items-center border-b border-customGrayLine pb-5 mb-3 cursor-pointer "
+                      onClick={() => handleCLickDetail(trader)}
                     >
                       <Image
-                        src={`${Image_base}${trader?.user_id?.profilePicture}`}
+                        src={`${Image_base}${trader?.profilePicture}`}
                         alt="img"
                         width={47}
                         height={47}
@@ -252,14 +254,13 @@ const SearchPage = () => {
                       />
                       <div className="mx-3">
                         <h5 className="text-[18px] font-medium text-black capitalize">
-                          {trader?.user_id?.firstName}{" "}
-                          {trader?.user_id?.lastName}
+                          {trader?.firstName} {trader?.lastName}
                         </h5>
                         <p className="text-[12px] font-medium text-customDarkGray capitalize">
-                          {trader?.user_id?.companyName}
+                          {trader?.companyName}
                         </p>
                         <p className="text-[12px] font-medium text-customDarkGray">
-                          {trader?.user_id?.phone}
+                          {trader?.phone}
                         </p>
                       </div>
                     </div>

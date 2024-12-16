@@ -13,8 +13,8 @@ const Wishlist = ({ wishlists }) => {
   };
   return (
     <>
-      <div onClick={handleClick} className="rounded overflow-hidden cursor-pointer gap-2 my-3">
-        <div>
+      <div className="rounded overflow-hidden cursor-pointer gap-2 my-3">
+        <div onClick={handleClick}>
           <Image
             className="w-full object-[initial] rounded-[10px] h-[300px] "
             src={

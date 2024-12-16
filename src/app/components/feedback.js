@@ -4,9 +4,13 @@ import Image from "next/image";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useState } from "react";
+import { addFeedbackApi } from "../user-profile/api";
+import { toast, ToastContainer } from "react-toastify";
+import CustomToast from "./toast";
+import "react-toastify/dist/ReactToastify.css";
 
 const validationSchema = Yup.object().shape({
-  description: Yup.string().required("Description is required"),
+  feedback: Yup.string().required("Feedback is required"),
 });
 
 const Feedback = () => {
@@ -14,13 +18,27 @@ const Feedback = () => {
 
   const formik = useFormik({
     initialValues: {
-      description: "",
+      feedback: "",
     },
     validationSchema: validationSchema,
     onSubmit: async (values) => {
       setLoading(true);
       const formData = new FormData();
-      formData.append("description", values.description);
+      formData.append("feedback", values.feedback);
+      const response = await addFeedbackApi(formData);
+      try {
+        if (response?.success) {
+          toast.success(<CustomToast content="Your Feedback is submitted." />);
+        } else {
+          console.error(
+            "Error submiting feedback:",
+            response?.message || "Unknown error"
+          );
+        }
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
     },
   });
   return (
@@ -35,24 +53,24 @@ const Feedback = () => {
         <form onSubmit={formik.handleSubmit} className="w-full space-y-6">
           <div className="mt-[12px]">
             <label
-              htmlFor="description"
+              htmlFor="feedback"
               className="text-[17px] font-medium text-customBlue capitalize"
             >
               Feedback
             </label>
             <textarea
               type="text"
-              id="description"
-              name="description"
+              id="feedback"
+              name="feedback"
               placeholder="Write feedback"
-              value={formik?.values?.description}
+              value={formik?.values?.feedback}
               rows={5}
               onChange={formik.handleChange}
               className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
         border border-[#CFCFCF] rounded-[25px]"
             ></textarea>
-            {formik.errors.description ? (
-              <div className="text-customRed">{formik.errors.description}</div>
+            {formik.errors.feedback ? (
+              <div className="text-customRed">{formik.errors.feedback}</div>
             ) : null}
           </div>
           <div className="text-center">
@@ -65,6 +83,7 @@ const Feedback = () => {
             </button>
           </div>
         </form>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );

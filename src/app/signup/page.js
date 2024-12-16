@@ -34,6 +34,16 @@ const CustomToast = ({ closeToast }) => (
   </div>
 );
 
+const image = {
+  image: "/auth.png",
+  logo: "/logo-trade.svg",
+  google: "/google.svg",
+  facebook: "/fb.svg",
+  apple: "/apple.svg",
+  eye: "/eye.png",
+  eyeSlash: "/eye-slash.png",
+};
+
 export default function SignUpPage() {
   const dispatch = useDispatch();
   const router = useRouter();
@@ -115,7 +125,7 @@ export default function SignUpPage() {
 
     if ("rPassword" in fieldValue) {
       temp.rPassword = fieldValue.rPassword
-        ? fieldValue.rPassword === fieldValue.password
+        ? fieldValue.rPassword === formValues.password
           ? ""
           : "Passwords do not match"
         : "Confirm Password is required";
@@ -176,14 +186,6 @@ export default function SignUpPage() {
     router.push("/login");
   };
 
-  const image = {
-    image: "/auth.png",
-    logo: "/logo-trade.svg",
-    google: "/google.svg",
-    facebook: "/fb.svg",
-    apple: "/apple.svg",
-  };
-
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
       <Head>
@@ -223,7 +225,7 @@ export default function SignUpPage() {
               {
                 name: "fbName",
                 label: "Facebook Name",
-                placeholder: "Enter your Fb Name",
+                placeholder: "Enter your facebook Name",
               },
               {
                 name: "email",
@@ -268,26 +270,65 @@ export default function SignUpPage() {
                     placeholder={field.placeholder}
                     value={formValues[field.name]}
                     onChange={handleInputChange}
+                    maxLength={20}
                     className="mt-1 block w-full px-3 py-2 shadow-sm border border-[#CFCFCF] rounded-[25px]"
                   />
-                  {/* {field.name === "password" && (
-                    <button
-                      type="button"
+                  {field.name === "password" && (
+                    <div
                       onClick={handlePasswordToggle}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
                     >
-                      {passwordVisible ? "Hide" : "Show"}
-                    </button>
+                      {passwordVisible ? (
+                        <>
+                          <Image
+                            src={image.eyeSlash}
+                            alt=""
+                            className="w-[20px] h-auto object-contain "
+                            width={20}
+                            height={20}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={image.eye}
+                            alt=""
+                            className="w-[20px] h-auto object-contain "
+                            width={20}
+                            height={20}
+                          />
+                        </>
+                      )}
+                    </div>
                   )}
                   {field.name === "rPassword" && (
-                    <button
-                      type="button"
+                    <div
                       onClick={handleRPasswordToggle}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2"
                     >
-                      {rPasswordVisible ? "Hide" : "Show"}
-                    </button>
-                  )} */}
+                      {rPasswordVisible ? (
+                        <>
+                          <Image
+                            src={image.eyeSlash}
+                            alt=""
+                            className="w-[20px] h-auto object-contain "
+                            width={20}
+                            height={20}
+                          />
+                        </>
+                      ) : (
+                        <>
+                          <Image
+                            src={image.eye}
+                            alt=""
+                            className="w-[20px] h-auto object-contain "
+                            width={20}
+                            height={20}
+                          />
+                        </>
+                      )}
+                    </div>
+                  )}
                 </div>
                 {errors[field.name] && (
                   <div className="text-customRed text-sm mt-1">

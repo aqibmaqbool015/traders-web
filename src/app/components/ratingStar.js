@@ -8,14 +8,13 @@ export const RatingStar = ({ isReview, setIsReview }) => {
       ...prev,
       rating: ratingValue.toString(),
     }));
-    console.log({ rating: ratingValue }, "Updated rating");
   };
 
   return (
     <div className="!mt-1">
       <Rating
         onClick={handleRating}
-        ratingValue={(Number(isReview.rating || 0)) * 5}
+        ratingValue={(isReview.rating || 0) * 5}
         initialValue={0}
         size={30}
         fillColor="orange"

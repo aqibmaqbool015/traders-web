@@ -1,15 +1,13 @@
 "use client";
-import Link from "next/link";
+import Image from "next/image";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import {
   AuctionsCardAll,
-  AuctionsCardLive,
   AuctionsCardTabs,
   AuctionsCardWon,
   VehicleCard,
 } from "../components/VehicleCard";
-import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   allVehicles,
   getAllAuctionApi,
@@ -19,6 +17,7 @@ import {
   getAuctionSearchApi,
   getLiveAuctionApi,
 } from "./api";
+import { getUserPostsApi } from "../user-profile/api";
 
 const image = {
   search: "/search-alert.svg",
@@ -40,34 +39,50 @@ const Auctions = () => {
   const [allAuction, setAllAuction] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showLoading, setShowLoading] = useState(false);
+  const [tabLoading, setTabLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 20;
+  const rowsPerPage = 10;
   const [totalPages, setTotalPages] = useState(1);
 
-  // useEffect(() => {
-  //   const id = pathname.split("/")[2];
-  //   if (id) {
-  //     fetchGetAllAuctions();
-  //   }
-  // }, [pathname]);
   useEffect(() => {
-    fetchGetAllAuctions();
+    fetchGetAllAuctions(currentPage);
   }, []);
 
-  const fetchGetAllAuctions = async () => {
+  const fetchGetAllAuctions = async (page) => {
     setIsLoading(true);
     try {
-      const response = await getAllAuctionApi();
-      // {
-      //   page: currentPage,
-      //   limit: rowsPerPage,
-      // }
-      setAllAuction((prev) =>
-        currentPage === 1 ? response?.data : [...prev, ...response?.data]
-      );
-      setTotalPages(response?.totalPages || 1);
+      const data = await getAllAuctionApi({
+        page,
+        limit: rowsPerPage ?? newPage,
+      });
+      setShowLoading(false);
+      if (data?.data) {
+        setAllAuction(data?.data);
+        setTotalPages(data?.totalPages);
+      }
     } catch (error) {
-      console.error("Vehicles API Error:", error);
+      console.error("Auctions API Error:", error);
+      setAllAuction([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const onSearchMore = async (page) => {
+    setIsLoading(true);
+    try {
+      const data = await getAllAuctionApi({
+        page,
+        limit: rowsPerPage ?? newPage,
+      });
+      setShowLoading(false);
+      if (data?.data) {
+        setAllAuction((prevVehicles) => [...prevVehicles, ...data?.data]);
+        setTotalPages(data?.totalPages);
+      }
+    } catch (error) {
+      console.error("Auctions API Error:", error);
       setAllAuction([]);
     } finally {
       setIsLoading(false);
@@ -81,8 +96,6 @@ const Auctions = () => {
         term: searchTerm,
         search: currentPage,
       });
-      console.log("search---------", response);
-
       setAllAuction((prev) =>
         currentPage === 1 ? response?.data : [...prev, ...response?.data]
       );
@@ -96,20 +109,19 @@ const Auctions = () => {
   };
 
   const handleSearch = () => {
-    const id = pathname.split("/")[2];
     setAllAuction([]);
     setCurrentPage(1);
-    const fetchFunction = searchTerm ? fetchSearchApi : fetchGetAllAuctions;
-    fetchFunction(id);
+    setOpenTab(1);
+    searchTerm ? fetchSearchApi() : fetchGetAllAuctions(1);
   };
 
   const handleShowMore = () => {
+    setShowLoading(true);
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
-      const id = pathname.split("/")[2];
-      const fetchFunction = searchTerm ? fetchSearchApi : fetchGetAllAuctions;
-      fetchFunction(id);
+      searchTerm ? fetchSearchApi() : onSearchMore(currentPage + 1);
     }
+    setShowLoading(false);
   };
 
   useEffect(() => {
@@ -119,45 +131,11 @@ const Auctions = () => {
     }
   }, [pathname]);
 
-  useEffect(() => {
-    fetchVehicles();
-  }, []);
-
-  const fetchVehicles = async () => {
-    try {
-      const data = await allVehicles();
-      if (data?.data) {
-        setVehicles(data?.data);
-      }
-    } catch (err) {
-      console.error("Error fetching vehicles:", err);
-      setVehicles([]);
-    }
-  };
-
-  // useEffect(() => {
-  //   fetchAllAuctions();
-  // }, []);
-
-  // const fetchAllAuctions = async () => {
-  //   try {
-  //     const data = await getAllAuctionApi();
-  //     if (data?.data) {
-  //       setAllAuction(data?.data);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching vehicles:", err);
-  //     setAllAuction([]);
-  //   }
-  // };
-  useEffect(() => {
-    fetchAuctionsLive();
-  }, []);
-
-  const fetchAuctionsLive = async () => {
+  const onPressTab2 = async () => {
+    setTabLoading(true);
     try {
       const data = await getLiveAuctionApi();
-      console.log("auctions----------------", data);
+      console.log("live........", data);
 
       if (data?.data) {
         setAuctionLive(data?.data);
@@ -166,15 +144,12 @@ const Auctions = () => {
       console.error("Error fetching Auction:", err);
       setAuctionLive([]);
     }
+    setTabLoading(false);
   };
-  useEffect(() => {
-    fetchAuctionsInterested();
-  }, []);
-  const fetchAuctionsInterested = async () => {
+
+  const onPressTab3 = async () => {
     try {
       const data = await getAllInterestedApi();
-      console.log("Interested----------------", data);
-
       if (data?.data) {
         setAuctionInterested(data?.data);
       }
@@ -184,15 +159,9 @@ const Auctions = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAuctionsBid();
-  }, []);
-  const fetchAuctionsBid = async () => {
+  const onPressTab4 = async () => {
     try {
       const data = await getAllUserBidApi();
-      console.log("Bid----------------", data);
-      //
-
       if (data?.data) {
         setAuctionBid(data?.data);
       }
@@ -202,14 +171,9 @@ const Auctions = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAuctionsWon();
-  }, []);
-  const fetchAuctionsWon = async () => {
+  const onPressTab5 = async () => {
     try {
       const data = await getAllUserWonApi();
-      console.log("Won----------------", data);
-
       if (data?.data) {
         setAuctionWon(data?.data);
       }
@@ -218,30 +182,52 @@ const Auctions = () => {
       setAuctionWon([]);
     }
   };
-  // const handleShowMoreVehicle = () => {
-  //   setVisibleVehicle((prev) => prev + 15);
-  // };
-  // const handleShowLessVehicle = () => {
-  //   setVisibleVehicle(15);
-  // };
-  // const handleSelectChange = (event) => {
-  //   const selectedOption = event.target.value;
 
-  //   if (selectedOption === "Trader") {
-  //     router.push("/trader");
-  //   }
-  // };
+  const onPressTab6 = async () => {
+    try {
+      const data = await getUserPostsApi();
+      if (data?.data) {
+        setVehicles(data?.data);
+      }
+    } catch (err) {
+      console.error("Error fetching vehicles:", err);
+      setVehicles([]);
+    }
+  };
+
+  const onHandleTabChange = (tab) => {
+    setOpenTab(tab);
+    if (tab === 1) {
+      setAllAuction([]);
+      fetchGetAllAuctions(1);
+    }
+    if (tab === 2) {
+      onPressTab2();
+    }
+    if (tab === 3) {
+      onPressTab3();
+    }
+    if (tab === 4) {
+      onPressTab4();
+    }
+    if (tab === 5) {
+      onPressTab5();
+    }
+    if (tab === 6) {
+      onPressTab6();
+    }
+  };
 
   return (
     <>
-      <div className=" px-8">
+      <div className=" md:px-8 px-4 ">
         <section className="mt-4">
           <div className="md:flex sm:flex items-center space-x-2 p-2 mt-3 ">
             <div className="relative flex items-center flex-1 rounded-[6px] border-2 border-customGray my-8">
               <div className="md:flex sm:flex items-center space-x-2 p-2 relative w-full">
                 <input
                   type="search"
-                  placeholder="Enter trader's first name"
+                  placeholder="Search Auctions List"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="p-1 border-none shadow-none outline-none w-[100%] rounded-[10px]"
@@ -273,7 +259,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(1);
+                  onHandleTabChange(1);
                 }}
                 data-toggle="tab"
                 href="#link1"
@@ -292,7 +278,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(2);
+                  onHandleTabChange(2);
                 }}
                 data-toggle="tab"
                 href="#link2"
@@ -311,7 +297,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(3);
+                  onHandleTabChange(3);
                 }}
                 data-toggle="tab"
                 href="#link3"
@@ -330,7 +316,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(4);
+                  onHandleTabChange(4);
                 }}
                 data-toggle="tab"
                 href="#link4"
@@ -349,7 +335,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(5);
+                  onHandleTabChange(5);
                 }}
                 data-toggle="tab"
                 href="#link5"
@@ -368,7 +354,7 @@ const Auctions = () => {
                 }
                 onClick={(e) => {
                   e.preventDefault();
-                  setOpenTab(6);
+                  onHandleTabChange(6);
                 }}
                 data-toggle="tab"
                 href="#link6"
@@ -381,109 +367,197 @@ const Auctions = () => {
           <div className="relative flex flex-col min-w-0 break-words w-full mb-6 ">
             <div className="px-4 py-5 flex-auto">
               <div className="tab-content tab-space">
-                <div className={openTab === 1 ? "block" : "hidden"} id="link1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {allAuction?.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No Auctions available
-                      </p>
-                    ) : (
-                      <>
+                <div
+                  className={
+                    openTab === 1 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link1"
+                >
+                  {allAuction?.length === 0 ? (
+                    <>
+                      <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                    </>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {allAuction?.map((auction, index) => (
                           <AuctionsCardAll key={index} auction={auction} />
                         ))}
-                      </>
-                    )}
-                  </div>
-                  <div className="text-center my-5">
-                    {currentPage < totalPages && (
-                      <div className="text-center my-5">
-                        <button
-                          onClick={handleShowMore}
-                          className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
-                        >
-                          Show More
-                        </button>
                       </div>
-                    )}
-                  </div>
+                      {allAuction?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {auctionLive?.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No Live Auctions available
-                      </p>
-                    ) : (
-                      auctionLive?.map((auction, index) => (
-                        <AuctionsCardAll key={index} auction={auction} />
-                      ))
-                    )}
-                  </div>
+                  {tabLoading && !auctionLive ? (
+                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  ) : auctionLive?.length === 0 ? (
+                    <p className="text-center text-customBlue my-5">
+                      Live vehicles not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {auctionLive?.map((auction, index) => (
+                          <AuctionsCardAll key={index} auction={auction} />
+                        ))}
+                      </div>
+                      {auctionLive?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={openTab === 3 ? "block" : "hidden"} id="link3">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {auctionInterested?.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No Interested Auctions available
-                      </p>
-                    ) : (
-                      auctionInterested?.map((vehcile, index) => (
-                        <AuctionsCardTabs key={index} vehcile={vehcile} />
-                      ))
-                    )}
-                  </div>
+                  {tabLoading && !auctionInterested ? (
+                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  ) : auctionInterested?.length === 0 ? (
+                    <p className="text-center text-customBlue my-5">
+                      Interested vehicles not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {auctionInterested?.map((auction, index) => (
+                          <AuctionsCardTabs key={index} auction={auction} />
+                        ))}
+                      </div>
+                      {auctionInterested?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={openTab === 4 ? "block" : "hidden"} id="link4">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {auctionBid?.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No Bid Auctions available
-                      </p>
-                    ) : (
-                      auctionBid?.map((vehcile, index) => (
-                        <AuctionsCardTabs key={index} vehcile={vehcile} />
-                      ))
-                    )}
-                  </div>
+                  {tabLoading && !auctionBid ? (
+                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  ) : auctionBid?.length === 0 ? (
+                    <p className="text-center text-customBlue my-5">
+                      Bid vehicles not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {auctionBid?.map((auction, index) => (
+                          <AuctionsCardTabs key={index} auction={auction} />
+                        ))}
+                      </div>
+                      {auctionBid?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className={openTab === 5 ? "block" : "hidden"} id="link5">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {auctionWon?.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No Won Auctions available
-                      </p>
-                    ) : (
-                      auctionWon?.map((vehcile, index) => (
-                        <AuctionsCardWon key={index} vehcile={vehcile} />
-                      ))
-                    )}
-                  </div>
+                  {tabLoading && !auctionWon ? (
+                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  ) : auctionWon?.length === 0 ? (
+                    <p className="text-center text-customBlue my-5">
+                      Won vehicles not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {auctionWon?.map((auction, index) => (
+                          <AuctionsCardWon key={index} auction={auction} />
+                        ))}
+                      </div>
+                      {auctionWon?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-                <div className={openTab === 6 ? "block" : "hidden"} id="link6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {vehicles.length === 0 ? (
-                      <p className="text-center text-customBlue">
-                        No vehicles available
-                      </p>
-                    ) : (
-                      <>
+                <div
+                  className={
+                    openTab === 6 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link6"
+                >
+                  {tabLoading && !vehicles ? (
+                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                  ) : vehicles?.length === 0 ? (
+                    <p className="text-center text-customBlue my-5">
+                      Won vehicles not found.
+                    </p>
+                  ) : (
+                    <div className="md:mx-6 w-full">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {vehicles?.map((vehicle, index) => (
                           <VehicleCard key={index} vehicle={vehicle} />
                         ))}
-                      </>
-                    )}
-                  </div>
+                      </div>
+                      {vehicles?.length < totalPages * rowsPerPage && (
+                        <div className="text-center my-5">
+                          <button
+                            onClick={handleShowMore}
+                            className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium"
+                          >
+                            {showLoading ? (
+                              <span className="animate-spin rounded-full h-5 w-5 border-t-2 border-white border-opacity-50 mr-2"></span>
+                            ) : null}
+                            {showLoading ? "Loading..." : "Show More"}
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
           </div>
-
-          {/* <div className="text-center my-5">
-            <button className="bg-customLightColor text-customDarkGray rounded-[20px] px-5 py-2 capitalize text-[16px] font-medium">
-              show more
-            </button>
-          </div> */}
         </section>
       </div>
     </>

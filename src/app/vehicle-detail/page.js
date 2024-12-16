@@ -12,7 +12,13 @@ import * as Yup from "yup";
 import { allBrands } from "../home/api";
 import { addVehicleApi, getAllFuelApi, getModelsByBrandApi } from "./api";
 import { vehicleDetailValidationSchema } from "@/utils/Yup";
-import { dealerHistory, driver, keys, serviceHistory } from "../constant";
+import {
+  dealerHistory,
+  driver,
+  duration,
+  keys,
+  serviceHistory,
+} from "../constant";
 import CustomToast from "../components/toast";
 
 const image = {
@@ -33,11 +39,7 @@ export default function VehicleDetail() {
   const [isLocationModal, setIsLocationModal] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
   const [selectedVehicleType, setSelectedVehicleType] = useState(false);
-  const [timeChange, settimeChange] = useState("");
-
-  const handleTimeChange = (e) => {
-    settimeChange(new Date(e).toISOString());
-  };
+  const [dataAutoTrader, setDataAutoTrader] = useState();
 
   useEffect(() => {
     const vehicleType = JSON.parse(localStorage.getItem("vehicleType"));
@@ -54,28 +56,44 @@ export default function VehicleDetail() {
       const completeVehicleData = JSON.parse(identityData);
       const identity = completeVehicleData?.data;
       const vehicleData = completeVehicleData?.dataAutoTrader;
-      formik.setFieldValue("regno", identity?.registration || "");
-      formik.setFieldValue("doors", identity?.specsVehicle?.doors || "");
-      formik.setFieldValue("fuel", identity?.specsVehicle?.fuel || "");
-      formik.setFieldValue("type", identity?.specsVehicle?.version || "");
+      setDataAutoTrader(vehicleData);
+      formik.setFieldValue("regno", vehicleData?.registration || "");
+      formik.setFieldValue(
+        "doors",
+        vehicleData?.autotraderValuation?.doors || ""
+      );
+      formik.setFieldValue(
+        "fuel",
+        vehicleData?.autotraderValuation?.fuel || ""
+      );
+      formik.setFieldValue(
+        "type",
+        vehicleData?.autotraderValuation?.vehicleType || ""
+      );
       formik.setFieldValue(
         "seats",
         vehicleData?.autotraderValuation?.seats || ""
       );
       formik.setFieldValue("year", identity?.specsVehicle?.modelYear || "");
-      formik.setFieldValue("engine", identity?.specsVehicle?.engineCC || "");
+      formik.setFieldValue(
+        "engine",
+        vehicleData?.autotraderValuation?.engineCc || ""
+      );
       formik.setFieldValue(
         "mileage",
         vehicleData?.autotraderValuation?.valuationMileage || ""
       );
-      formik.setFieldValue("post_desc", identity?.specsVehicle?.version || "");
+      formik.setFieldValue(
+        "post_desc",
+        vehicleData?.autotraderValuation?.vehicleType || ""
+      );
       formik.setFieldValue(
         "transition",
-        identity?.specsVehicle?.transmissionMode || ""
+        vehicleData?.autotraderValuation?.transmissionType || ""
       );
       formik.setFieldValue(
         "mot_expire",
-        identity?.specsVehicle?.mot_expire || ""
+        vehicleData?.autotraderValuation?.firstRegistrationDate || ""
       );
     }
   };
@@ -158,6 +176,7 @@ export default function VehicleDetail() {
       v5_present: "",
       vehicleKey: "",
       prep_needed: "",
+      duration: "",
     },
     validationSchema: vehicleDetailValidationSchema,
     onSubmit: async (values) => {
@@ -182,10 +201,31 @@ export default function VehicleDetail() {
       formData.append("engine", values.engine);
       formData.append("mot_expire", values.mot_expire);
       formData.append("drive", values.drive);
+      formData.append(
+        "trade",
+        dataAutoTrader?.autotraderValuation?.valuation?.trade
+      );
+      formData.append(
+        "retail",
+        dataAutoTrader?.autotraderValuation?.valuation?.retail
+      );
+      formData.append(
+        "partExchange",
+        dataAutoTrader?.autotraderValuation?.valuation?.partExchange
+      );
+      formData.append(
+        "private",
+        dataAutoTrader?.autotraderValuation?.valuation?.private
+      );
 
       if (selectedVehicleType) {
+        const timeString = values.start_Time;
+        const [hours, minutes] = timeString.split(":").map(Number);
+        const date = new Date();
+        date.setUTCHours(hours, minutes, 0, 0);
+        const formattedDate = date.toISOString();
         formData.append("auction_date", values.date);
-        formData.append("auc_start_time", values.start_Time);
+        formData.append("auc_start_time", formattedDate);
       }
 
       if (values.pictures && values.pictures.length > 0) {
@@ -195,26 +235,34 @@ export default function VehicleDetail() {
       }
 
       if (!values.date && selectedVehicleType) {
-        console.log("Date is required");
-      }
-      if (!values.start_Time && selectedVehicleType) {
-        console.log("Start time is required");
+        toast.error(<CustomToast content={"Date is required"} />);
+        return
       }
 
+      if (!values.start_Time && selectedVehicleType) {
+        toast.error(<CustomToast content={"Start time is required"} />);
+        return
+      }
+      if (!values.duration && selectedVehicleType) {
+        toast.error(<CustomToast content={"Duration is required"} />);
+        return
+      }
       setLoading(true);
       const response = await addVehicleApi(formData);
-      if (response === true) {
-        console.success("Vehicle added successfully.");
+
+      if (response?.success) {
         toast.success(
           <CustomToast
             content="Your vehicle has been successfully submitted and is in review."
             className="bg-customOrange py-1 px-2 rounded-[8px] text-white text-center min-w-[100px]"
-            button="Ok"
           />
         );
         router.push("/home");
+        setLoading(false);
+      } else {
+        toast.error(<CustomToast content={response?.message ?? ""} />);
+        setLoading(false);
       }
-      setLoading(false);
     },
   });
 
@@ -268,8 +316,14 @@ export default function VehicleDetail() {
     const updatedPictures = formik.values.pictures.filter(
       (_, i) => i !== index
     );
+    const updatedPreviews = formik.values.picturePreviews.filter(
+      (_, i) => i !== index
+    );
+
     formik.setFieldValue("pictures", updatedPictures);
+    formik.setFieldValue("picturePreviews", updatedPreviews);
   };
+
   const openLocationModal = () => setIsLocationModal(true);
   const closeLocationModal = () => {
     setIsLocationModal(false);
@@ -297,14 +351,14 @@ export default function VehicleDetail() {
         <div className="w-full ">
           <div className="w-full px-4 md:px-0">
             <div className="flex flex-col justify-center items-center p-4">
-              <h1 className="text-2xl font-semibold mb-4 text-center text-[30px] text-customBlue">
+              <h1 className="text-2xl font-semibold mb-4 text-center md:text-[30px] text-[25px] text-customBlue">
                 Add Vehicle Details
               </h1>
               <div className="w-full">
                 <div className="mb-4 mt-4 md:mx-20">
-                  <div className="border-dashed border-2 border-customGray min-h-[200px] rounded-lg p-4 flex items-center justify-center">
-                    {formik.values.pictures.length === 0 && (
-                      <label className="cursor-pointer text-center">
+                  <div className="border-dashed border-2 border-customGray min-h-[200px] rounded-lg p-4 flex items-center justify-center relative ">
+                    {(formik.values.pictures || []).length === 0 && (
+                      <label className="cursor-pointer text-center absolute w-full ">
                         <Image
                           src="/plus.svg"
                           alt="Upload"
@@ -327,7 +381,8 @@ export default function VehicleDetail() {
                         />
                       </label>
                     )}
-                    <div className="grid grid-cols-4 gap-4 mt-4">
+
+                    <div className="grid md:grid-cols-4 gap-4 mt-4">
                       {(formik.values.picturePreviews || []).map(
                         (image, index) => (
                           <div key={index} className="relative">
@@ -382,7 +437,6 @@ export default function VehicleDetail() {
                   <div className="text-customRed">{formik.errors.regno}</div>
                 )}
               </div>
-
               <div className="mb-4">
                 <label
                   htmlFor="make_id"
@@ -424,7 +478,6 @@ export default function VehicleDetail() {
                       ))}
                     </select>
                   )}
-
                   {formik.errors.make_id && (
                     <div className="text-customRed">
                       {formik.errors.make_id}
@@ -473,7 +526,6 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                       ))}
                     </select>
                   )}
-
                   {formik.errors.model_id ? (
                     <div className="text-customRed">
                       {formik.errors.model_id}
@@ -534,18 +586,24 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                   type="text"
                   id="location"
                   className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-        border border-[#CFCFCF] rounded-[25px]"
+    border border-[#CFCFCF] rounded-[25px]"
                   placeholder="Location"
                   disabled
                   onChange={(e) => {
-                    formik.handleChange(e);
-                    setSelectedLocation(e.target.value);
+                    formik.setFieldValue("location", e.target.value); // Set Formik field value
+                    setSelectedLocation(e.target.value); // Update state
+
+                    // Clear error if location is valid
+                    if (e.target.value.trim()) {
+                      formik.setFieldError("location", undefined);
+                    }
                   }}
                   value={selectedLocation || formik.values?.location}
                 />
-                {formik.errors.location ? (
+                {formik.errors.location && formik.touched.location ? (
                   <div className="text-customRed">{formik.errors.location}</div>
                 ) : null}
+
                 <span
                   className="absolute right-2 top-10 cursor-pointer "
                   onClick={openLocationModal}
@@ -582,9 +640,9 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                             apiKey="AIzaSyD_KJynrQba_jgW-fo3F4ItmLiy58jD0es"
                             onPlaceSelected={(place) => {
                               const address = place?.formatted_address || "";
+                              formik.setFieldValue("location", address);
                               setSelectedLocation(address);
                               const locationData = place?.geometry;
-                              formik.setFieldValue("location", address);
                               formik.setFieldValue(
                                 "lat",
                                 locationData?.location?.lat()
@@ -593,13 +651,14 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                                 "long",
                                 locationData?.location?.lng()
                               );
+                              formik.setFieldError("location", undefined);
                               closeLocationModal();
                             }}
                             options={{
                               types: ["(regions)"],
-                              componentRestrictions: { country: "ru" },
+                              componentRestrictions: { country: "gb" },
                             }}
-                            defaultValue=""
+                            defaultValue="London"
                             className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
                   border border-[#CFCFCF] rounded-[25px]"
                           />
@@ -679,14 +738,17 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                       Start Time
                     </label>
                     <input
-                      type="date"
+                      type="time"
                       id="start_Time"
                       className="mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
-        border border-[#CFCFCF] rounded-[25px]"
+    border border-[#CFCFCF] rounded-[25px]"
                       placeholder="12:01 PM"
                       value={
                         formik.values?.start_Time ||
-                        new Date().toISOString().substring(11, 16)
+                        new Date().toLocaleTimeString("en-GB", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
                       }
                       onChange={(e) =>
                         formik.setFieldValue("start_Time", e.target.value)
@@ -1103,6 +1165,48 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
                   </div>
                 ) : null}
               </div>
+              {selectedVehicleType && (
+                <div className="mb-4">
+                  <label
+                    htmlFor="duration"
+                    className="block text-customBlue text-sm font-medium mb-2"
+                  >
+                    Duration
+                  </label>
+                  <div className="relative !mt-0">
+                    <select
+                      className="appearance-none mt-1 block w-full px-3 py-2 shadow-sm placeholder-customDarkGray focus:outline-none focus:ring-indigo-500 focus:border-indigo-500
+        border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
+                      id="duration"
+                      value={formik.values?.duration}
+                      onChange={formik.handleChange}
+                    >
+                      <option value="">Select a Duration</option>
+                      {duration.map((durations) => (
+                        <option key={durations._id} value={durations._id}>
+                          {durations.title}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none">
+                      <svg
+                        className="w-4 h-4 text-customDarkGray"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
             <div className="grid md:grid-cols-1 mt-4">
               <div className="mb-4">
@@ -1132,7 +1236,7 @@ border border-[#CFCFCF] rounded-[25px] text-customDarkGray"
             </div>
           </div>
 
-          <div className="flex justify-center my-5">
+          <div className="flex justify-center my-5 mx-3">
             <button
               type="button"
               onClick={() => router.push("/")}

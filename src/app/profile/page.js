@@ -106,7 +106,7 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
           } else if (userData?.reviewStatus === "reviewing") {
             toast.success(
               <CustomToast
-                content="Please go to the app and log in there."
+                content="Your upload documents request is under review."
                 contact="you can contact at"
                 mail="support@trade2trade.co.uk"
               />
@@ -147,7 +147,7 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
             className="min-h-screen flex flex-col items-center p-4"
             onSubmit={handleSubmitDocuments}
           >
-            <h1 className="text-2xl font-semibold mb-4 text-center text-[30px] text-customBlue">
+            <h1 className="text-2xl font-semibold mb-4 text-center md:text-[30px] text-[25px] text-customBlue">
               Upload Documents
             </h1>
             <div className="w-full md:w-[400px]">
@@ -213,27 +213,35 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
                       className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
                     />
                   ) : (
-                    <div className="text-center">
-                      <label className="inline-block cursor-pointer">
-                        <Image
-                          src={image.plas}
-                          alt="img"
-                          width={25}
-                          height={25}
-                          className="w-[25px] h-[25px] object-contain"
-                        />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleImageUpload(e, setFrontImage, setFrontPreview)
-                          }
-                        />
-                      </label>
-                      <p className="text-customDarkGray">
-                        Upload front side of your ID
-                      </p>
+                    <div className="text-center w-full h-full relative flex justify-center items-center ">
+                      <div>
+                        <label className="block cursor-pointer absolute w-full h-full left-0 top-0 ">
+                          <Image
+                            src={image.plas}
+                            alt="img"
+                            width={25}
+                            height={25}
+                            className="w-[25px] h-[25px] object-contain inline-block mt-14
+                             "
+                            //  relative top-[30%] left-[48%]
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleImageUpload(
+                                e,
+                                setFrontImage,
+                                setFrontPreview
+                              )
+                            }
+                          />
+                        </label>
+                        <p className="text-customDarkGray">
+                          Upload front side of your ID
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -253,27 +261,29 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
                       className="object-cover rounded-lg h-[190px] md:w-[390px] w-[375px] max-w-full"
                     />
                   ) : (
-                    <div>
-                      <label className="w-[25px] h-[25px] inline-block cursor-pointer">
-                        <Image
-                          src={image.plas}
-                          width={30}
-                          height={30}
-                          alt="img"
-                          className="w-full h-full object-contain"
-                        />
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) =>
-                            handleImageUpload(e, setBackImage, setBackPreview)
-                          }
-                        />
-                      </label>
-                      <p className="text-customDarkGray">
-                        Upload back side of your ID
-                      </p>
+                    <div className="text-center w-full h-full relative flex justify-center items-center ">
+                      <div>
+                        <label className="block cursor-pointer absolute w-full h-full left-0 top-0 ">
+                          <Image
+                            src={image.plas}
+                            width={30}
+                            height={30}
+                            alt="img"
+                            className="w-[25px] h-[25px] object-contain inline-block mt-14"
+                          />
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handleImageUpload(e, setBackImage, setBackPreview)
+                            }
+                          />
+                        </label>
+                        <p className="text-customDarkGray">
+                          Upload back side of your ID
+                        </p>
+                      </div>
                     </div>
                   )}
                 </div>

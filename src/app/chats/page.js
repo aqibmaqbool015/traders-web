@@ -5,6 +5,9 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import { getConversationsApi } from "./api";
 import { useSelector } from "react-redux";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import CustomToast from "../components/toast";
 
 const image = {
   search: "/search-alert.svg",
@@ -71,8 +74,6 @@ const Chats = () => {
   }, [selectedUser]);
 
   function onConnect() {
-    console.log("onConnect triggered.");
-
     socket.emit("addUser", {
       userId: user?._id,
       receiver: selectedUser?.participants?.length
@@ -81,7 +82,7 @@ const Chats = () => {
     });
 
     socket.on("getMessage", (data) => {
-      console.log("getMessage received:", data);
+      toast.success(<CustomToast content="getMessage received:" />);
     });
 
     socket.on("userMsgs", (data) => {
@@ -92,18 +93,18 @@ const Chats = () => {
   }
 
   function onDisconnect() {
-    console.log("onDisconnect triggered.");
+    toast.error(<CustomToast content="onDisconnect triggered." />);
   }
 
   function onDisconnect() {
     setIsConnected(false);
-    console.log("Socket disconnected");
+    toast.error(<CustomToast content="Socket disconnected" />);
   }
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
   };
-// 
+
   const onChatSelection = (data) => {
     setSelectedUser(data);
   };
@@ -121,9 +122,9 @@ const Chats = () => {
     };
     socket.emit("sendMessage", params, (response) => {
       if (response.success) {
-        console.log("Message sent:", response.message);
+        toast.success(<CustomToast content="Message sent:" />);
       } else {
-        console.error("Failed to send message:", response.message);
+        toast.error(<CustomToast content="Failed to send message:" />);
       }
     });
     setMessage("");
@@ -342,6 +343,7 @@ const Chats = () => {
             </div>
           )}
         </div>
+        <ToastContainer position="top-right" />
       </div>
     </>
   );
