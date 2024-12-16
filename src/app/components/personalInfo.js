@@ -1,7 +1,8 @@
+"use client";
 import Image from "next/image";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { updateProfileApi } from "../user-profile/api";
 import { toast, ToastContainer } from "react-toastify";
 import CustomToast from "./toast";
@@ -10,11 +11,9 @@ import "react-toastify/dist/ReactToastify.css";
 const validationSchema = Yup.object().shape({
   firstName: Yup.string().required("First name is required"),
   lastName: Yup.string().required("Last name is required"),
-
   phone: Yup.number()
     .required("Phone is required")
     .typeError("Invalid phone number"),
-  bio: Yup.string().required("Bio is required"),
 });
 
 const PersonalInfo = ({ userProfile, setUserProfile }) => {
@@ -34,6 +33,7 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
       email: userProfile?.email || "",
       phone: userProfile?.phone || "",
       bio: userProfile?.bio || "",
+      profilePicture: userProfile?.profilePicture || "",
     },
     validationSchema: validationSchema,
     validateOnChange: false,
@@ -51,19 +51,29 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
         if (response?.success) {
           toast.success(<CustomToast content="Your profile is updated." />);
         } else {
-          console.error(
-            "Error updating profile:",
-            response?.message || "Unknown error"
+          toast.error(
+            <CustomToast
+              content={response?.message || "Error updating profile:"}
+            />
           );
         }
       } catch (error) {
-        console.error("Error:", error.message);
+        toast.error(<CustomToast content={error?.message} />);
       } finally {
         setLoading(false);
       }
     },
     enableReinitialize: true,
   });
+
+  const handleImageUpload = (e) => {
+    const selectedFiles = e.target.files;
+    if (selectedFiles && selectedFiles[0]) {
+      const previewUrl = URL.createObjectURL(selectedFiles[0]);
+      formik.setFieldValue("profilePicture", previewUrl);
+    }
+  };
+  console.log(formik?.values?.profilePicture);
 
   return (
     <>
@@ -75,9 +85,9 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
           <div className="mb-4">
             <div className="flex justify-center mb-3">
               <div className="w-24 h-24 bg-customGray rounded-full relative">
-                {formik.values.profileImage ? (
+                {formik.values.profilePicture ? (
                   <Image
-                    src={URL.createObjectURL(formik.values.profileImage)}
+                    src={formik.values.profilePicture}
                     alt="Profile"
                     className="w-full h-full object-cover rounded-full"
                     width={300}
@@ -86,7 +96,7 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
                 ) : (
                   <Image
                     src="/user-vactor.png"
-                    alt="Avatar"
+                    alt="Profile"
                     className="w-full h-full object-cover rounded-full"
                     width={300}
                     height={300}
@@ -94,7 +104,7 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
                 )}
                 <span className="absolute bottom-0 right-0 bg-white rounded-full w-[28px] h-[28px] p-[5px]">
                   <label
-                    htmlFor="profileImage"
+                    htmlFor="profilePicture"
                     className="cursor-pointer w-[17px] h-full inline-block"
                   >
                     <Image
@@ -107,16 +117,11 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
                   </label>
                 </span>
                 <input
-                  id="profileImage"
+                  id="profilePicture"
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={(e) =>
-                    formik.setFieldValue(
-                      "profileImage",
-                      e.currentTarget.files[0]
-                    )
-                  }
+                  onChange={handleImageUpload}
                 />
               </div>
             </div>

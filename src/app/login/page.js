@@ -165,7 +165,7 @@ export default function LoginPage() {
             width={140}
             height={50}
             alt="img"
-            className="w-[140px] h-auto"
+            className="w-[100px] h-auto mx-2 my-2"
           />
         </div>
         <div className="max-w-md w-full py-5 px-4 md:px-0">

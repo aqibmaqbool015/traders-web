@@ -72,7 +72,7 @@ export default function ListVehicle() {
               width={140}
               height={50}
               alt="Trade Logo"
-              className="w-[140px] h-auto"
+              className="w-[100px] mx-2 my-2 h-auto"
             />
           </span>
         </div>

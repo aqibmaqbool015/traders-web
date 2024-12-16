@@ -76,7 +76,6 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
       } else {
         console.error("Profile image is required.");
       }
-
       if (frontImage) {
         formData.append("drivingLicence", frontImage);
       } else {
@@ -138,7 +137,7 @@ const Profile = ({ setIsModalOpen, setIsModalDocumentsOpen }) => {
           width={140}
           height={50}
           alt="img"
-          className="w-[140px] h-[70px]"
+          className="w-[100px] mx-2 my-2 h-[70px]"
         />
       </div>
       <div className="w-full flex flex-col items-center">

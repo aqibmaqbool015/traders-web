@@ -42,6 +42,7 @@ const UserProfile = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
   const rowsPerPage = 10;
   const router = useRouter();
   
@@ -123,6 +124,8 @@ const UserProfile = () => {
     if (currentPage < totalPages) {
       setCurrentPage((prev) => prev + 1);
     }
+    setShowLoading(false);
+
   };
 
   useEffect(() => {
@@ -162,7 +165,7 @@ const UserProfile = () => {
           <Image
             src={`${Image_base}${userProfile?.profilePicture}` || image.avatar}
             alt=""
-            className="w-[40px] h-[40px] inline-block object-contain rounded-full "
+            className="w-[40px] h-[40px] inline-block rounded-full "
             width={40}
             height={40}
           />

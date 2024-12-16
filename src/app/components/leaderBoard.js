@@ -14,14 +14,19 @@ const Leaderboard = ({
   showLoading,
   totalPages,
 }) => {
+
   return (
     <>
       <h2 className="text-2xl text-customBlue font-semibold mb-4">
-        Leaderboard 
+        Leaderboard
       </h2>
-      {isLeaderBoard?.length === 0 ? (
+      {!isLeaderBoard?.length ? (
+        <div className="flex justify-center ">
+          <p className="text-center my-5 animate-spin rounded-full h-10 w-10 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+        </div>
+      ) : isLeaderBoard?.length === 0 ? (
         <p className="text-center text-customBlue my-5">
-          No LeaderBoard available
+          Leaderboards not found.
         </p>
       ) : (
         <div className="md:mx-2">
@@ -70,13 +75,12 @@ const Leaderboard = ({
                     Sales
                   </p>
                   <div className="w-[50px] flex justify-center items-center text-center md:h-[50px] h-[40px] rounded-[10px] border border-customOrange bg-customOrangeLightBg text-customOrange">
-                    {user.count1 || "0"}
+                    {user.userVehicles}
                   </div>
                 </div>
               </div>
             </div>
           ))}
-
           {isLeaderBoard?.length < totalPages * rowsPerPage && (
             <div className="text-center my-5">
               <button

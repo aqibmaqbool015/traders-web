@@ -1,7 +1,7 @@
 import { getLocalStorageItem } from "@/utils/localStorage";
 
-// const baseUrl = "https://trade2trade.co.uk:5050/api/v1/";
-const baseUrl = "https://xjn69b4j-5050.euw.devtunnels.ms/api/v1/";
+const baseUrl = "https://trade2trade.co.uk:5050/api/v1/";
+// const baseUrl = "https://xjn69b4j-5050.euw.devtunnels.ms/api/v1/";
 export const Image_base = "https://t2tcorebucket.s3.eu-west-2.amazonaws.com";
 
 export async function fetchApi(

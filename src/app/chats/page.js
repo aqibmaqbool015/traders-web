@@ -70,10 +70,19 @@ const Chats = () => {
   }, []);
 
   useEffect(() => {
-    onConnect();
+    if (selectedUser) {
+      onConnect();
+    }
   }, [selectedUser]);
 
   function onConnect() {
+    console.log({
+      userId: user?._id,
+      receiver: selectedUser?.participants?.length
+        ? selectedUser?.participants[0]?._id
+        : selectedUser?._id,
+    });
+
     socket.emit("addUser", {
       userId: user?._id,
       receiver: selectedUser?.participants?.length
@@ -109,24 +118,22 @@ const Chats = () => {
     setSelectedUser(data);
   };
 
-  const onSendMessage = () => {
+  const onSendMessage = async () => {
     if (!message) {
       return;
     }
     const params = {
       senderId: user?._id,
-      receiverId: selectedUser?.messages ?? selectedUser?._id,
+      receiverId: selectedUser?.participants?.length
+        ? selectedUser?.participants[0]?._id
+        : selectedUser?._id,
       text: message,
       createdAt: new Date(),
       imgUrl: selectedUser?.messages?.imgUrl ?? selectedUser?.profilePicture,
     };
-    socket.emit("sendMessage", params, (response) => {
-      if (response.success) {
-        toast.success(<CustomToast content="Message sent:" />);
-      } else {
-        toast.error(<CustomToast content="Failed to send message:" />);
-      }
-    });
+    await socket.emit("sendMessage", params);
+    fetchConverstaion();
+    setMessages((prevMessages) => [...prevMessages, params]);
     setMessage("");
   };
 
@@ -250,34 +257,25 @@ const Chats = () => {
                   return (
                     <div
                       key={index}
-                      className={`flex ${
-                        message.sender === user?._id
-                          ? "justify-end  items-end"
-                          : " items-end"
+                      className={`flex justify-end  ${
+                        message.sender !== user?._id
+                          ? "justify-start items-end"
+                          : "justify-end items-end"
                       }`}
                     >
-                      {message.sender !== user?._id && (
-                        <Image
-                          width={20}
-                          height={20}
-                          src={`${Image_base}${message?.imgUrl}`}
-                          alt="User Avatar"
-                          className="rounded-full w-[40px] h-[40px] object-contain inline-block "
-                        />
-                      )}
                       <div
                         className={`max-w-xl p-4 ${
                           message.sender !== user?._id
-                            ? "bg-customBlue text-white"
-                            : "bg-customCardBg text-customBlackDark"
+                            ? "bg-customCardBg text-customBlackDark"
+                            : " bg-customBlue text-white"
                         } rounded-lg ml-3`}
                       >
-                        <p>{message?.message}</p>
+                        <p>{message?.message ?? message?.text}</p>
                         <span
                           className={`text-xs relative right-0 w-full block text-right mt-1 ${
                             message.sender !== user?._id
-                              ? "text-white"
-                              : "text-customBlackDark"
+                              ? "text-customBlackDark"
+                              : " text-white"
                           }`}
                         >
                           {new Date(message?.createdAt).toLocaleString(
@@ -290,6 +288,15 @@ const Chats = () => {
                           )}
                         </span>
                       </div>
+                      {message.sender !== user?._id && (
+                        <Image
+                          width={20}
+                          height={20}
+                          src={`${Image_base}${message?.imgUrl}`}
+                          alt="User Avatar"
+                          className="rounded-full w-[40px] h-[40px] mx-3 object-contain inline-block "
+                        />
+                      )}
                       {message.sender === user?._id && (
                         <Image
                           width={20}

@@ -197,7 +197,7 @@ export default function SignUpPage() {
           <Image
             src={image.logo}
             alt="img"
-            className="w-[140px] h-auto"
+            className="w-[100px] mx-2 my-2 h-auto"
             width={140}
             height={70}
           />

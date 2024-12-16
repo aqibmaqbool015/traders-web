@@ -46,14 +46,14 @@ const Auctions = () => {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    fetchGetAllAuctions(currentPage);
+    fetchGetAllAuctions();
   }, []);
 
   const fetchGetAllAuctions = async (page) => {
     setIsLoading(true);
     try {
       const data = await getAllAuctionApi({
-        page,
+        page: page ?? 1,
         limit: rowsPerPage ?? newPage,
       });
       setShowLoading(false);
@@ -400,16 +400,21 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 2 ? "block" : "hidden"} id="link2">
-                  {tabLoading && !auctionLive ? (
-                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                <div
+                  className={
+                    openTab === 2 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link2"
+                >
+                  {tabLoading && !auctionLive?.length ? (
+                    <p className="text-center my-5 animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : auctionLive?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
                       Live vehicles not found.
                     </p>
                   ) : (
                     <div className="md:mx-6 w-full">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {auctionLive?.map((auction, index) => (
                           <AuctionsCardAll key={index} auction={auction} />
                         ))}
@@ -430,16 +435,16 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 3 ? "block" : "hidden"} id="link3">
-                  {tabLoading && !auctionInterested ? (
-                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                <div className={openTab === 3 ? "text-center flex justify-center" : "hidden"} id="link3">
+                  {tabLoading && !auctionInterested.length ? (
+                    <p className="text-center my-5 animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 "></p>
                   ) : auctionInterested?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
                       Interested vehicles not found.
                     </p>
                   ) : (
                     <div className="md:mx-6 w-full">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {auctionInterested?.map((auction, index) => (
                           <AuctionsCardTabs key={index} auction={auction} />
                         ))}
@@ -460,16 +465,16 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 4 ? "block" : "hidden"} id="link4">
-                  {tabLoading && !auctionBid ? (
-                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                <div className={openTab === 4 ? "text-center flex justify-center" : "hidden"} id="link4">
+                  {tabLoading && !auctionBid?.length ? (
+                    <p className="text-center my-5  animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : auctionBid?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
                       Bid vehicles not found.
                     </p>
                   ) : (
                     <div className="md:mx-6 w-full">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {auctionBid?.map((auction, index) => (
                           <AuctionsCardTabs key={index} auction={auction} />
                         ))}
@@ -490,16 +495,16 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 5 ? "block" : "hidden"} id="link5">
-                  {tabLoading && !auctionWon ? (
-                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                <div className={openTab === 5 ? "text-center flex justify-center" : "hidden"} id="link5">
+                  {tabLoading && !auctionWon?.length ? (
+                    <p className="text-center my-5  animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : auctionWon?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
                       Won vehicles not found.
                     </p>
                   ) : (
                     <div className="md:mx-6 w-full">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                         {auctionWon?.map((auction, index) => (
                           <AuctionsCardWon key={index} auction={auction} />
                         ))}
@@ -526,11 +531,11 @@ const Auctions = () => {
                   }
                   id="link6"
                 >
-                  {tabLoading && !vehicles ? (
+                  {tabLoading && !vehicles?.length ? (
                     <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : vehicles?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
-                      Won vehicles not found.
+                      My vehicles not found.
                     </p>
                   ) : (
                     <div className="md:mx-6 w-full">

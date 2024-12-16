@@ -91,7 +91,7 @@ const Header = () => {
                 width={140}
                 height={50}
                 alt="Logo"
-                className="md:w-[140px] w-[110px] h-auto"
+                className="md:w-[100px] mx-2 my-2 w-[110px] h-auto"
               />
             </span>
           </div>
@@ -201,7 +201,7 @@ const Header = () => {
                   width={22}
                   height={10}
                   alt=""
-                  className="w-[30px] h-auto rounded-full"
+                  className="w-[30px] h-[30px] rounded-full"
                 />
                 <span className="text-customBlue mx-2 text-[14px] inline-block">
                   {userProfile?.firstName}

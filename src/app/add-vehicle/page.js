@@ -36,7 +36,7 @@ export default function AddVehicle() {
               <Image
                 src={image.logo}
                 alt="1"
-                className="w-[140px] h-auto cursor-pointer"
+                className="w-[100px] mx-2 my-2 h-auto cursor-pointer"
                 width={140}
                 height={50}
                 onClick={handleCLick}

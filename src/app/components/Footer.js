@@ -33,7 +33,7 @@ function Footer() {
                     width={140}
                     height={50}
                     alt="img"
-                    className="md:w-[140px] w-[110px] h-auto cursor-pointer "
+                    className="md:w-[100px] mx-2 my-2 w-[110px] h-auto cursor-pointer "
                     onClick={handleCLick}
                   />
                 </div>
@@ -43,26 +43,20 @@ function Footer() {
                   Support
                 </h6>
                 <div className="">
-                  {/* <Link
-                    href="/"
-                    className="text-customBlackLight text-[15px] font-normal block my-2"
-                  >
-                    Returns{" "}
-                  </Link> */}
-                  {/* <Link
-                    href="/"
-                    className="text-customBlackLight text-[15px] font-normal block my-2"
-                  >
-                    F.A.Qs
-                  </Link> */}
                   <Link
-                    href="#"
+                    href="/privacy-policy"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Privacy Policy
                   </Link>
                   <Link
-                    href="#"
+                    href="/terms-condition"
+                    className="text-customBlackLight text-[15px] font-normal block my-2"
+                  >
+                    Terms & Conditions
+                  </Link>
+                  <Link
+                    href="/user-profile"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Contact Us
@@ -78,7 +72,7 @@ function Footer() {
                     (315) 257 7729{" "}
                   </div>
                   <div className="text-customBlackLight text-[15px] font-normal block my-2">
-                    922 Washington Ave, Albany, NY 12203, United States
+                    C3 100 Fitzwalter Road, Sheffield, England, S2 2SP
                   </div>
                   <div className="text-customBlackLight text-[15px] font-normal block my-2">
                     Support@Trade2Trade.co.uk
@@ -110,38 +104,9 @@ function Footer() {
               alt="img"
             />
           </div>
-          <div className="flex md:flex-row flex-col justify-between items-center mt-8">
-            <div className=" lg:flex gap-2">
-              <div className="text-white text-[14px]">
-                @2024 trade2trade. All Rights Reserved
-              </div>
-            </div>
-
-            <div className=" lg:flex gap-2 sm:text-left text-center ">
-              <Link
-                href="#"
-                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
-              >
-                Copy Right
-              </Link>
-              <Link
-                href="#"
-                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
-              >
-                Terms Of Use
-              </Link>
-              <Link
-                href="#"
-                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
-              >
-                Privacy Policy
-              </Link>
-              <Link
-                href="#"
-                className="text-white md:text-[14px] text-[12px] cursor-pointer font-normal md:mx-3 mx-2 "
-              >
-                Code of Conduct
-              </Link>
+          <div className="my-3 text-center">
+            <div className="text-white text-[14px]">
+              @2024 trade2trade. All Rights Reserved
             </div>
           </div>
         </div>

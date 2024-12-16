@@ -35,7 +35,7 @@ const UserInfoTab = ({
   showLoading,
   totalPages,
 }) => {
-  const [activeTab, setActiveTab] = useState("Leaderboard");
+  const [activeTab, setActiveTab] = useState("Personal Information");
   const [profileImage, setProfileImage] = useState(null);
 
   const handleImageUpload = (e, setImage) => {
@@ -48,7 +48,6 @@ const UserInfoTab = ({
       reader.readAsDataURL(file);
     }
   };
-
 
   const renderContent = () => {
     switch (activeTab) {
@@ -111,9 +110,9 @@ const UserInfoTab = ({
             </h2>
             {isVehcilesPost?.length === 0 ? (
               <>
-                <p className="text-center text-customBlue">
-                  No Vehciles Post available
-                </p>
+                <div className="flex justify-center">
+                  <p className="text-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 my-5 "></p>
+                </div>
               </>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
@@ -178,9 +177,11 @@ const UserInfoTab = ({
 
   return (
     <div className="min-h-screen md:flex">
-      <div className="md:w-1/4 px-4 md:px-0 bg-white shadow-lg border-r border-r-customBg
+      <div
+        className="md:w-1/4 px-4 md:px-0 bg-white shadow-lg border-r border-r-customBg
       md:sticky md:top-0 md:h-fit
-      ">
+      "
+      >
         <div>
           <h2 className="text-xl text-customBlue font-bold mb-4 px-4 pt-5">
             Your Profile

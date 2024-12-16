@@ -118,7 +118,7 @@ const OtpPage = () => {
             alt="img"
             width={140}
             height={70}
-            className="w-[140px] h-auto"
+            className="w-[100px] mx-2 my-2 h-auto"
           />
         </div>
         <div className="max-w-md w-full py-8 md:py-16 px-4 md:px-0">

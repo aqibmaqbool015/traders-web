@@ -191,7 +191,7 @@ const Subscription = () => {
           width={140}
           height={50}
           alt="img"
-          className="w-[140px] h-[70px]"
+          className="w-[100px] mx-2 my-2 h-[70px]"
         />
       </div>
       <div className="md:mx-40 mx-8 my-6 ">

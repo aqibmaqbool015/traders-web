@@ -3,7 +3,7 @@
 const TermsCondition = () => {
   return (
     <>
-      <div className="p-2">
+      <div className="p-2 md:mx-8">
         <h2 className="text-2xl text-customBlue font-semibold mb-4">
           Terms and Conditions of Trade 2 Trade Subscription
         </h2>

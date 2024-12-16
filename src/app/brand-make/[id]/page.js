@@ -85,12 +85,7 @@ const BrandMake = () => {
     }
   };
 
-  useEffect(() => {
-    const id = pathname.split("/")[2];
-    if (id) {
-      fetchGetVehicleDetail(id);
-    }
-  }, [pathname]);
+
 
   const handleClick = (id) => {
     router.push(`/detail/${id}`);

@@ -165,6 +165,7 @@ const Detail = () => {
     };
     try {
       const data = await reviewDetailsApi(params);
+      console.log("data------", data);
 
       if (data?.data) {
         setAllReviews(data?.data[0]?.reviews || []);
@@ -285,7 +286,8 @@ const Detail = () => {
 
     try {
       await createReviewApi(param);
-      toast.success(<CustomToast content="Review added successfully." />);
+      console.log("review------");
+      console.log("Review added successfully.");
     } catch (error) {
     } finally {
       setReviewLoading(false);
@@ -503,7 +505,7 @@ const Detail = () => {
                         alt=""
                       />
                       <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
-                        {isVehicleDetail?.mileage} meter
+                        {isVehicleDetail?.mileage} miles
                       </h5>
                     </div>
                     <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
@@ -526,7 +528,7 @@ const Detail = () => {
                         height={20}
                         alt=""
                       />
-                      <h5 className="text-[16px] text-customDarkGray font-normal mx-3">
+                      <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
                         {isVehicleDetail?.door} Doors
                       </h5>
                     </div>
@@ -551,7 +553,7 @@ const Detail = () => {
                         alt=""
                       />
                       <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
-                        {isVehicleDetail?.fuel_type?._id?.name} Liter
+                        {isVehicleDetail?.fuel_type?._id?.name} mile
                       </h5>
                     </div>
                   </div>
@@ -798,7 +800,7 @@ const Detail = () => {
                           key={index}
                         >
                           <div
-                            className="flex md:w-[140px] sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                            className="flex md:w-[100px] mx-2 my-2 sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                  items-center"
                             onClick={() => onHandleClickButtons(index)}
                           >
@@ -864,7 +866,7 @@ const Detail = () => {
                                     key={index}
                                   >
                                     <div
-                                      className="flex md:w-[140px] sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                                      className="flex md:w-[100px] mx-2 my-2 sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                  items-center"
                                       onClick={() =>
                                         onHandleClickButtons(index)
