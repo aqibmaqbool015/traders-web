@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getUserProfile } from "../login/api";
 import { Image_base } from "@/networking/network";
 import { getUserNotificationApi } from "../user-profile/api";
+import { formatDistance, formatDistanceToNow } from "date-fns";
 
 const image = {
   logo: "/logo-trade.svg",
@@ -143,7 +144,7 @@ const Header = () => {
             <span className=" cursor-pointer" onClick={toggleDropdown}>
               {allNotifications ? (
                 <Image
-                  src={image.bellIcon}
+                  src={image.bell}
                   height={10}
                   width={18}
                   alt="Bell"
@@ -151,7 +152,7 @@ const Header = () => {
                 />
               ) : (
                 <Image
-                  src={image.bell}
+                  src={image.bellIcon}
                   height={10}
                   width={18}
                   alt="Bell"
@@ -160,20 +161,40 @@ const Header = () => {
               )}
 
               {isDropdownOpen && (
-                <div className="absolute right-24 mt-6 z-50 md:w-[350px] p-1 px-2 bg-white border border-customGray rounded shadow-lg">
+                <div
+                  className="absolute right-24 mt-6 z-50 md:w-[350px] p-1 px-2 bg-white border border-customGray rounded shadow-lg
+                h-[300px] overflow-auto "
+                >
                   {allNotifications?.length === 0 ? (
                     <p className="text-left text-customBlue my-5">
                       Notifications not found.
                     </p>
                   ) : (
-                    <div className="md:mx-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {allNotifications?.map((item, index) => (
-                          <div className="" key={index}>
-                            Notifications
+                    <div className="md:mx-2">
+                      {allNotifications?.map((item, index) => (
+                        <div
+                          className="px-2 py-1 my-2 bg-customBg border border-customBlue rounded-[5px] "
+                          key={index}
+                        >
+                          <div className="w-full">
+                            <p className="text-customBlue font-medium text-[16px] ">
+                              {item?.title}
+                            </p>
+                            <p className="text-customColorNav text-[14px] font-normal">
+                              {item?.body}
+                            </p>
+                            <p className="text-customColorNav text-[14px] font-normal text-right">
+                              {item?.createdAt
+                                ? `${formatDistance(
+                                    new Date(item.createdAt),
+                                    new Date(),
+                                    { addSuffix: true }
+                                  )}`.replace("about ", "") 
+                                : ""}
+                            </p>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

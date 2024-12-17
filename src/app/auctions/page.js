@@ -135,7 +135,6 @@ const Auctions = () => {
     setTabLoading(true);
     try {
       const data = await getLiveAuctionApi();
-      console.log("live........", data);
 
       if (data?.data) {
         setAuctionLive(data?.data);
@@ -190,7 +189,6 @@ const Auctions = () => {
         setVehicles(data?.data);
       }
     } catch (err) {
-      console.error("Error fetching vehicles:", err);
       setVehicles([]);
     }
   };
@@ -435,7 +433,12 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 3 ? "text-center flex justify-center" : "hidden"} id="link3">
+                <div
+                  className={
+                    openTab === 3 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link3"
+                >
                   {tabLoading && !auctionInterested.length ? (
                     <p className="text-center my-5 animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2 "></p>
                   ) : auctionInterested?.length === 0 ? (
@@ -465,7 +468,12 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 4 ? "text-center flex justify-center" : "hidden"} id="link4">
+                <div
+                  className={
+                    openTab === 4 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link4"
+                >
                   {tabLoading && !auctionBid?.length ? (
                     <p className="text-center my-5  animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : auctionBid?.length === 0 ? (
@@ -495,7 +503,12 @@ const Auctions = () => {
                     </div>
                   )}
                 </div>
-                <div className={openTab === 5 ? "text-center flex justify-center" : "hidden"} id="link5">
+                <div
+                  className={
+                    openTab === 5 ? "text-center flex justify-center" : "hidden"
+                  }
+                  id="link5"
+                >
                   {tabLoading && !auctionWon?.length ? (
                     <p className="text-center my-5  animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : auctionWon?.length === 0 ? (
@@ -532,7 +545,7 @@ const Auctions = () => {
                   id="link6"
                 >
                   {tabLoading && !vehicles?.length ? (
-                    <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
+                    <p className="text-center my-5 animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
                   ) : vehicles?.length === 0 ? (
                     <p className="text-center text-customBlue my-5">
                       My vehicles not found.

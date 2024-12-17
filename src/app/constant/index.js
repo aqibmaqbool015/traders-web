@@ -635,7 +635,7 @@ export const driver = [
 ];
 export const duration = [
   {
-    title: "1 hours",
+    title: "1 hour",
   },
   {
     title: "2 hours",

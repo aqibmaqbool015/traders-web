@@ -165,8 +165,6 @@ const Detail = () => {
     };
     try {
       const data = await reviewDetailsApi(params);
-      console.log("data------", data);
-
       if (data?.data) {
         setAllReviews(data?.data[0]?.reviews || []);
       }
@@ -186,21 +184,21 @@ const Detail = () => {
     setVisibleComments(3);
   };
 
-  // useEffect(() => {
-  //   fetchAllAuctions();
-  // }, []);
+  useEffect(() => {
+    fetchAllAuctions();
+  }, []);
 
-  // const fetchAllAuctions = async () => {
-  //   try {
-  //     const data = await getAllAuctionApi();
-  //     if (data?.data) {
-  //       setAllAuction(data?.data);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching vehicles:", err);
-  //     setAllAuction([]);
-  //   }
-  // };
+  const fetchAllAuctions = async () => {
+    try {
+      const data = await getAllAuctionApi();
+      if (data?.data) {
+        setAllAuction(data?.data);
+      }
+    } catch (err) {
+      console.error("Error fetching vehicles:", err);
+      setAllAuction([]);
+    }
+  };
 
   const fetchGetVehicleDetail = async (id) => {
     try {
@@ -286,7 +284,6 @@ const Detail = () => {
 
     try {
       await createReviewApi(param);
-      console.log("review------");
       console.log("Review added successfully.");
     } catch (error) {
     } finally {
@@ -317,7 +314,8 @@ const Detail = () => {
   const openCallModal = () => setIsCallModal(true);
   const closeCallModal = () => setIsCallModal(false);
   const handleClickBid = (e) => {
-    e.preventDefault();
+    const userJsonParams = JSON.stringify(e);
+    localStorage.setItem("traderData", userJsonParams);
     router.push("/auction-bid");
   };
 
@@ -558,40 +556,32 @@ const Detail = () => {
                     </div>
                   </div>
                 </div>
-                {/* <div className="col-span-12 md:col-span-12">
-                  {allAuction?.length === 0 ? (
+                <div className="col-span-12 md:col-span-12">
+                  {isVehicleDetail?.isLive ? (
                     <>
-                      <p className="text-center text-customBlue">No Bid</p>
+                      <div className="text-center ">
+                        <button
+                          className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2"
+                          onClick={()=>handleClickBid(isVehicleDetail)}
+                        >
+                          Start You Bid
+                        </button>
+                      </div>
                     </>
                   ) : (
                     <>
-                      {allAuction?.isLive && allAuction?.is_sold ? (
-                        <>
-                          <div className="text-center ">
-                            <button
-                              className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2"
-                              onClick={handleClickBid}
-                            >
-                              Start You Bid
-                            </button>
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="text-center ">
-                            <button
-                              className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2
+                      <div className="text-center ">
+                        <button
+                          className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2
                         opacity-50  "
-                              disabled
-                            >
-                              Start You Bid
-                            </button>
-                          </div>
-                        </>
-                      )}
+                          disabled
+                        >
+                          Start You Bid
+                        </button>
+                      </div>
                     </>
                   )}
-                </div> */}
+                </div>
                 <div className="col-span-12 md:col-span-6">
                   <div className="mt-10">
                     <Image
@@ -800,7 +790,7 @@ const Detail = () => {
                           key={index}
                         >
                           <div
-                            className="flex md:w-[100px] mx-2 my-2 sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                            className="flex sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                  items-center"
                             onClick={() => onHandleClickButtons(index)}
                           >
@@ -866,7 +856,7 @@ const Detail = () => {
                                     key={index}
                                   >
                                     <div
-                                      className="flex md:w-[100px] mx-2 my-2 sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                                      className="flex sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                  items-center"
                                       onClick={() =>
                                         onHandleClickButtons(index)
@@ -1142,3 +1132,34 @@ const Detail = () => {
 };
 
 export default Detail;
+
+{
+  /* {allAuction?.length > 0
+                    ? allAuction?.flatMap((auctionGroup) =>
+                        auctionGroup?.map((auction) =>
+                          auction.isLive ? (
+                            <div key={auction.id} className="text-center">
+                              <button
+                                className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2"
+                                onClick={() => handleClickBid(auction.id)}
+                              >
+                                Start Your Bid
+                              </button>
+                            </div>
+                          ) : (
+                            <>
+                              <div className="text-center ">
+                                <button
+                                  className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2
+                            opacity-50  "
+                                  disabled
+                                >
+                                  Start You Bid
+                                </button>
+                              </div>
+                            </>
+                          )
+                        )
+                      )
+                    : null} */
+}

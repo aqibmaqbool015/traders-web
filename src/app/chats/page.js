@@ -24,8 +24,10 @@ const Chats = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+
   const [isConnected, setIsConnected] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
+
   const user = useSelector((state) => state?.User?.data);
 
   useEffect(() => {
@@ -76,13 +78,6 @@ const Chats = () => {
   }, [selectedUser]);
 
   function onConnect() {
-    console.log({
-      userId: user?._id,
-      receiver: selectedUser?.participants?.length
-        ? selectedUser?.participants[0]?._id
-        : selectedUser?._id,
-    });
-
     socket.emit("addUser", {
       userId: user?._id,
       receiver: selectedUser?.participants?.length
@@ -103,11 +98,6 @@ const Chats = () => {
 
   function onDisconnect() {
     toast.error(<CustomToast content="onDisconnect triggered." />);
-  }
-
-  function onDisconnect() {
-    setIsConnected(false);
-    toast.error(<CustomToast content="Socket disconnected" />);
   }
 
   const handleFileChange = (event) => {
@@ -258,24 +248,24 @@ const Chats = () => {
                     <div
                       key={index}
                       className={`flex justify-end  ${
-                        message.sender !== user?._id
+                        message.sender ?? message?._id !== user?._id
                           ? "justify-start items-end"
                           : "justify-end items-end"
                       }`}
                     >
                       <div
-                        className={`max-w-xl p-4 ${
-                          message.sender !== user?._id
-                            ? "bg-customCardBg text-customBlackDark"
-                            : " bg-customBlue text-white"
+                        className={`max-w-xl p-4   ${
+                          message.sender ?? message?._id !== user?._id
+                            ? "bg-customBlue text-white"
+                            : "  bg-customCardBg text-customBlackDark"
                         } rounded-lg ml-3`}
                       >
                         <p>{message?.message ?? message?.text}</p>
                         <span
                           className={`text-xs relative right-0 w-full block text-right mt-1 ${
-                            message.sender !== user?._id
-                              ? "text-customBlackDark"
-                              : " text-white"
+                            message.sender ?? message?._id !== user?._id
+                              ? "text-white"
+                              : "  text-customBlackDark"
                           }`}
                         >
                           {new Date(message?.createdAt).toLocaleString(

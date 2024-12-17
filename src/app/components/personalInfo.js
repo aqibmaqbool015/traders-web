@@ -33,7 +33,7 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
       email: userProfile?.email || "",
       phone: userProfile?.phone || "",
       bio: userProfile?.bio || "",
-      profilePicture: userProfile?.profilePicture || "",
+      profilePicture: null,
     },
     validationSchema: validationSchema,
     validateOnChange: false,
@@ -45,7 +45,9 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
       formData.append("lastName", values.lastName);
       formData.append("phone", values.phone);
       formData.append("bio", values.bio);
-
+      if (values.profilePicture) {
+        formData.append("profilePicture", values.profilePicture);
+      }
       try {
         const response = await updateProfileApi(formData);
         if (response?.success) {
@@ -65,15 +67,15 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
     },
     enableReinitialize: true,
   });
-
   const handleImageUpload = (e) => {
     const selectedFiles = e.target.files;
     if (selectedFiles && selectedFiles[0]) {
-      const previewUrl = URL.createObjectURL(selectedFiles[0]);
-      formik.setFieldValue("profilePicture", previewUrl);
+      const file = selectedFiles[0];
+      const previewUrl = URL.createObjectURL(file);
+      formik.setFieldValue("profilePicture", file);
+      formik.setFieldValue("profilePicturePreview", previewUrl);
     }
   };
-  console.log(formik?.values?.profilePicture);
 
   return (
     <>
@@ -85,9 +87,9 @@ const PersonalInfo = ({ userProfile, setUserProfile }) => {
           <div className="mb-4">
             <div className="flex justify-center mb-3">
               <div className="w-24 h-24 bg-customGray rounded-full relative">
-                {formik.values.profilePicture ? (
+                {formik.values.profilePicturePreview ? (
                   <Image
-                    src={formik.values.profilePicture}
+                    src={formik.values.profilePicturePreview}
                     alt="Profile"
                     className="w-full h-full object-cover rounded-full"
                     width={300}

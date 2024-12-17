@@ -72,7 +72,7 @@ const HomePage = () => {
   const rowsPerPage = 20;
 
   useEffect(() => {
-    fetchVehicles(1);
+    fetchVehicles(currentPage);
   }, []);
 
   const fetchVehicles = async (page) => {

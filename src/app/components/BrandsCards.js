@@ -372,7 +372,7 @@ const BrandsCards = ({
                                   </div>
                                 )}
                               </div>
-                              <div className="py-3 px-2">
+                              <div className="py-3 px-2 text-left">
                                 <h2 className="text-customBlue font-medium md:text-[23px] text-[15px] ">
                                   {feed?.vehicle?.model_id?.name ||
                                     feed?.vehicle?.regno}

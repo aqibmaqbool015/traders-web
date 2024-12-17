@@ -52,8 +52,6 @@ const TraderDetail = () => {
   const [isFilterModalOpen, setFilterModalOpen] = useState(false);
   const searchParams = useSearchParams();
   const [traderData, setTraderData] = useState(null);
-  console.log("--------", traderData);
-
   const [isReview, setIsReview] = useState("");
 
   useEffect(() => {
@@ -220,7 +218,7 @@ const TraderDetail = () => {
                     return (
                       <div className="inline-block w-[140px] mx-2 " key={index}>
                         <div
-                          className="flex md:w-[100px] mx-2 my-2 sm:w-[140px] w-[130px] mx-2 my-2 px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
+                          className="flex mx-2 my-2 sm:w-[140px] w-[130px]  px-4 py-2 border cursor-pointer border-customGray rounded-[8px] bg-customBgButton
                                  items-center"
                           onClick={() => onHandleClickButtons(index)}
                         >

@@ -168,14 +168,20 @@ export const AuctionsCardAll = ({ auction }) => {
                 height={14}
               />
               <p className="text-customSmallGray text-[13px] mx-2">
-                {new Date(auction?.auc_start_time)
+                {/* {new Date(auction?.auc_start_time)
                   .toUTCString()
                   .split(" ")[4]
                   .replace(/^(\d{2}):(\d{2}):\d{2}$/, (_, hh, mm) => {
                     const hours = Number(hh) % 12 || 12;
                     const period = Number(hh) >= 12 ? "pm" : "am";
                     return `${hours}:${mm} ${period}`;
-                  })}
+                  })} */}
+
+                {new Date(auction?.auc_start_time).toLocaleString("en-GB", {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                })}
 
                 {"-"}
                 {new Date(auction?.auc_end_time).toLocaleString("en-GB", {
