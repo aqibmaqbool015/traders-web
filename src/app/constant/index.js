@@ -328,11 +328,11 @@ export const cardsAuction = [
 ];
 
 export const bidAmount = [
-  { text: "£250k", class: "bg-transparent text-customOrange" },
-  { text: "£300k", class: "bg-transparent text-customOrange" },
-  { text: "£350k", class: "bg-transparent text-customOrange" },
-  { text: "£400k", class: "bg-transparent text-customOrange" },
-  { text: "£450k", class: "bg-transparent text-customOrange" },
+  { text: "250", class: "bg-transparent text-customOrange" },
+  { text: "300", class: "bg-transparent text-customOrange" },
+  { text: "350", class: "bg-transparent text-customOrange" },
+  { text: "400", class: "bg-transparent text-customOrange" },
+  { text: "450", class: "bg-transparent text-customOrange" },
   { text: "Use custom bid", class: "bg-customOrange text-white" },
 ];
 

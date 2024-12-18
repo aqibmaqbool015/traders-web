@@ -1,7 +1,7 @@
 "use client";
 import { Image_base } from "@/networking/network";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { io } from "socket.io-client";
 import { getConversationsApi } from "./api";
 import { useSelector } from "react-redux";
@@ -17,15 +17,11 @@ const image = {
 };
 
 const SOCKET_SERVER_URL = "https://trade2trade.co.uk:5050/";
-const socket = io(SOCKET_SERVER_URL);
-
 const Chats = () => {
   const [isChat, setIsChat] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
-
-  const [isConnected, setIsConnected] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null);
 
   const user = useSelector((state) => state?.User?.data);
@@ -52,53 +48,65 @@ const Chats = () => {
     }
   };
 
+  const scrollRef = useRef(null);
+  const socketRef = useRef(null);
+  const socketSend = socketRef.current;
   useEffect(() => {
-    if (socket.connected) {
-      onConnect();
-    }
-
+    socketRef.current = io(SOCKET_SERVER_URL, {
+      autoConnect: false,
+      transports: ["websocket"],
+    });
+    const socket = socketRef.current;
     socket.on("connect", () => {
-      onConnect();
+      console.log("Connected to socket server");
     });
-
-    socket.on("disconnect", () => {
-      onDisconnect();
-    });
-
-    return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (selectedUser) {
-      onConnect();
-    }
-  }, [selectedUser]);
-
-  function onConnect() {
     socket.emit("addUser", {
       userId: user?._id,
       receiver: selectedUser?.participants?.length
         ? selectedUser?.participants[0]?._id
         : selectedUser?._id,
     });
-
-    socket.on("getMessage", (data) => {
-      toast.success(<CustomToast content="getMessage received:" />);
-    });
-
     socket.on("userMsgs", (data) => {
-      if (data) {
+      if (data?.messages.length) {
         setMessages(data?.messages);
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollTo({
+              top: scrollRef.current.scrollHeight,
+              behavior: "smooth",
+            });
+          }
+        }, 100);
       }
     });
-  }
+    socket.on("getMessage", (data) => {
+      if (data?.message) {
+        setMessages((prevMessages) => [...prevMessages, data]);
+        setTimeout(() => {
+          if (scrollRef.current) {
+            scrollRef.current.scrollTo({
+              top: scrollRef.current.scrollHeight,
+              behavior: "smooth",
+            });
+          }
+        }, 100);
+      }
+    });
 
-  function onDisconnect() {
-    toast.error(<CustomToast content="onDisconnect triggered." />);
-  }
+    socket.on("disconnect", () => {
+      console.log("Disconnected from socket server");
+    });
+    socket.on("connect_error", (err) => {
+      console.error("Connection error:", err);
+    });
+    socket.on("error", (err) => {
+      console.error("Socket error:", err);
+    });
+    socket.connect();
+    return () => {
+      socket.disconnect();
+    };
+  }, [selectedUser]);
 
   const handleFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -121,9 +129,15 @@ const Chats = () => {
       createdAt: new Date(),
       imgUrl: selectedUser?.messages?.imgUrl ?? selectedUser?.profilePicture,
     };
-    await socket.emit("sendMessage", params);
+    await socketSend.emit("sendMessage", params);
+    const localParams = {
+      sender: user?._id,
+      message: message,
+      createdAt: new Date(),
+      imgUrl: selectedUser?.messages?.imgUrl ?? selectedUser?.profilePicture,
+    };
+    setMessages((prevMessages) => [...prevMessages, localParams]);
     fetchConverstaion();
-    setMessages((prevMessages) => [...prevMessages, params]);
     setMessage("");
   };
 
@@ -247,23 +261,23 @@ const Chats = () => {
                   return (
                     <div
                       key={index}
-                      className={`flex justify-end  ${
-                        message.sender ?? message?._id !== user?._id
+                      className={`flex ${
+                        message.sender !== user?._id
                           ? "justify-start items-end"
                           : "justify-end items-end"
                       }`}
                     >
                       <div
                         className={`max-w-xl p-4   ${
-                          message.sender ?? message?._id !== user?._id
+                          message.sender !== user?._id
                             ? "bg-customBlue text-white"
                             : "  bg-customCardBg text-customBlackDark"
                         } rounded-lg ml-3`}
                       >
-                        <p>{message?.message ?? message?.text}</p>
+                        <p>{message?.message}</p>
                         <span
                           className={`text-xs relative right-0 w-full block text-right mt-1 ${
-                            message.sender ?? message?._id !== user?._id
+                            message.sender !== user?._id
                               ? "text-white"
                               : "  text-customBlackDark"
                           }`}

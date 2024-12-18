@@ -130,11 +130,7 @@ export const AuctionsCardAll = ({ auction }) => {
               className="w-full object-[initial] cursor-pointer
                     h-[250px] 
                      rounded-[8px] "
-              src={
-                auction?.pictures?.length > 0
-                  ? `${Image_base}${auction.pictures[0]}`
-                  : image.vehicle
-              }
+              src={imageSrc}
               alt="allAuction"
               width={200}
               height={280}
@@ -154,7 +150,9 @@ export const AuctionsCardAll = ({ auction }) => {
             </div>
 
             <p className="text-customBlackLight text-[17px]">
-              {auction?.model_id?.name || auction?.regno}
+              {auction?.make_id?.title} 
+              {"  "}
+              {auction?.model_id?.name}
             </p>
             <p className="text-customDarkGray text-[15px]">
               {auction?.year || "2014"} - {auction?.mileage || "167,453"} Km
