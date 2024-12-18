@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import { Image_base } from "@/networking/network";
 import { useRouter } from "next/navigation";
