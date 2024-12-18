@@ -117,7 +117,7 @@ const PrivacyPolicy = () => {
         </h2>
         <p className="text-customColorNav mb-6">
           We implement reasonable security measures to protect your personal
-          information from unauthorized access and use. However, it's important
+          information from unauthorized access and use. However, its important
           to note that no data transmission over the internet or storage system
           can be guaranteed to be 100% secure.
         </p>
@@ -150,7 +150,7 @@ const PrivacyPolicy = () => {
           8. Data Storage and Security
         </h2>
         <p className="text-customColorNav mb-6">
-          Ensuring the security and privacy of our users' data is a top priority
+          Ensuring the security and privacy of our users data is a top priority
           for Trade To Trade Group. The following measures outline how we will
           safely store and protect user data in the T2T V3.0 App:
         </p>
