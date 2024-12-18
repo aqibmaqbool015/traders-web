@@ -17,8 +17,13 @@ const image = {
 };
 
 const Header = () => {
-  const pathname = usePathname();
-  const router = useRouter();
+  // const handleCLick = () => {
+  //   router.push("/home");
+  // };
+  // const handleCLickAuctions = () => {
+  //   router.push("/auctions");
+  // };
+
   const handleCLick = () => {
     router.push("/home");
   };
@@ -72,13 +77,41 @@ const Header = () => {
     router.push("/login");
   };
 
+  // const onClickChat = () => {
+  //   localStorage.setItem("senderId", null);
+  //   router.push("/chats");
+  // };
+
+  const handleClick = (route) => {
+    router.push(route);
+  };
+
   const onClickChat = () => {
     localStorage.setItem("senderId", null);
     router.push("/chats");
   };
 
+  const router = useRouter();
+  const { pathname, query } = router;
+
   const onClickLeaderboard = () => {
+    localStorage.setItem("activeTab", "Leaderboard");
     router.push("/user-profile?tab=Leaderboard");
+  };
+
+  const currentTab =
+    query?.tab || localStorage.getItem("activeTab") || "Personal Information";
+
+  const handleSettingsClick = () => {
+    localStorage.setItem("activeTab", "Personal Information");
+    router.push("/user-profile?tab=Personal+Information");
+  };
+  const handleProfileClick = () => {
+    localStorage.setItem("activeTab", "Personal Information");
+    router.push("/user-profile?tab=Personal+Information");
+  };
+  const getLinkClass = (linkPath) => {
+    return pathname === linkPath ? "text-customOrange" : "text-customColorNav";
   };
 
   return (
@@ -86,7 +119,10 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center ">
           <div className="flex items-center">
-            <span className="cursor-pointer" onClick={handleCLick}>
+            <span
+              className="cursor-pointer"
+              onClick={() => handleClick("/home")}
+            >
               <Image
                 src={image.logo}
                 width={140}
@@ -98,43 +134,35 @@ const Header = () => {
           </div>
           <nav className="hidden md:flex space-x-4">
             <div
-              onClick={handleCLick}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
-                pathname === "/home"
-                  ? "text-customOrange"
-                  : "text-customColorNav"
-              }`}
+              onClick={() => handleClick("/home")}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+                "/home"
+              )}`}
             >
               HOME
             </div>
             <div
-              onClick={handleCLickAuctions}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
-                pathname === "/auctions"
-                  ? "text-customOrange"
-                  : "text-customColorNav"
-              }`}
+              onClick={() => handleClick("/auctions")}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+                "/auctions"
+              )}`}
             >
               AUCTION
             </div>
             <div
               onClick={onClickChat}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${
-                pathname === "/chats"
-                  ? "text-customOrange"
-                  : "text-customColorNav"
-              }`}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+                "/chats"
+              )}`}
             >
               CHATS
             </div>
 
             <div
               onClick={onClickLeaderboard}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 uppercase ${
-                pathname === "/user-profile"
-                  ? "text-customOrange"
-                  : "text-customColorNav"
-              }`}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 uppercase ${getLinkClass(
+                "/user-profile?tab=Leaderboard"
+              )}`}
             >
               Leaderboard
             </div>
@@ -189,7 +217,7 @@ const Header = () => {
                                     new Date(item.createdAt),
                                     new Date(),
                                     { addSuffix: true }
-                                  )}`.replace("about ", "") 
+                                  )}`.replace("about ", "")
                                 : ""}
                             </p>
                           </div>
@@ -229,7 +257,7 @@ const Header = () => {
                 </span>
 
                 <div
-                  className="absolute right-1 mt-24 w-24 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
+                  className="absolute right-1 mt-32 w-24 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
                 z-50 "
                 >
                   <button
@@ -238,12 +266,18 @@ const Header = () => {
                   >
                     Logout
                   </button>
-                  <Link
-                    href="/user-profile"
+                  <div
+                    onClick={handleProfileClick}
+                    className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
+                  >
+                    Profile
+                  </div>
+                  <div
+                    onClick={handleSettingsClick}
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
                   >
                     Settings
-                  </Link>
+                  </div>
                 </div>
               </span>
 
@@ -279,7 +313,7 @@ const Header = () => {
         >
           <nav className="flex flex-col space-y-2 p-4">
             <Link
-              href="/"
+              href="/home"
               className="px-2 text-customColorNav text-[16px] font-medium hover:text-customBlue hover:underline underline-offset-8"
             >
               HOME

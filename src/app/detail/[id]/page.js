@@ -542,18 +542,20 @@ const Detail = () => {
                         {isVehicleDetail?.location}
                       </h5>
                     </div>
-                    <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
-                      <Image
-                        className="w-[20px] h-[20px]"
-                        src={image.image5}
-                        width={20}
-                        height={20}
-                        alt=""
-                      />
-                      <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
-                        {isVehicleDetail?.fuel_type?._id?.name} mile
-                      </h5>
-                    </div>
+                    {isVehicleDetail?.fuel_type?._id?.name && (
+                      <div className="flex cursor-pointer items-center border-b border-b-customGray py-3">
+                        <Image
+                          className="w-[20px] h-[20px]"
+                          src={image.image5}
+                          width={20}
+                          height={20}
+                          alt=""
+                        />
+                        <h5 className="text-[16px] text-customDarkGray uppercase font-normal mx-3">
+                          {isVehicleDetail?.fuel_type?._id?.name}
+                        </h5>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="col-span-12 md:col-span-12">
@@ -562,7 +564,7 @@ const Detail = () => {
                       <div className="text-center ">
                         <button
                           className="py-2.5 px-8 border border-transparent rounded-[12px] shadow-sm text-sm font-medium text-white bg-customOrange !mt-2"
-                          onClick={()=>handleClickBid(isVehicleDetail)}
+                          onClick={() => handleClickBid(isVehicleDetail)}
                         >
                           Start You Bid
                         </button>

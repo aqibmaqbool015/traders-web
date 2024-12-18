@@ -1,6 +1,6 @@
 import Image from "next/image";
-import { userLeader } from "../constant";
 import { Image_base } from "@/networking/network";
+import { useRouter } from "next/navigation";
 
 const image = {
   avatar: "/user-vactor.png",
@@ -14,7 +14,22 @@ const Leaderboard = ({
   showLoading,
   totalPages,
 }) => {
+  const router = useRouter();
 
+  const handleClickHistory = (traderData, selected) => {
+    const param = {
+      user_id: traderData?.user?._id,
+      sold: selected === "sold" ? true : false,
+    };
+    const userJsonParams = JSON.stringify(param);
+    localStorage.setItem("traderVehicleId", userJsonParams);
+    router.push("/my-post");
+  };
+  const onClickTrader = (trader) => {
+    const data = JSON.stringify(trader?.user);
+    localStorage.setItem("traderData", data);
+    router.push(`/trader-detail/${trader?.user?._id}`);
+  };
   return (
     <>
       <h2 className="text-2xl text-customBlue font-semibold mb-4">
@@ -33,36 +48,44 @@ const Leaderboard = ({
           {isLeaderBoard?.map((user, index) => (
             <div
               key={index}
-              className="flex items-end space-x-3 border-b border-b-customBg pb-3 mb-3"
+              className="flex justify-between items-end space-x-3 border-b border-b-customBg pb-3 mb-3"
             >
-              <Image
-                src={
-                  `${Image_base}${user?.user?.profilePicture}` || image.avatar
-                }
-                alt=""
-                className="md:w-[50px] md:h-[50px] h-[40px] w-[40px] inline-block rounded-full "
-                width={50}
-                height={50}
-              />
-              <div className="flex-1">
-                <p className="font-normal md:text-[20px] text-[17px] text-customBlue ">
-                  {user?.user?.firstName}
-                </p>
-                <div className="flex items-center">
-                  <Image
-                    src={image.star}
-                    alt=""
-                    className="w-[16px] h-[16px] mr-2 object-contain inline-block "
-                    width={16}
-                    height={16}
-                  />
-                  <h3 className="text-sm text-customDarkGray">
-                    {user?.averageRating} ( {user?.reviews} )
-                  </h3>
+              <div
+                className="flex cursor-pointer"
+                onClick={() => onClickTrader(user)}
+              >
+                <Image
+                  src={
+                    `${Image_base}${user?.user?.profilePicture}` || image.avatar
+                  }
+                  alt=""
+                  className="md:w-[50px] md:h-[50px] h-[40px] w-[40px] inline-block rounded-full "
+                  width={50}
+                  height={50}
+                />
+                <div className="flex-1 ml-2">
+                  <p className="font-normal md:text-[20px] text-[17px] text-customBlue ">
+                    {user?.user?.firstName}
+                  </p>
+                  <div className="flex items-center">
+                    <Image
+                      src={image.star}
+                      alt=""
+                      className="w-[16px] h-[16px] mr-2 object-contain inline-block "
+                      width={16}
+                      height={16}
+                    />
+                    <h3 className="text-sm text-customDarkGray">
+                      {user?.averageRating} ( {user?.reviews} )
+                    </h3>
+                  </div>
                 </div>
               </div>
               <div className="flex">
-                <div className="mx-2">
+                <div
+                  className="mx-2 cursor-pointer"
+                  onClick={() => handleClickHistory(user, "sold")}
+                >
                   <p className="md:text-[18px] text-[15px] text-customDarkGray font-normal  text-center">
                     Sold
                   </p>
@@ -70,7 +93,11 @@ const Leaderboard = ({
                     {user?.userSoldVehicles}
                   </div>
                 </div>
-                <div className="mx-2">
+
+                <div
+                  className="mx-2 cursor-pointer"
+                  onClick={() => handleClickHistory(user, "sale")}
+                >
                   <p className="md:text-[18px] text-[15px] text-customDarkGray font-normal  text-center">
                     Sales
                   </p>

@@ -56,7 +56,7 @@ function Footer() {
                     Terms & Conditions
                   </Link>
                   <Link
-                    href="/user-profile"
+                    href="/contact-us"
                     className="text-customBlackLight text-[15px] font-normal block my-2"
                   >
                     Contact Us
@@ -68,9 +68,9 @@ function Footer() {
                   How to Reach Us:
                 </h6>
                 <div className="">
-                  <div className="text-customBlackLight text-[15px] font-normal block my-2">
+                  {/* <div className="text-customBlackLight text-[15px] font-normal block my-2">
                     (315) 257 7729{" "}
-                  </div>
+                  </div> */}
                   <div className="text-customBlackLight text-[15px] font-normal block my-2">
                     C3 100 Fitzwalter Road, Sheffield, England, S2 2SP
                   </div>

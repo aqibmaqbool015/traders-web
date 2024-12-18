@@ -15,6 +15,7 @@ import Feedback from "./feedback";
 import ChangePassword from "./changePassword";
 import TermsCondition from "./termsCondition";
 import PrivacyPolicy from "./privacyPolicy";
+import { useRouter } from "next/navigation";
 
 const image = {
   logout: "/info-14.svg",
@@ -35,8 +36,19 @@ const UserInfoTab = ({
   showLoading,
   totalPages,
 }) => {
+  const router = useRouter();
+  const { query } = router;
   const [activeTab, setActiveTab] = useState("Personal Information");
   const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    const savedTab = localStorage.getItem("activeTab");
+    if (savedTab) {
+      setActiveTab(savedTab);
+    } else {
+      setActiveTab("Personal Information");
+    }
+  }, []);
 
   const handleImageUpload = (e, setImage) => {
     const file = e.target.files[0];
