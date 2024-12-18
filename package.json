@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@glidejs/glide": "^3.6.2",
-    "@reach/combobox": "^0.18.0",
     "@reduxjs/toolkit": "^2.3.0",
     "date-fns": "^4.1.0",
     "flowbite": "^2.5.2",
