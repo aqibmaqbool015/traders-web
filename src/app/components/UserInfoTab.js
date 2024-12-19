@@ -9,13 +9,13 @@ import Image from "next/image";
 import MyPost from "./myPost";
 import SnagList from "./snagList";
 import WantedList from "./wantedList";
-import Notifications from "./notifications";
 import ManageLocation from "./manageLocation";
 import Feedback from "./feedback";
 import ChangePassword from "./changePassword";
 import TermsCondition from "./termsCondition";
 import PrivacyPolicy from "./privacyPolicy";
 import { useRouter } from "next/navigation";
+import RetailCheck from "./retailCheck";
 
 const image = {
   logout: "/info-14.svg",
@@ -59,6 +59,17 @@ const UserInfoTab = ({
       };
       reader.readAsDataURL(file);
     }
+  };
+  const [isLogoutModal, setIsLogoutModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleModalOpenLogout = () => setIsLogoutModal(true);
+  const handleModalCloseLogout = () => setIsLogoutModal(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("");
+    sessionStorage.clear();
+    router.push("/login");
   };
 
   const renderContent = () => {
@@ -163,8 +174,8 @@ const UserInfoTab = ({
           </>
         );
 
-      case "Manage Notification":
-        return <Notifications />;
+      case "Retail Check":
+        return <RetailCheck />;
       case "Manage Location":
         return <ManageLocation />;
       case "Feedback":
@@ -221,7 +232,10 @@ const UserInfoTab = ({
                 <span className="text-lg">{item.name}</span>
               </li>
             ))}
-            <li className="flex items-center space-x-2 md:px-5 cursor-pointer border-b border-b-customBg pb-4 ">
+            <li
+              className="flex items-center space-x-2 md:px-5 cursor-pointer border-b border-b-customBg pb-4 "
+              onClick={handleModalOpenLogout}
+            >
               <span className="">
                 <Image
                   src={image.logout}
@@ -253,6 +267,46 @@ const UserInfoTab = ({
           </ul>
         </div>
       </div>
+
+      {isLogoutModal && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg shadow-lg w-11/12 sm:w-1/2 md:w-[400px] max-h-[90vh] overflow-y-auto">
+            <div className="p-4 relative">
+              <div className="absolute right-3 top-4">
+                <Image
+                  src={image.crossBlue}
+                  alt="Close"
+                  className="w-[15px] h-auto cursor-pointer"
+                  onClick={handleModalCloseLogout}
+                  width={15}
+                  height={15}
+                />
+              </div>
+            </div>
+            <div className="my-4 px-4">
+              <p className="text-[15px] text-customBlackLight text-center ">
+                Do you really want to logout your account.
+              </p>
+              <div className="my-3 text-center">
+                <button
+                  onClick={handleLogout}
+                  disabled={loading}
+                  className="text-white capitalize mx-2 bg-customRed border border-transparent rounded-[20px] px-3 min-w-[100px] py-1 "
+                >
+                  {loading ? "Loading..." : "Logout"}
+                </button>
+                <span
+                  onClick={handleModalCloseLogout}
+                  className="text-customBlue inline-block capitalize mx-2 bg-transparent border border-customBlue rounded-[20px] px-3 min-w-[100px] py-1
+                        cursor-pointer "
+                >
+                  cancel
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Main Content */}
       <div className="md:w-3/4 bg-white md:p-6 p-3">{renderContent()}</div>

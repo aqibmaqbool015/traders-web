@@ -213,7 +213,7 @@ const SearchPage = () => {
                   ) : null} */}
                 </>
               ) : vehicles?.length === 0 ? (
-                <p className="text-center">No data found</p>
+                <p className="text-center">{/* No data found */}</p>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-left">
                   {vehicles?.map((vehicle, index) => (
@@ -232,11 +232,15 @@ const SearchPage = () => {
                 )}
               </div>
             </div>
-            <div className={openTab === 2 ? " flex text-center justify-center" : " hidden"}>
+            <div
+              className={
+                openTab === 2 ? " flex text-center justify-center" : " hidden"
+              }
+            >
               {isLoading ? (
                 <p className="text-center my-5 flex justify-center animate-spin rounded-full h-12 w-12 border-t-2 border-customBlue border-opacity-50 mr-2"></p>
               ) : trader?.length === 0 ? (
-                <p className="text-center">No data found</p>
+                <p className="text-center">{/* No data found */}</p>
               ) : (
                 <div className="grid grid-cols-1bs gap-4 mt-4 text-left w-full ">
                   {trader?.map((trader, index) => (

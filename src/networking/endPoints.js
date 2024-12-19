@@ -53,6 +53,8 @@ export const endpoint = {
   getUserVehicleHistory: "getUserVehicleHistory",
   reviewDetailsVehicle: "reviewDetailsVehicle",
   supportForm: "supportForm",
+  checkRetail: "checkRetail",
+  getCheckRetail: "getCheckRetail",
 };
 
 export const method = {

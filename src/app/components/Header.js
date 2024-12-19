@@ -74,6 +74,8 @@ const Header = () => {
   };
 
   const handleLogout = () => {
+    localStorage.removeItem("");
+    sessionStorage.clear(); 
     router.push("/login");
   };
 
@@ -82,9 +84,9 @@ const Header = () => {
   //   router.push("/chats");
   // };
 
-  const handleClick = (route) => {
-    router.push(route);
-  };
+  // const handleClick = (route) => {
+  //   router.push(route);
+  // };
 
   const onClickChat = () => {
     localStorage.setItem("senderId", null);
@@ -92,7 +94,7 @@ const Header = () => {
   };
 
   const router = useRouter();
-  const { pathname, query } = router;
+  const { query } = router;
 
   const onClickLeaderboard = () => {
     localStorage.setItem("activeTab", "Leaderboard");
@@ -104,15 +106,54 @@ const Header = () => {
 
   const handleSettingsClick = () => {
     localStorage.setItem("activeTab", "Personal Information");
-    router.push("/user-profile?tab=Personal+Information");
+    router.push("/user-profile");
   };
   const handleProfileClick = () => {
     localStorage.setItem("activeTab", "Personal Information");
     router.push("/user-profile?tab=Personal+Information");
   };
-  const getLinkClass = (linkPath) => {
-    return pathname === linkPath ? "text-customOrange" : "text-customColorNav";
+  const handleRetailClick = () => {
+    localStorage.setItem("activeTab", "Retail Check");
+    router.push("/user-profile?tab=Retail+Check");
   };
+  // const getLinkClass = (linkPath) => {
+  //   return pathname === linkPath ? "text-customOrange" : "text-customColorNav";
+  // };
+
+  // const [currentPath, setCurrentPath] = useState("");
+  // useEffect(() => {
+  //   if (router.isReady) {
+  //     setCurrentPath(router.pathname);
+  //   }
+  // }, [router.isReady, router.pathname]);
+
+  const handleClick = (path) => {
+    router.push(path);
+  };
+
+  const pathname =
+    router?.pathname ||
+    (typeof window !== "undefined" ? window.location.pathname : "");
+
+  const getLinkClass = (linkPath) => {
+    const currentPath = router?.pathname || "";
+    if (linkPath.includes("?")) {
+      const [basePath] = linkPath.split("?");
+      return currentPath === basePath
+        ? "text-customOrange hover:text-customOrange"
+        : "text-customColorNav hover:text-customOrange";
+    }
+    return currentPath === linkPath
+      ? "text-customOrange hover:text-customOrange"
+      : "text-customColorNav hover:text-customOrange";
+  };
+
+  // const getLinkClass = (linkPath) => {
+  //   const isActive = pathname === linkPath;
+  //   return isActive
+  //     ? "text-customOrange hover:text-customOrange"
+  //     : "text-customColorNav hover:text-customOrange";
+  // };
 
   return (
     <header className="bg-white shadow">
@@ -135,7 +176,7 @@ const Header = () => {
           <nav className="hidden md:flex space-x-4">
             <div
               onClick={() => handleClick("/home")}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/home"
               )}`}
             >
@@ -143,7 +184,7 @@ const Header = () => {
             </div>
             <div
               onClick={() => handleClick("/auctions")}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/auctions"
               )}`}
             >
@@ -151,20 +192,19 @@ const Header = () => {
             </div>
             <div
               onClick={onClickChat}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 ${getLinkClass(
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/chats"
               )}`}
             >
               CHATS
             </div>
-
             <div
               onClick={onClickLeaderboard}
-              className={`px-2 text-[15px] font-medium cursor-pointer hover:text-customBlue hover:underline underline-offset-8 uppercase ${getLinkClass(
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 uppercase ${getLinkClass(
                 "/user-profile?tab=Leaderboard"
               )}`}
             >
-              Leaderboard
+              LEADERBOARD
             </div>
           </nav>
 
@@ -257,9 +297,10 @@ const Header = () => {
                 </span>
 
                 <div
-                  className="absolute right-1 mt-32 w-24 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
+                  className="absolute right-1 mt-36 w-32 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
                 z-50 "
                 >
+                  
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
@@ -272,6 +313,12 @@ const Header = () => {
                   >
                     Profile
                   </div>
+                  {/* <div
+                    onClick={handleRetailClick}
+                    className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
+                  >
+                    Retail Check
+                  </div> */}
                   <div
                     onClick={handleSettingsClick}
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"

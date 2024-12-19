@@ -21,8 +21,6 @@ export const contact = [
   },
 ];
 
-
-
 export const contactList = [
   {
     image: "/contact1.svg",
@@ -486,10 +484,10 @@ export const yourProfileList = [
     icon: "/info-7.svg",
     name: "Wanted Section",
   },
-  // {
-  //   icon: "/info-8.svg",
-  //   name: "Manage Notification",
-  // },
+  {
+    icon: "/add-cart.png",
+    name: "Retail Check",
+  },
   {
     icon: "/info-9.svg",
     name: "Manage Location",

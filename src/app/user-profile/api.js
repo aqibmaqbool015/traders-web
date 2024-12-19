@@ -4,7 +4,11 @@ import { fetchApi } from "@/networking/network";
 export const getLeaderboardAPi = (params) => {
   return fetchApi(
     `${endpoint.getLeaderboard}?page=${params?.page}&limit=${params?.limit}`,
-     null, method.get, true, false)
+    null,
+    method.get,
+    true,
+    false
+  )
     .then((response) => {
       return response;
     })
@@ -64,6 +68,28 @@ export const createSnagApi = (params) => {
     })
     .catch((error) => {
       console.error("Snag list API Error:", error);
+      throw error;
+    });
+};
+
+export const checkRetailApi = (params) => {
+  return fetchApi(endpoint.checkRetail, params, method.post, true, false)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Retail API Error:", error);
+      throw error;
+    });
+};
+
+export const getCheckRetailApi = () => {
+  return fetchApi(endpoint.getCheckRetail, null, method.get, true, true)
+    .then((response) => {
+      return response;
+    })
+    .catch((error) => {
+      console.error("Get Retail API Error:", error);
       throw error;
     });
 };

@@ -6,6 +6,7 @@ import { checkPaymentStatusApi, updatePremiumUser } from "./api";
 import { getUserProfile } from "../login/api";
 import Image from "next/image";
 import { toast, ToastContainer } from "react-toastify";
+c
 import CustomToast from "../components/toast";
 
 const Success = () => {
