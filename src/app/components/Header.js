@@ -359,7 +359,10 @@ const Header = () => {
         >
           <nav className="flex flex-col space-y-2 p-4">
             <div
-              onClick={() => handleClick("/home")}
+              onClick={() => {
+                handleClick("/home");
+                setIsOpen(false);
+              }}
               className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/home"
               )}`}
@@ -367,7 +370,10 @@ const Header = () => {
               HOME
             </div>
             <div
-              onClick={() => handleClick("/auctions")}
+              onClick={() => {
+                handleClick("/auctions");
+                setIsOpen(false);
+              }}
               className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/auctions"
               )}`}
@@ -375,7 +381,10 @@ const Header = () => {
               AUCTION
             </div>
             <div
-              onClick={onClickChat}
+              onClick={() => {
+                onClickChat();
+                setIsOpen(false);
+              }}
               className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
                 "/chats"
               )}`}
@@ -383,28 +392,39 @@ const Header = () => {
               CHATS
             </div>
             <div
-              onClick={onClickLeaderboard}
+              onClick={() => {
+                onClickLeaderboard();
+                setIsOpen(false);
+              }}
               className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 uppercase ${getLinkClass(
                 "/user-profile?tab=Leaderboard"
               )}`}
             >
               LEADERBOARD
             </div>
-            <button
-              onClick={handleLogout}
-              className="block w-full text-left px-2 uppercase text-[15px] font-medium text-customColorNav hover:bg-gray-100"
-            >
-              Logout
-            </button>
 
             <div
-              onClick={handleSettingsClick}
+              onClick={() => {
+                handleSettingsClick();
+                setIsOpen(false);
+              }}
               className="block w-full text-left px-2 uppercase text-[15px] font-medium text-customColorNav hover:bg-gray-100"
             >
               Settings
             </div>
+
+            <button
+              onClick={() => {
+                handleLogout();
+                setIsOpen(false);
+              }}
+              className="block w-full text-left px-2 uppercase text-[15px] font-medium text-customColorNav hover:bg-gray-100"
+            >
+              Logout
+            </button>
             <Link
               href="/add-vehicle"
+              onClick={() => setIsOpen(false)}
               className="bg-customBlue text-white py-2 px-5 w-[120px] text-center rounded-[25px] font-medium"
             >
               + SELL
