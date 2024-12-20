@@ -44,7 +44,7 @@ const RetailCheck = () => {
   const onClickRetail = async () => {
     if (!valuationMileage) {
       toast.error(<CustomToast content="Please enter a mileage number." />);
-      return
+      return;
     }
     if (!registration) {
       toast.error(
@@ -151,7 +151,7 @@ const RetailCheck = () => {
                   },
                   {
                     icon: images.exchange,
-                    label: `${retail?.valuation?.partExchange} (Parts)`,
+                    label: `${retail?.valuation?.partExchange} (Part Exchange)`,
                   },
                   {
                     icon: images.private,
