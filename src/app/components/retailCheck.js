@@ -16,6 +16,7 @@ const images = {
   model: "/model.png",
   color: "/color.png",
   mileage: "/instrument2.svg",
+  image5: "/instrument5.svg",
 };
 
 const RetailCheck = () => {
@@ -49,7 +50,6 @@ const RetailCheck = () => {
 
     const params = { registration };
     setLoading(true);
-
     try {
       const response = await checkRetailApi(params);
 
@@ -124,23 +124,24 @@ const RetailCheck = () => {
                   { icon: images.regIcon, label: retail?.registration },
                   {
                     icon: images.retail,
-                    label: `${retail?.valuation?.retail} Retail`,
+                    label: `${retail?.valuation?.retail} `,
                   },
                   {
                     icon: images.trade,
-                    label: `${retail?.valuation?.trade} Trade`,
+                    label: `${retail?.valuation?.trade} `,
                   },
                   {
                     icon: images.exchange,
-                    label: `${retail?.valuation?.partExchange} Exchange`,
+                    label: `${retail?.valuation?.partExchange} `,
                   },
                   {
                     icon: images.private,
-                    label: `${retail?.valuation?.private} Private`,
+                    label: `${retail?.valuation?.private} `,
                   },
-                  { icon: images.make, label: `${retail?.make} Make` },
-                  { icon: images.model, label: `${retail?.model} Model` },
-                  { icon: images.color, label: `${retail?.colour} Color` },
+                  { icon: images.make, label: `${retail?.make} ` },
+                  { icon: images.model, label: `${retail?.model} ` },
+                  { icon: images.image5, label: `${retail?.fuelType} ` },
+                  { icon: images.color, label: `${retail?.colour} ` },
                   {
                     icon: images.mileage,
                     label: `${retail?.valuationMileage} Mileage`,

@@ -270,7 +270,7 @@ const Header = () => {
             </span>
             <Link
               href="/add-vehicle"
-              className="bg-customBlue text-white py-2 px-5 rounded-[25px] font-medium"
+            className="bg-customBlue text-white py-2 px-5 rounded-[25px] font-medium"
             >
               + SELL
             </Link>
