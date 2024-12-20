@@ -181,7 +181,13 @@ const OtpPage = () => {
         </div>
       </div>
       <div className="w-full md:w-[45%]">
-        <Image src={image.image} alt="img" className="h-full w-full" />
+        <Image
+          src={image.image}
+          alt="img"
+          className="h-full w-full"
+          width={100}
+          height={100}
+        />
       </div>
     </div>
   );

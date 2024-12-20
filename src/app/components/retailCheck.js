@@ -44,7 +44,7 @@ const RetailCheck = () => {
   const onClickRetail = async () => {
     if (!valuationMileage) {
       toast.error(<CustomToast content="Please enter a mileage number." />);
-      return;
+      return
     }
     if (!registration) {
       toast.error(

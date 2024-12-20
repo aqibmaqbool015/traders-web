@@ -54,7 +54,7 @@ export default function AddVehicle() {
               <div className="w-full md:w-[500px]">
                 <div className="mb-4">
                   <div
-                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] px-2 grid place-items-center
                     cursor-pointer"
                     onClick={handleClickVehicle}
                   >
@@ -81,7 +81,7 @@ export default function AddVehicle() {
                 </div>
                 <div className="mb-4">
                   <div
-                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] grid place-items-center
+                    className="shadow-custom rounded-lg text-center bg-transparent h-[200px] px-2 grid place-items-center
                     cursor-pointer"
                     onClick={handleClickAuction}
                   >

@@ -221,8 +221,8 @@ const Auctions = () => {
       <div className=" md:px-8 px-4 ">
         <section className="mt-4">
           <div className="md:flex sm:flex items-center space-x-2 p-2 mt-3 ">
-            <div className="relative flex items-center flex-1 rounded-[6px] border-2 border-customGray my-8">
-              <div className="md:flex sm:flex items-center space-x-2 p-2 relative w-full">
+            <div className="relative flex items-center flex-1 rounded-[6px] border-2 border-customGray md:my-8 my-2">
+              <div className="flex items-center space-x-2 p-2 relative w-full">
                 <input
                   type="search"
                   placeholder="Search Auctions List"

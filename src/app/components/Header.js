@@ -75,7 +75,7 @@ const Header = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("");
-    sessionStorage.clear(); 
+    sessionStorage.clear();
     router.push("/login");
   };
 
@@ -270,7 +270,7 @@ const Header = () => {
             </span>
             <Link
               href="/add-vehicle"
-            className="bg-customBlue text-white py-2 px-5 rounded-[25px] font-medium"
+              className="bg-customBlue text-white py-2 px-5 rounded-[25px] font-medium"
             >
               + SELL
             </Link>
@@ -300,7 +300,6 @@ const Header = () => {
                   className="absolute right-1 mt-36 w-32 p-1 bg-white border border-customGray rounded shadow-lg hidden group-hover:block
                 z-50 "
                 >
-                  
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-customDarkGray hover:bg-gray-100"
@@ -359,47 +358,57 @@ const Header = () => {
           } bg-white shadow-lg`}
         >
           <nav className="flex flex-col space-y-2 p-4">
-            <Link
-              href="/home"
-              className="px-2 text-customColorNav text-[16px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+            <div
+              onClick={() => handleClick("/home")}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
+                "/home"
+              )}`}
             >
               HOME
-            </Link>
-            <Link
-              href="/auction"
-              className="px-2 text-customColorNav text-[16px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+            </div>
+            <div
+              onClick={() => handleClick("/auctions")}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
+                "/auctions"
+              )}`}
             >
               AUCTION
-            </Link>
-            <Link
-              href="/chats"
-              className="px-2 text-customColorNav text-[16px] font-medium hover:text-customBlue hover:underline underline-offset-8"
+            </div>
+            <div
+              onClick={onClickChat}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 ${getLinkClass(
+                "/chats"
+              )}`}
             >
               CHATS
-            </Link>
-            <div className="flex items-center">
-              <span>
-                <Image
-                  src={image.user}
-                  alt="User"
-                  width={22}
-                  height={10}
-                  className="w-[22px] h-auto"
-                />
-              </span>
-              <Link
-                href="/login"
-                className="text-customColorNav text-[16px] font-medium mx-2"
-              >
-                Login /{" "}
-              </Link>
-              <Link
-                href="/signup"
-                className="text-customColorNav text-[16px] font-medium"
-              >
-                Sign Up
-              </Link>
             </div>
+            <div
+              onClick={onClickLeaderboard}
+              className={`px-2 text-[15px] font-medium cursor-pointer hover:underline underline-offset-8 uppercase ${getLinkClass(
+                "/user-profile?tab=Leaderboard"
+              )}`}
+            >
+              LEADERBOARD
+            </div>
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left px-2 uppercase text-[15px] font-medium text-customColorNav hover:bg-gray-100"
+            >
+              Logout
+            </button>
+
+            <div
+              onClick={handleSettingsClick}
+              className="block w-full text-left px-2 uppercase text-[15px] font-medium text-customColorNav hover:bg-gray-100"
+            >
+              Settings
+            </div>
+            <Link
+              href="/add-vehicle"
+              className="bg-customBlue text-white py-2 px-5 w-[120px] text-center rounded-[25px] font-medium"
+            >
+              + SELL
+            </Link>
           </nav>
         </div>
       </div>

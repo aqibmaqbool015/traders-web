@@ -7,7 +7,7 @@ export const changePassword = async (params) => {
       endpoint.createPassword,
       params,
       method.post,
-      true,
+      false,
       false
     );
     if (!response.success) {

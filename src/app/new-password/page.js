@@ -76,6 +76,8 @@ export default function NewPassword() {
       try {
         setLoading(true);
         const response = await changePassword(params);
+        console.log('response------',response);
+        
         if (response.success) {
           router.push("/login");
         } else {
