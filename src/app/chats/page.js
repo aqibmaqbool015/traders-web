@@ -185,7 +185,7 @@ const Chats = () => {
 
         <div className="md:flex my-4">
           <div
-            className={`md:w-1/4 p-2 border-r border-r-customLightBorder overflow-y-auto h-[600px] bg-transparent cursor-pointer ${
+            className={`md:w-1/4 border-r border-r-customLightBorder overflow-y-auto h-[600px] bg-transparent cursor-pointer ${
               isChatOpen ? "hidden md:block" : "block"
             }`}
           >
@@ -193,7 +193,7 @@ const Chats = () => {
               <p className="text-center text-customBlue">No Chats available</p>
             ) : (
               <>
-                <div className="md:w-1/4 bg-transparent p-4 border-r cursor-pointer border-r-customLightBorder overflow-y-auto h-[600px] ">
+                <div className="md:w-auto bg-transparent p-4 border-r cursor-pointer border-r-customLightBorder overflow-y-auto h-[600px] ">
                   <div className="space-y-6">
                     {isChat?.length === 0 ? (
                       <p className="text-center text-customBlue">
