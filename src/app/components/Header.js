@@ -169,7 +169,7 @@ const Header = () => {
                 width={140}
                 height={50}
                 alt="Logo"
-                className="md:w-[100px] mx-2 my-2 w-[110px] h-auto"
+                className="md:w-[100px] mx-2 my-2 w-[90px] h-auto"
               />
             </span>
           </div>
@@ -209,6 +209,7 @@ const Header = () => {
           </nav>
 
           <div className="hidden md:flex items-center space-x-4">
+            
             <span className=" cursor-pointer" onClick={toggleDropdown}>
               {allNotifications ? (
                 <Image

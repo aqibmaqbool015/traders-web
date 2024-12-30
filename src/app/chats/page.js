@@ -14,6 +14,7 @@ const image = {
   sender: "/send.svg",
   avatar: "/chat-user.png",
   camera: "/camera.svg",
+  back: "/back.png",
 };
 
 const SOCKET_SERVER_URL = "https://trade2trade.co.uk:5050/";
@@ -141,6 +142,16 @@ const Chats = () => {
     setMessage("");
   };
 
+  const [isChatOpen, setIsChatOpen] = useState(false);
+
+  const handleUserClick = () => {
+    setIsChatOpen(true);
+  };
+
+  const handleBackToUsers = () => {
+    setIsChatOpen(false);
+  };
+
   return (
     <>
       <div className=" px-8">
@@ -173,60 +184,85 @@ const Chats = () => {
         </section>
 
         <div className="md:flex my-4">
-          {isChat?.length === 0 ? (
-            <p className="text-center text-customBlue">No Chats available</p>
-          ) : (
-            <>
-              <div className="md:w-1/4 bg-transparent p-4 border-r cursor-pointer border-r-customLightBorder overflow-y-auto h-[600px] ">
-                <div className="space-y-6">
-                  {isChat?.length === 0 ? (
-                    <p className="text-center text-customBlue">
-                      No chat available
-                    </p>
-                  ) : (
-                    isChat?.map((vehicle, index) => (
-                      <div
-                        key={index}
-                        onClick={() => onChatSelection(vehicle)}
-                        className="flex items-start space-x-3"
-                      >
-                        <Image
-                          width={20}
-                          height={20}
-                          src={
-                            `${Image_base}${vehicle?.messages?.imgUrl}` ||
-                            image.avatar
-                          }
-                          alt="img"
-                          className="w-[40px] h-[40px] rounded-full inline-block object-contain"
-                        />
-                        <div className="flex-1">
-                          <p className="font-semibold text-customBlue ">
-                            {vehicle?.participants[0]?.firstName}
-                          </p>
-                          <p className="text-sm text-customDarkGray">
-                            {vehicle?.messages?.message}
-                          </p>
+          <div
+            className={`md:w-1/4 p-2 border-r border-r-customLightBorder overflow-y-auto h-[600px] bg-transparent cursor-pointer ${
+              isChatOpen ? "hidden md:block" : "block"
+            }`}
+          >
+            {isChat?.length === 0 ? (
+              <p className="text-center text-customBlue">No Chats available</p>
+            ) : (
+              <>
+                <div className="md:w-1/4 bg-transparent p-4 border-r cursor-pointer border-r-customLightBorder overflow-y-auto h-[600px] ">
+                  <div className="space-y-6">
+                    {isChat?.length === 0 ? (
+                      <p className="text-center text-customBlue">
+                        No chat available
+                      </p>
+                    ) : (
+                      isChat?.map((vehicle, index) => (
+                        <div key={index} onClick={handleUserClick}>
+                          <div
+                            onClick={() => onChatSelection(vehicle)}
+                            className="flex items-start space-x-3"
+                          >
+                            <Image
+                              width={20}
+                              height={20}
+                              src={
+                                `${Image_base}${vehicle?.messages?.imgUrl}` ||
+                                image.avatar
+                              }
+                              alt="img"
+                              className="w-[40px] h-[40px] rounded-full inline-block object-contain"
+                            />
+                            <div className="flex-1">
+                              <p className="font-semibold text-customBlue ">
+                                {vehicle?.participants[0]?.firstName}
+                              </p>
+                              <p className="text-sm text-customDarkGray">
+                                {vehicle?.messages?.message}
+                              </p>
+                            </div>
+                            <span className="text-xs text-customDarkGray relative right-0  block text-right mt-1">
+                              {new Date(
+                                vehicle?.messages?.createdAt
+                              ).toLocaleString("en-GB", {
+                                hour: "2-digit",
+                                minute: "2-digit",
+                                hour12: true,
+                              })}
+                            </span>
+                          </div>
                         </div>
-                        <span className="text-xs text-customDarkGray relative right-0  block text-right mt-1">
-                          {new Date(
-                            vehicle?.messages?.createdAt
-                          ).toLocaleString("en-GB", {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true,
-                          })}
-                        </span>
-                      </div>
-                    ))
-                  )}
+                      ))
+                    )}
+                  </div>
                 </div>
-              </div>
-            </>
-          )}
+              </>
+            )}
+          </div>
           {selectedUser && (
-            <div className="md:w-3/4 flex flex-col overflow-y-auto h-[600px]">
+            <div
+              className={`md:w-3/4 flex flex-col overflow-y-auto h-[600px] ${
+                isChatOpen ? "w-full" : "hidden md:flex"
+              }`}
+            >
               <div className="bg-white p-4 border-b border-b-customLightBorder flex">
+                {isChatOpen && (
+                  <div
+                    onClick={handleBackToUsers}
+                    className="mr-3 text-customBlue text-sm md:hidden"
+                  >
+                    <Image
+                      src={image.back}
+                      alt=""
+                      width={20}
+                      height={20}
+                      className="object-contain inline-block w-[15px] h-auto "
+                    />
+                  </div>
+                )}
                 <Image
                   width={20}
                   height={20}
